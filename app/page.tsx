@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Download, Github } from 'lucide-react';
 import { useStore } from '@/lib/store/useStore';
 import { generateMCPServer } from '@/lib/generators/mcpServerGenerator';
+import confetti from 'canvas-confetti';
 
 export default function Home() {
   const { serverConfig } = useStore();
@@ -22,6 +23,14 @@ export default function Home() {
     a.download = `${serverConfig.name}.ts`;
     a.click();
     URL.revokeObjectURL(url);
+    
+    // Celebration confetti!
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#6366f1', '#8b5cf6', '#10b981'],
+    });
   };
 
   return (
