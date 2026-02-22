@@ -79,6 +79,33 @@ export function validateParameters(
               });
             }
           }
+
+          // Validate minLength constraint
+          if (param.minLength !== undefined && value.length < param.minLength) {
+            errors.push({
+              field: param.name,
+              message: `${param.name} must be at least ${param.minLength} characters`,
+            });
+          }
+
+          // Validate maxLength constraint
+          if (param.maxLength !== undefined && value.length > param.maxLength) {
+            errors.push({
+              field: param.name,
+              message: `${param.name} must be at most ${param.maxLength} characters`,
+            });
+          }
+
+          // Validate pattern constraint
+          if (param.pattern) {
+            const regex = new RegExp(param.pattern);
+            if (!regex.test(value)) {
+              errors.push({
+                field: param.name,
+                message: `${param.name} must match pattern: /${param.pattern}/`,
+              });
+            }
+          }
         }
         break;
       case 'number':
@@ -119,6 +146,30 @@ export function validateParameters(
             field: param.name,
             message: `${param.name} must be an array`,
           });
+        } else {
+          // Validate minItems constraint
+          if (param.minItems !== undefined && value.length < param.minItems) {
+            errors.push({
+              field: param.name,
+              message: `${param.name} must have at least ${param.minItems} items`,
+            });
+          }
+
+          // Validate maxItems constraint
+          if (param.maxItems !== undefined && value.length > param.maxItems) {
+            errors.push({
+              field: param.name,
+              message: `${param.name} must have at most ${param.maxItems} items`,
+            });
+          }
+
+          // Validate uniqueItems constraint
+          if (param.uniqueItems && new Set(value).size !== value.length) {
+            errors.push({
+              field: param.name,
+              message: `${param.name} must have unique items`,
+            });
+          }
         }
         break;
       case 'object':

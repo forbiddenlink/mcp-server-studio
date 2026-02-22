@@ -20,7 +20,7 @@ function typeToZodSchema(param: MCPParameter): string {
       case 'boolean':
         return 'z.boolean()';
       case 'array':
-        return 'z.array(z.unknown())';
+        return buildArraySchema(param);
       case 'object':
         return 'z.record(z.unknown())';
       default:
@@ -29,11 +29,31 @@ function typeToZodSchema(param: MCPParameter): string {
   })();
 
   const withDescription = `${baseSchema}.describe("${param.description.replace(/"/g, '\\"')}")`;
-  return param.required ? withDescription : `${withDescription}.optional()`;
+
+  // Add default value if specified
+  const withDefault = param.default !== undefined
+    ? `${withDescription}.default(${formatDefaultValue(param.default)})`
+    : withDescription;
+
+  return param.required ? withDefault : `${withDefault}.optional()`;
 }
 
 /**
- * Builds a Zod string schema with enum and format constraints
+ * Formats a default value for Zod schema generation
+ */
+function formatDefaultValue(value: string | number | boolean | unknown[] | Record<string, unknown>): string {
+  if (typeof value === 'string') {
+    return `"${value.replace(/"/g, '\\"')}"`;
+  }
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+  // Arrays and objects
+  return JSON.stringify(value);
+}
+
+/**
+ * Builds a Zod string schema with enum, format, and length/pattern constraints
  */
 function buildStringSchema(param: MCPParameter): string {
   // Handle enum constraint - use z.enum() for multiple values, z.literal() for single
@@ -45,25 +65,46 @@ function buildStringSchema(param: MCPParameter): string {
     return `z.enum([${enumValues}])`;
   }
 
+  const constraints: string[] = [];
+
   // Handle format constraint
   if (param.format) {
     switch (param.format) {
       case 'email':
-        return 'z.string().email()';
+        constraints.push('.email()');
+        break;
       case 'uri':
-        return 'z.string().url()';
+        constraints.push('.url()');
+        break;
       case 'uuid':
-        return 'z.string().uuid()';
+        constraints.push('.uuid()');
+        break;
       case 'date-time':
-        return 'z.string().datetime()';
+        constraints.push('.datetime()');
+        break;
       case 'date':
-        return 'z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/)';
-      default:
-        return 'z.string()';
+        constraints.push('.regex(/^\\d{4}-\\d{2}-\\d{2}$/)');
+        break;
     }
   }
 
-  return 'z.string()';
+  // Handle length constraints
+  if (param.minLength !== undefined) {
+    constraints.push(`.min(${param.minLength})`);
+  }
+
+  if (param.maxLength !== undefined) {
+    constraints.push(`.max(${param.maxLength})`);
+  }
+
+  // Handle pattern constraint
+  if (param.pattern) {
+    // Escape backslashes for the regex string
+    const escapedPattern = param.pattern.replace(/\\/g, '\\\\');
+    constraints.push(`.regex(new RegExp("${escapedPattern}"))`);
+  }
+
+  return `z.string()${constraints.join('')}`;
 }
 
 /**
@@ -81,6 +122,27 @@ function buildNumberSchema(param: MCPParameter): string {
   }
 
   return `z.number()${constraints.join('')}`;
+}
+
+/**
+ * Builds a Zod array schema with minItems, maxItems, and uniqueItems constraints
+ */
+function buildArraySchema(param: MCPParameter): string {
+  const constraints: string[] = [];
+
+  if (param.minItems !== undefined) {
+    constraints.push(`.min(${param.minItems})`);
+  }
+
+  if (param.maxItems !== undefined) {
+    constraints.push(`.max(${param.maxItems})`);
+  }
+
+  if (param.uniqueItems) {
+    constraints.push(`.refine((arr) => new Set(arr).size === arr.length, { message: 'Items must be unique' })`);
+  }
+
+  return `z.array(z.unknown())${constraints.join('')}`;
 }
 
 /**

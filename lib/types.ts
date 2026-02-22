@@ -11,12 +11,21 @@ export interface MCPParameter {
   type: ParameterType;
   description: string;
   required: boolean;
+  // Default value (all types)
+  default?: string | number | boolean | unknown[] | Record<string, unknown>;
   // String constraints
   enum?: string[];
   format?: StringFormat;
+  minLength?: number;
+  maxLength?: number;
+  pattern?: string;
   // Number constraints
   minimum?: number;
   maximum?: number;
+  // Array constraints
+  minItems?: number;
+  maxItems?: number;
+  uniqueItems?: boolean;
 }
 
 // Sampling configuration - allows tools to request LLM inference from clients

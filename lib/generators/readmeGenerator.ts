@@ -13,6 +13,12 @@ function toSnakeCase(name: string): string {
 function generateConstraintDocs(p: MCPParameter): string {
   const constraints: string[] = [];
 
+  // Default value
+  if (p.default !== undefined) {
+    const defaultStr = typeof p.default === 'string' ? p.default : JSON.stringify(p.default);
+    constraints.push(`Default: \`${defaultStr}\``);
+  }
+
   // Enum values
   if (p.enum && p.enum.length > 0) {
     const values = p.enum.map(v => `\`${v}\``).join(', ');
@@ -24,6 +30,20 @@ function generateConstraintDocs(p: MCPParameter): string {
     constraints.push(`Format: ${p.format}`);
   }
 
+  // String length constraints
+  if (p.minLength !== undefined && p.maxLength !== undefined) {
+    constraints.push(`Length: ${p.minLength}-${p.maxLength}`);
+  } else if (p.minLength !== undefined) {
+    constraints.push(`Min length: ${p.minLength}`);
+  } else if (p.maxLength !== undefined) {
+    constraints.push(`Max length: ${p.maxLength}`);
+  }
+
+  // String pattern
+  if (p.pattern) {
+    constraints.push(`Pattern: \`${p.pattern}\``);
+  }
+
   // Number range
   if (p.minimum !== undefined && p.maximum !== undefined) {
     constraints.push(`Range: ${p.minimum}-${p.maximum}`);
@@ -31,6 +51,20 @@ function generateConstraintDocs(p: MCPParameter): string {
     constraints.push(`Min: ${p.minimum}`);
   } else if (p.maximum !== undefined) {
     constraints.push(`Max: ${p.maximum}`);
+  }
+
+  // Array items constraints
+  if (p.minItems !== undefined && p.maxItems !== undefined) {
+    constraints.push(`Items: ${p.minItems}-${p.maxItems}`);
+  } else if (p.minItems !== undefined) {
+    constraints.push(`Min items: ${p.minItems}`);
+  } else if (p.maxItems !== undefined) {
+    constraints.push(`Max items: ${p.maxItems}`);
+  }
+
+  // Unique items
+  if (p.uniqueItems) {
+    constraints.push(`Unique items required`);
   }
 
   return constraints.length > 0 ? ` (${constraints.join(', ')})` : '';

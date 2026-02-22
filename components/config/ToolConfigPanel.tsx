@@ -69,11 +69,20 @@ export function ToolConfigPanel() {
         // Clear string-specific constraints
         delete updatedParam.format;
         delete updatedParam.enum;
+        delete updatedParam.minLength;
+        delete updatedParam.maxLength;
+        delete updatedParam.pattern;
       }
       if (updates.type !== 'number') {
         // Clear number-specific constraints
         delete updatedParam.minimum;
         delete updatedParam.maximum;
+      }
+      if (updates.type !== 'array') {
+        // Clear array-specific constraints
+        delete updatedParam.minItems;
+        delete updatedParam.maxItems;
+        delete updatedParam.uniqueItems;
       }
     }
 
@@ -228,6 +237,59 @@ export function ToolConfigPanel() {
                           <span>Required parameter</span>
                         </label>
 
+                        {/* Default value - all types */}
+                        <div className="space-y-2 pt-2 border-t border-[var(--border-default)]">
+                          <span className="text-xs font-medium text-[var(--text-tertiary)]">
+                            Default Value
+                          </span>
+                          <Input
+                            placeholder={
+                              param.type === 'boolean'
+                                ? 'true or false'
+                                : param.type === 'array'
+                                ? '["item1", "item2"]'
+                                : param.type === 'object'
+                                ? '{"key": "value"}'
+                                : param.type === 'number'
+                                ? 'e.g., 42'
+                                : 'Default value'
+                            }
+                            value={
+                              param.default !== undefined
+                                ? typeof param.default === 'object'
+                                  ? JSON.stringify(param.default)
+                                  : String(param.default)
+                                : ''
+                            }
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '') {
+                                handleUpdateParameter(index, { default: undefined });
+                              } else {
+                                // Parse based on type
+                                let parsedValue: string | number | boolean | unknown[] | Record<string, unknown> | undefined;
+                                try {
+                                  if (param.type === 'boolean') {
+                                    parsedValue = value.toLowerCase() === 'true';
+                                  } else if (param.type === 'number') {
+                                    const num = Number(value);
+                                    parsedValue = isNaN(num) ? value : num;
+                                  } else if (param.type === 'array' || param.type === 'object') {
+                                    parsedValue = JSON.parse(value);
+                                  } else {
+                                    parsedValue = value;
+                                  }
+                                } catch {
+                                  // If parsing fails, store as string
+                                  parsedValue = value;
+                                }
+                                handleUpdateParameter(index, { default: parsedValue });
+                              }
+                            }}
+                            className="bg-[var(--bg-surface)] border-[var(--border-default)]"
+                          />
+                        </div>
+
                         {/* String constraints */}
                         {param.type === 'string' && (
                           <div className="space-y-3 pt-2 border-t border-[var(--border-default)]">
@@ -268,6 +330,40 @@ export function ToolConfigPanel() {
                               }}
                               className="bg-[var(--bg-surface)] border-[var(--border-default)]"
                             />
+                            <div className="flex gap-2">
+                              <Input
+                                type="number"
+                                placeholder="Min length"
+                                value={param.minLength ?? ''}
+                                onChange={(e) =>
+                                  handleUpdateParameter(index, {
+                                    minLength: e.target.value === '' ? undefined : Number(e.target.value),
+                                  })
+                                }
+                                className="bg-[var(--bg-surface)] border-[var(--border-default)] flex-1"
+                              />
+                              <Input
+                                type="number"
+                                placeholder="Max length"
+                                value={param.maxLength ?? ''}
+                                onChange={(e) =>
+                                  handleUpdateParameter(index, {
+                                    maxLength: e.target.value === '' ? undefined : Number(e.target.value),
+                                  })
+                                }
+                                className="bg-[var(--bg-surface)] border-[var(--border-default)] flex-1"
+                              />
+                            </div>
+                            <Input
+                              placeholder="Regex pattern (e.g., ^[a-z]+$)"
+                              value={param.pattern ?? ''}
+                              onChange={(e) =>
+                                handleUpdateParameter(index, {
+                                  pattern: e.target.value === '' ? undefined : e.target.value,
+                                })
+                              }
+                              className="bg-[var(--bg-surface)] border-[var(--border-default)]"
+                            />
                           </div>
                         )}
 
@@ -301,6 +397,52 @@ export function ToolConfigPanel() {
                                 className="bg-[var(--bg-surface)] border-[var(--border-default)] flex-1"
                               />
                             </div>
+                          </div>
+                        )}
+
+                        {/* Array constraints */}
+                        {param.type === 'array' && (
+                          <div className="space-y-3 pt-2 border-t border-[var(--border-default)]">
+                            <span className="text-xs font-medium text-[var(--text-tertiary)]">
+                              Array Constraints
+                            </span>
+                            <div className="flex gap-2">
+                              <Input
+                                type="number"
+                                placeholder="Min items"
+                                value={param.minItems ?? ''}
+                                onChange={(e) =>
+                                  handleUpdateParameter(index, {
+                                    minItems: e.target.value === '' ? undefined : Number(e.target.value),
+                                  })
+                                }
+                                className="bg-[var(--bg-surface)] border-[var(--border-default)] flex-1"
+                              />
+                              <Input
+                                type="number"
+                                placeholder="Max items"
+                                value={param.maxItems ?? ''}
+                                onChange={(e) =>
+                                  handleUpdateParameter(index, {
+                                    maxItems: e.target.value === '' ? undefined : Number(e.target.value),
+                                  })
+                                }
+                                className="bg-[var(--bg-surface)] border-[var(--border-default)] flex-1"
+                              />
+                            </div>
+                            <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)] cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={param.uniqueItems ?? false}
+                                onChange={(e) =>
+                                  handleUpdateParameter(index, {
+                                    uniqueItems: e.target.checked ? true : undefined,
+                                  })
+                                }
+                                className="rounded border-[var(--border-default)] bg-[var(--bg-surface)] checked:bg-[var(--accent)] checked:border-[var(--accent)]"
+                              />
+                              <span>Unique items only</span>
+                            </label>
                           </div>
                         )}
                       </div>
