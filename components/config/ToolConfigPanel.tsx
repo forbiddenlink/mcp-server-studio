@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X, Plus, Trash2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { MCPParameter, ParameterType, SamplingConfig, ElicitationConfig, TasksConfig } from '@/lib/types';
+import { MCPParameter, ParameterType, StringFormat, SamplingConfig, ElicitationConfig, TasksConfig } from '@/lib/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CapabilitiesSection } from './CapabilitiesSection';
 
@@ -61,7 +61,23 @@ export function ToolConfigPanel() {
 
   const handleUpdateParameter = (index: number, updates: Partial<MCPParameter>) => {
     const newParams = [...parameters];
-    newParams[index] = { ...newParams[index], ...updates };
+    let updatedParam = { ...newParams[index], ...updates };
+
+    // Clear irrelevant constraints when type changes
+    if (updates.type) {
+      if (updates.type !== 'string') {
+        // Clear string-specific constraints
+        delete updatedParam.format;
+        delete updatedParam.enum;
+      }
+      if (updates.type !== 'number') {
+        // Clear number-specific constraints
+        delete updatedParam.minimum;
+        delete updatedParam.maximum;
+      }
+    }
+
+    newParams[index] = updatedParam;
     setParameters(newParams);
   };
 
@@ -211,6 +227,82 @@ export function ToolConfigPanel() {
                           />
                           <span>Required parameter</span>
                         </label>
+
+                        {/* String constraints */}
+                        {param.type === 'string' && (
+                          <div className="space-y-3 pt-2 border-t border-[var(--border-default)]">
+                            <span className="text-xs font-medium text-[var(--text-tertiary)]">
+                              String Constraints
+                            </span>
+                            <Select
+                              value={param.format || 'none'}
+                              onValueChange={(value) =>
+                                handleUpdateParameter(index, {
+                                  format: value === 'none' ? undefined : (value as StringFormat),
+                                })
+                              }
+                            >
+                              <SelectTrigger className="bg-[var(--bg-surface)] border-[var(--border-default)]">
+                                <SelectValue placeholder="Format (optional)" />
+                              </SelectTrigger>
+                              <SelectContent className="surface-overlay">
+                                <SelectItem value="none">No format</SelectItem>
+                                <SelectItem value="email">Email</SelectItem>
+                                <SelectItem value="uri">URI</SelectItem>
+                                <SelectItem value="date">Date</SelectItem>
+                                <SelectItem value="uuid">UUID</SelectItem>
+                                <SelectItem value="date-time">Date-Time</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <Input
+                              placeholder="Enum values (comma-separated)"
+                              value={param.enum?.join(', ') || ''}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                const enumValues = value
+                                  ? value.split(',').map((v) => v.trim()).filter(Boolean)
+                                  : undefined;
+                                handleUpdateParameter(index, {
+                                  enum: enumValues && enumValues.length > 0 ? enumValues : undefined,
+                                });
+                              }}
+                              className="bg-[var(--bg-surface)] border-[var(--border-default)]"
+                            />
+                          </div>
+                        )}
+
+                        {/* Number constraints */}
+                        {param.type === 'number' && (
+                          <div className="space-y-3 pt-2 border-t border-[var(--border-default)]">
+                            <span className="text-xs font-medium text-[var(--text-tertiary)]">
+                              Number Constraints
+                            </span>
+                            <div className="flex gap-2">
+                              <Input
+                                type="number"
+                                placeholder="Min"
+                                value={param.minimum ?? ''}
+                                onChange={(e) =>
+                                  handleUpdateParameter(index, {
+                                    minimum: e.target.value === '' ? undefined : Number(e.target.value),
+                                  })
+                                }
+                                className="bg-[var(--bg-surface)] border-[var(--border-default)] flex-1"
+                              />
+                              <Input
+                                type="number"
+                                placeholder="Max"
+                                value={param.maximum ?? ''}
+                                onChange={(e) =>
+                                  handleUpdateParameter(index, {
+                                    maximum: e.target.value === '' ? undefined : Number(e.target.value),
+                                  })
+                                }
+                                className="bg-[var(--bg-surface)] border-[var(--border-default)] flex-1"
+                              />
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

@@ -8,6 +8,35 @@ function toSnakeCase(name: string): string {
 }
 
 /**
+ * Generates constraint documentation for a parameter
+ */
+function generateConstraintDocs(p: MCPParameter): string {
+  const constraints: string[] = [];
+
+  // Enum values
+  if (p.enum && p.enum.length > 0) {
+    const values = p.enum.map(v => `\`${v}\``).join(', ');
+    constraints.push(`Allowed values: ${values}`);
+  }
+
+  // String format
+  if (p.format) {
+    constraints.push(`Format: ${p.format}`);
+  }
+
+  // Number range
+  if (p.minimum !== undefined && p.maximum !== undefined) {
+    constraints.push(`Range: ${p.minimum}-${p.maximum}`);
+  } else if (p.minimum !== undefined) {
+    constraints.push(`Min: ${p.minimum}`);
+  } else if (p.maximum !== undefined) {
+    constraints.push(`Max: ${p.maximum}`);
+  }
+
+  return constraints.length > 0 ? ` (${constraints.join(', ')})` : '';
+}
+
+/**
  * Generates parameter documentation for a tool or prompt
  */
 function generateParameterDocs(parameters: MCPParameter[]): string {
@@ -18,7 +47,8 @@ function generateParameterDocs(parameters: MCPParameter[]): string {
   return parameters
     .map(p => {
       const requiredTag = p.required ? '**required**' : '*optional*';
-      return `- \`${p.name}\` (${p.type}, ${requiredTag}): ${p.description}`;
+      const constraintDocs = generateConstraintDocs(p);
+      return `- \`${p.name}\` (${p.type}, ${requiredTag}): ${p.description}${constraintDocs}`;
     })
     .join('\n');
 }

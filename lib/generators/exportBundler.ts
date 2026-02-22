@@ -2,6 +2,7 @@ import { MCPServerConfig } from '../types';
 import { generateMCPServer } from './mcpServerGenerator';
 import { generateDockerFiles } from './dockerGenerator';
 import { generateRailwayFiles, generateRailwayInstructions } from './railwayGenerator';
+import { generateClaudeDesktopConfig } from './readmeGenerator';
 
 export type ExportFormat = 'typescript' | 'docker' | 'railway';
 
@@ -80,6 +81,7 @@ export function createExportBundle(
     { name: 'src/index.ts', content: serverCode },
     { name: 'package.json', content: generatePackageJson(config) },
     { name: 'tsconfig.json', content: generateTsConfig() },
+    { name: 'claude_desktop_config.json', content: generateClaudeDesktopConfig(config) },
   ];
 
   if (format === 'docker') {

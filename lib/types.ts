@@ -2,6 +2,8 @@
 
 export type ParameterType = 'string' | 'number' | 'boolean' | 'array' | 'object';
 
+export type StringFormat = 'email' | 'uri' | 'date' | 'uuid' | 'date-time';
+
 export type TransportType = 'stdio' | 'http';
 
 export interface MCPParameter {
@@ -9,6 +11,12 @@ export interface MCPParameter {
   type: ParameterType;
   description: string;
   required: boolean;
+  // String constraints
+  enum?: string[];
+  format?: StringFormat;
+  // Number constraints
+  minimum?: number;
+  maximum?: number;
 }
 
 // Sampling configuration - allows tools to request LLM inference from clients

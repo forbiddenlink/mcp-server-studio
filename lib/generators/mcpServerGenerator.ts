@@ -8,15 +8,15 @@ function toSnakeCase(name: string): string {
 }
 
 /**
- * Converts a ParameterType to Zod schema method
+ * Converts a ParameterType to Zod schema method with constraints
  */
 function typeToZodSchema(param: MCPParameter): string {
   const baseSchema = (() => {
     switch (param.type) {
       case 'string':
-        return 'z.string()';
+        return buildStringSchema(param);
       case 'number':
-        return 'z.number()';
+        return buildNumberSchema(param);
       case 'boolean':
         return 'z.boolean()';
       case 'array':
@@ -30,6 +30,57 @@ function typeToZodSchema(param: MCPParameter): string {
 
   const withDescription = `${baseSchema}.describe("${param.description.replace(/"/g, '\\"')}")`;
   return param.required ? withDescription : `${withDescription}.optional()`;
+}
+
+/**
+ * Builds a Zod string schema with enum and format constraints
+ */
+function buildStringSchema(param: MCPParameter): string {
+  // Handle enum constraint - use z.enum() for multiple values, z.literal() for single
+  if (param.enum && param.enum.length > 0) {
+    if (param.enum.length === 1) {
+      return `z.literal("${param.enum[0].replace(/"/g, '\\"')}")`;
+    }
+    const enumValues = param.enum.map(v => `"${v.replace(/"/g, '\\"')}"`).join(', ');
+    return `z.enum([${enumValues}])`;
+  }
+
+  // Handle format constraint
+  if (param.format) {
+    switch (param.format) {
+      case 'email':
+        return 'z.string().email()';
+      case 'uri':
+        return 'z.string().url()';
+      case 'uuid':
+        return 'z.string().uuid()';
+      case 'date-time':
+        return 'z.string().datetime()';
+      case 'date':
+        return 'z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/)';
+      default:
+        return 'z.string()';
+    }
+  }
+
+  return 'z.string()';
+}
+
+/**
+ * Builds a Zod number schema with min/max constraints
+ */
+function buildNumberSchema(param: MCPParameter): string {
+  const constraints: string[] = [];
+
+  if (param.minimum !== undefined) {
+    constraints.push(`.min(${param.minimum})`);
+  }
+
+  if (param.maximum !== undefined) {
+    constraints.push(`.max(${param.maximum})`);
+  }
+
+  return `z.number()${constraints.join('')}`;
 }
 
 /**

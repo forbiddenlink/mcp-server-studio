@@ -5,10 +5,28 @@ function generateJsonSchema(parameters: MCPParameter[]): Record<string, any> {
   const required: string[] = [];
 
   parameters.forEach((param) => {
-    properties[param.name] = {
+    const property: Record<string, any> = {
       type: param.type,
       description: param.description,
     };
+
+    // String constraints
+    if (param.enum !== undefined && param.enum.length > 0) {
+      property.enum = param.enum;
+    }
+    if (param.format !== undefined) {
+      property.format = param.format;
+    }
+
+    // Number constraints
+    if (param.minimum !== undefined) {
+      property.minimum = param.minimum;
+    }
+    if (param.maximum !== undefined) {
+      property.maximum = param.maximum;
+    }
+
+    properties[param.name] = property;
 
     if (param.required) {
       required.push(param.name);

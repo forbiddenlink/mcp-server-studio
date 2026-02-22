@@ -19,6 +19,15 @@ interface SimulatedResponse {
   result: string;
 }
 
+// Format validation patterns
+const FORMAT_PATTERNS: Record<string, RegExp> = {
+  email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  uri: /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\/[^\s]+$/,
+  uuid: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+  date: /^\d{4}-\d{2}-\d{2}$/,
+  'date-time': /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?$/,
+};
+
 // Schema validation for tool parameters
 export function validateParameters(
   params: Record<string, unknown>,
@@ -49,6 +58,27 @@ export function validateParameters(
             field: param.name,
             message: `${param.name} must be a string`,
           });
+        } else {
+          // Validate enum constraint
+          if (param.enum && param.enum.length > 0) {
+            if (!param.enum.includes(value)) {
+              errors.push({
+                field: param.name,
+                message: `${param.name} must be one of: ${param.enum.join(', ')}`,
+              });
+            }
+          }
+
+          // Validate format constraint
+          if (param.format) {
+            const pattern = FORMAT_PATTERNS[param.format];
+            if (pattern && !pattern.test(value)) {
+              errors.push({
+                field: param.name,
+                message: `${param.name} must be a valid ${param.format}`,
+              });
+            }
+          }
         }
         break;
       case 'number':
@@ -57,6 +87,22 @@ export function validateParameters(
             field: param.name,
             message: `${param.name} must be a number`,
           });
+        } else {
+          // Validate minimum constraint
+          if (param.minimum !== undefined && value < param.minimum) {
+            errors.push({
+              field: param.name,
+              message: `${param.name} must be at least ${param.minimum}`,
+            });
+          }
+
+          // Validate maximum constraint
+          if (param.maximum !== undefined && value > param.maximum) {
+            errors.push({
+              field: param.name,
+              message: `${param.name} must be at most ${param.maximum}`,
+            });
+          }
         }
         break;
       case 'boolean':
