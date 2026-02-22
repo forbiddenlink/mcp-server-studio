@@ -9,11 +9,21 @@ import { PromptConfigPanel } from '@/components/config/PromptConfigPanel';
 import { ServerConfigPanel } from '@/components/config/ServerConfigPanel';
 import { CommandPalette, commandIcons } from '@/components/ui/command-palette';
 import { Button } from '@/components/ui/button';
-import { Download, Github, Zap, Code2, X, Command, Copy, Clipboard, Undo2, Redo2, Settings } from 'lucide-react';
+import { Download, Github, Zap, Code2, X, Command, Copy, Clipboard, Undo2, Redo2, Settings, ChevronDown, FileCode, Container, Train } from 'lucide-react';
 import { useStore } from '@/lib/store/useStore';
 import { toolTemplates } from '@/lib/templates/toolTemplates';
 import { MCPTool } from '@/lib/types';
 import { generateMCPServer } from '@/lib/generators/mcpServerGenerator';
+import { createExportBundle, ExportFormat } from '@/lib/generators/exportBundler';
+import { createZipBlob } from '@/lib/generators/zipCreator';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from '@/components/ui/dropdown-menu';
 import confetti from 'canvas-confetti';
 
 export default function Home() {
@@ -122,13 +132,20 @@ export default function Home() {
     selectNode(newTool.id);
   }, [addTool, selectNode]);
 
-  const handleExport = useCallback(() => {
-    const code = generateMCPServer(serverConfig);
-    const blob = new Blob([code], { type: 'text/typescript' });
+  const handleExport = useCallback(async (format: ExportFormat = 'typescript') => {
+    const bundle = createExportBundle(serverConfig, format);
+
+    let blob: Blob;
+    if (format === 'typescript') {
+      blob = new Blob([bundle.files[0].content], { type: 'text/typescript' });
+    } else {
+      blob = await createZipBlob(bundle.files);
+    }
+
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${serverConfig.name}.ts`;
+    a.download = bundle.filename;
     a.click();
     URL.revokeObjectURL(url);
 
@@ -181,7 +198,7 @@ export default function Home() {
       category: 'action',
       icon: commandIcons.Download,
       keywords: ['download', 'save', 'generate'],
-      action: handleExport,
+      action: () => handleExport('typescript'),
     });
 
     if (selectedNodeId) {
@@ -306,15 +323,35 @@ export default function Home() {
             <Github className="w-4 h-4 mr-2" />
             MCP Docs
           </Button>
-          <Button
-            onClick={handleExport}
-            size="sm"
-            className="hover:shadow-[var(--shadow-glow)] transition-shadow"
-            disabled={serverConfig.tools.length === 0}
-          >
-            <Download className="w-4 h-4 sm:mr-2" />
-            <span className="hidden sm:inline">Export Server</span>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                size="sm"
+                className="hover:shadow-[var(--shadow-glow)] transition-shadow"
+                disabled={serverConfig.tools.length === 0}
+              >
+                <Download className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Export</span>
+                <ChevronDown className="w-3 h-3 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>Export Format</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => handleExport('typescript')}>
+                <FileCode className="w-4 h-4 mr-2" />
+                TypeScript (.ts)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport('docker')}>
+                <Container className="w-4 h-4 mr-2" />
+                Docker Bundle (.zip)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport('railway')}>
+                <Train className="w-4 h-4 mr-2" />
+                Railway Bundle (.zip)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
