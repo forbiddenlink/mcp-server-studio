@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { Node, Edge } from '@xyflow/react';
 import { MCPTool, MCPServerConfig, ChatMessage } from '../types';
 
@@ -32,7 +33,9 @@ interface StoreState {
   clearMessages: () => void;
 }
 
-export const useStore = create<StoreState>((set, get) => ({
+export const useStore = create<StoreState>()(
+  persist(
+    (set, get) => ({
   // Initial state
   nodes: [],
   edges: [],
@@ -153,4 +156,15 @@ export const useStore = create<StoreState>((set, get) => ({
   clearMessages: () => {
     set({ messages: [] });
   },
-}));
+    }),
+    {
+      name: 'mcp-server-studio',
+      partialize: (state) => ({
+        tools: state.tools,
+        nodes: state.nodes,
+        edges: state.edges,
+        serverConfig: state.serverConfig,
+      }),
+    }
+  )
+);

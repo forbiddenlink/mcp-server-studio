@@ -83,56 +83,77 @@
 }
 
 .dark {
-  /* Custom MCP Studio Futuristic Theme */
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #12121a;
-  --bg-glass: rgba(18, 18, 26, 0.7);
-  
-  --accent-primary: #6366f1;
-  --accent-glow: #8b5cf6;
-  --accent-success: #10b981;
-  --accent-warning: #f59e0b;
-  --accent-error: #ef4444;
-  
-  --text-primary: #e5e7eb;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
-  
-  --border-color: rgba(99, 102, 241, 0.2);
-  --border-strong: rgba(99, 102, 241, 0.4);
-  
-  /* Map to shadcn color system */
-  --background: var(--bg-primary);
+  /* ═══════════════════════════════════════════════════════════════
+     MCP Server Studio - Refined Design System
+     Based on: Linear, Vercel Geist, Tailwind Zinc palette
+     ═══════════════════════════════════════════════════════════════ */
+
+  /* ─── 3-Tier Surface System ─── */
+  --bg-base: #09090b;           /* zinc-950 - Page background */
+  --bg-surface: #18181b;        /* zinc-900 - Cards, panels */
+  --bg-elevated: #27272a;       /* zinc-800 - Overlays, popovers */
+  --bg-hover: #3f3f46;          /* zinc-700 - Hover states */
+
+  /* ─── Primary Accent (Indigo) ─── */
+  --accent: #6366f1;            /* indigo-500 - Primary actions */
+  --accent-hover: #818cf8;      /* indigo-400 - Hover state */
+  --accent-muted: rgba(99, 102, 241, 0.15);   /* Tinted backgrounds */
+  --accent-subtle: rgba(99, 102, 241, 0.08);  /* Very subtle tints */
+
+  /* ─── 4-Tier Text Hierarchy ─── */
+  --text-primary: #fafafa;      /* zinc-50 - Headlines, emphasis */
+  --text-secondary: #a1a1aa;    /* zinc-400 - Body text */
+  --text-tertiary: #71717a;     /* zinc-500 - Captions, placeholders */
+  --text-disabled: #52525b;     /* zinc-600 - Disabled states */
+
+  /* ─── Borders ─── */
+  --border-default: #27272a;    /* zinc-800 - Default borders */
+  --border-strong: #3f3f46;     /* zinc-700 - Emphasized borders */
+  --border-accent: rgba(99, 102, 241, 0.4);   /* Accent borders */
+
+  /* ─── Semantic Colors ─── */
+  --success: #22c55e;           /* green-500 */
+  --warning: #f59e0b;           /* amber-500 */
+  --error: #ef4444;             /* red-500 */
+
+  /* ─── Shadows ─── */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.25);
+
+  /* ─── Map to shadcn color system ─── */
+  --background: var(--bg-base);
   --foreground: var(--text-primary);
-  --card: var(--bg-secondary);
+  --card: var(--bg-surface);
   --card-foreground: var(--text-primary);
-  --popover: var(--bg-secondary);
+  --popover: var(--bg-elevated);
   --popover-foreground: var(--text-primary);
-  --primary: var(--accent-primary);
+  --primary: #6366f1;
   --primary-foreground: #ffffff;
-  --secondary: var(--bg-secondary);
+  --secondary: var(--bg-surface);
   --secondary-foreground: var(--text-primary);
-  --muted: var(--bg-secondary);
+  --muted: var(--bg-surface);
   --muted-foreground: var(--text-secondary);
-  --accent: var(--accent-glow);
+  --accent-bg: var(--bg-elevated);
   --accent-foreground: #ffffff;
-  --destructive: var(--accent-error);
-  --border: var(--border-color);
-  --input: var(--border-color);
-  --ring: var(--accent-primary);
-  --chart-1: var(--accent-primary);
-  --chart-2: var(--accent-glow);
-  --chart-3: var(--accent-success);
-  --chart-4: var(--accent-warning);
-  --chart-5: var(--accent-error);
-  --sidebar: var(--bg-secondary);
+  --destructive: var(--error);
+  --border: var(--border-default);
+  --input: var(--border-default);
+  --ring: #6366f1;
+  --chart-1: #6366f1;
+  --chart-2: #8b5cf6;
+  --chart-3: #22c55e;
+  --chart-4: #f59e0b;
+  --chart-5: #ef4444;
+  --sidebar: var(--bg-surface);
   --sidebar-foreground: var(--text-primary);
-  --sidebar-primary: var(--accent-primary);
+  --sidebar-primary: #6366f1;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: var(--bg-secondary);
+  --sidebar-accent: var(--bg-elevated);
   --sidebar-accent-foreground: var(--text-primary);
-  --sidebar-border: var(--border-color);
-  --sidebar-ring: var(--accent-primary);
+  --sidebar-border: var(--border-default);
+  --sidebar-ring: #6366f1;
 }
 
 @layer base {
@@ -146,24 +167,140 @@
 }
 
 @layer utilities {
+  /* ─── Surface System ─── */
+  .surface-base {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+  }
+
+  .surface-elevated {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Glass effect - ONLY for overlays */
+  .surface-overlay {
+    background: rgba(24, 24, 27, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+  }
+
+  /* Legacy glass-panel - mapped to overlay for backwards compat */
   .glass-panel {
-    @apply backdrop-blur-[10px] border border-border;
-    background: var(--bg-glass);
-    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
+    background: rgba(24, 24, 27, 0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
   }
-  
-  .glow-primary {
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+
+  /* ─── Glow Effects (interaction only) ─── */
+  .hover\:glow-accent:hover {
+    box-shadow: var(--shadow-glow);
   }
-  
-  .glow-purple {
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+
+  .focus-visible\:glow-accent:focus-visible {
+    box-shadow: var(--shadow-glow);
   }
-  
+
+  /* ─── Icon Containers ─── */
+  .icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--accent-muted);
+    color: var(--accent);
+  }
+
+  .icon-container-sm {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+  }
+
+  /* ─── Canvas Background ─── */
   .grid-bg {
-    background-image: 
-      linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
-    background-size: 20px 20px;
+    background-color: var(--bg-base);
+    background-image:
+      linear-gradient(rgba(63, 63, 70, 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(63, 63, 70, 0.3) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* ─── Spacing Helpers ─── */
+  .gap-element { gap: 8px; }
+  .gap-component { gap: 16px; }
+  .gap-section { gap: 32px; }
+
+  /* ─── React Flow Handle Effects ─── */
+  .react-flow__handle {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .react-flow__handle:hover {
+    transform: scale(1.4);
+    box-shadow: 0 0 0 4px var(--accent-muted), var(--shadow-glow);
+  }
+
+  .react-flow__handle.connecting {
+    transform: scale(1.4);
+    box-shadow: 0 0 0 4px var(--accent-muted), var(--shadow-glow);
+  }
+
+  .react-flow__handle.valid {
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2), 0 0 12px rgba(34, 197, 94, 0.4);
+  }
+
+  /* ─── React Flow Edge Selection ─── */
+  .react-flow__edge.selected .react-flow__edge-path {
+    stroke: var(--accent) !important;
+  }
+
+  .react-flow__edge:hover .react-flow__edge-path {
+    stroke: var(--accent) !important;
+  }
+
+  /* ─── Mobile Responsiveness ─── */
+  @media (max-width: 640px) {
+    /* Larger touch targets for handles */
+    .react-flow__handle {
+      width: 16px !important;
+      height: 16px !important;
+    }
+
+    /* Larger controls for touch */
+    .react-flow__controls {
+      bottom: 80px !important;
+      left: 12px !important;
+    }
+
+    .react-flow__controls-button {
+      width: 36px !important;
+      height: 36px !important;
+    }
+
+    /* Hide minimap on mobile */
+    .react-flow__minimap {
+      display: none !important;
+    }
+
+    /* Adjust tool node for mobile */
+    .surface-base {
+      min-width: 180px !important;
+    }
+  }
+
+  /* Tablet adjustments */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .react-flow__minimap {
+      width: 120px !important;
+      height: 80px !important;
+    }
   }
 }
