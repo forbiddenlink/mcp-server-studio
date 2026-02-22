@@ -3,6 +3,8 @@ import { persist } from 'zustand/middleware';
 import { Node, Edge } from '@xyflow/react';
 import { MCPTool, MCPServerConfig, ChatMessage } from '../types';
 
+const MAX_HISTORY_SIZE = 50;
+
 interface HistoryEntry {
   tools: MCPTool[];
   nodes: Node[];
@@ -77,24 +79,40 @@ export const useStore = create<StoreState>()(
 
   // Tool actions
   addTool: (tool) => {
-    const { tools, nodes } = get();
-    
-    // Add tool to store
+    const { tools, nodes, edges, history, historyIndex } = get();
+
+    // Initialize history with current state if empty
+    let newHistory = history.length === 0
+      ? [{ tools: [], nodes: [], edges: [] }]
+      : history.slice(0, historyIndex + 1);
+
+    // Calculate new state
     const newTools = [...tools, tool];
-    
-    // Create a new node for React Flow
     const newNode: Node = {
       id: tool.id,
       type: 'toolNode',
       position: { x: 100 + tools.length * 50, y: 100 + tools.length * 50 },
-      data: {
-        tool,
-      },
+      data: { tool },
     };
-    
+    const newNodes = [...nodes, newNode];
+
+    // Push NEW state to history
+    newHistory.push({
+      tools: newTools.map(t => ({ ...t, parameters: [...t.parameters] })),
+      nodes: newNodes.map(n => ({ ...n })),
+      edges: edges.map(e => ({ ...e })),
+    });
+
+    // Trim old history if exceeds max size
+    if (newHistory.length > MAX_HISTORY_SIZE) {
+      newHistory = newHistory.slice(newHistory.length - MAX_HISTORY_SIZE);
+    }
+
     set({
       tools: newTools,
-      nodes: [...nodes, newNode],
+      nodes: newNodes,
+      history: newHistory,
+      historyIndex: newHistory.length - 1,
       serverConfig: {
         ...get().serverConfig,
         tools: newTools,
@@ -103,21 +121,44 @@ export const useStore = create<StoreState>()(
   },
 
   updateTool: (id, updates) => {
-    const { tools, nodes } = get();
-    
+    const { tools, nodes, edges, history, historyIndex } = get();
+
+    // Initialize history with current state if empty
+    let newHistory = history.length === 0
+      ? [{
+          tools: tools.map(t => ({ ...t, parameters: [...t.parameters] })),
+          nodes: nodes.map(n => ({ ...n })),
+          edges: edges.map(e => ({ ...e })),
+        }]
+      : history.slice(0, historyIndex + 1);
+
+    // Calculate new state
     const updatedTools = tools.map((tool) =>
       tool.id === id ? { ...tool, ...updates } : tool
     );
-    
     const updatedNodes = nodes.map((node) =>
       node.id === id
         ? { ...node, data: { ...node.data, tool: updatedTools.find((t) => t.id === id) } }
         : node
     );
-    
+
+    // Push NEW state to history
+    newHistory.push({
+      tools: updatedTools.map(t => ({ ...t, parameters: [...t.parameters] })),
+      nodes: updatedNodes.map(n => ({ ...n })),
+      edges: edges.map(e => ({ ...e })),
+    });
+
+    // Trim old history if exceeds max size
+    if (newHistory.length > MAX_HISTORY_SIZE) {
+      newHistory = newHistory.slice(newHistory.length - MAX_HISTORY_SIZE);
+    }
+
     set({
       tools: updatedTools,
       nodes: updatedNodes,
+      history: newHistory,
+      historyIndex: newHistory.length - 1,
       serverConfig: {
         ...get().serverConfig,
         tools: updatedTools,
@@ -126,14 +167,38 @@ export const useStore = create<StoreState>()(
   },
 
   deleteTool: (id) => {
-    const { tools, nodes } = get();
-    
+    const { tools, nodes, edges, history, historyIndex } = get();
+
+    // Initialize history with current state if empty
+    let newHistory = history.length === 0
+      ? [{
+          tools: tools.map(t => ({ ...t, parameters: [...t.parameters] })),
+          nodes: nodes.map(n => ({ ...n })),
+          edges: edges.map(e => ({ ...e })),
+        }]
+      : history.slice(0, historyIndex + 1);
+
+    // Calculate new state
     const newTools = tools.filter((tool) => tool.id !== id);
     const newNodes = nodes.filter((node) => node.id !== id);
-    
+
+    // Push NEW state to history
+    newHistory.push({
+      tools: newTools.map(t => ({ ...t, parameters: [...t.parameters] })),
+      nodes: newNodes.map(n => ({ ...n })),
+      edges: edges.map(e => ({ ...e })),
+    });
+
+    // Trim old history if exceeds max size
+    if (newHistory.length > MAX_HISTORY_SIZE) {
+      newHistory = newHistory.slice(newHistory.length - MAX_HISTORY_SIZE);
+    }
+
     set({
       tools: newTools,
       nodes: newNodes,
+      history: newHistory,
+      historyIndex: newHistory.length - 1,
       selectedNodeId: get().selectedNodeId === id ? null : get().selectedNodeId,
       serverConfig: {
         ...get().serverConfig,
@@ -183,14 +248,16 @@ export const useStore = create<StoreState>()(
 
   undo: () => {
     const { history, historyIndex } = get();
-    if (historyIndex < 0) return;
+    // Can undo if we have history entries before current position
+    if (historyIndex <= 0 || history.length === 0) return;
 
-    const entry = history[historyIndex];
+    const prevIndex = historyIndex - 1;
+    const entry = history[prevIndex];
     set({
       tools: entry.tools,
       nodes: entry.nodes,
       edges: entry.edges,
-      historyIndex: historyIndex - 1,
+      historyIndex: prevIndex,
       serverConfig: {
         ...get().serverConfig,
         tools: entry.tools,
@@ -200,14 +267,16 @@ export const useStore = create<StoreState>()(
 
   redo: () => {
     const { history, historyIndex } = get();
+    // Can redo if there are entries after current position
     if (historyIndex >= history.length - 1) return;
 
-    const entry = history[historyIndex + 1];
+    const nextIndex = historyIndex + 1;
+    const entry = history[nextIndex];
     set({
       tools: entry.tools,
       nodes: entry.nodes,
       edges: entry.edges,
-      historyIndex: historyIndex + 1,
+      historyIndex: nextIndex,
       serverConfig: {
         ...get().serverConfig,
         tools: entry.tools,
@@ -215,7 +284,7 @@ export const useStore = create<StoreState>()(
     });
   },
 
-  canUndo: () => get().historyIndex >= 0,
+  canUndo: () => get().historyIndex > 0,
   canRedo: () => get().historyIndex < get().history.length - 1,
 
   // React Flow actions
