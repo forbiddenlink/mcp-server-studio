@@ -2,6 +2,8 @@
 
 export type ParameterType = 'string' | 'number' | 'boolean' | 'array' | 'object';
 
+export type TransportType = 'stdio' | 'http';
+
 export interface MCPParameter {
   name: string;
   type: ParameterType;
@@ -20,6 +22,8 @@ export interface MCPTool {
 export interface MCPServerConfig {
   name: string;
   version: string;
+  transport: TransportType;
+  httpPort: number;
   tools: MCPTool[];
   resources: MCPResource[];
   prompts: MCPPrompt[];

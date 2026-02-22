@@ -90,6 +90,9 @@ interface StoreState {
   // Chat actions
   addMessage: (message: ChatMessage) => void;
   clearMessages: () => void;
+
+  // Server config actions
+  updateServerConfig: (updates: Partial<MCPServerConfig>) => void;
 }
 
 export const useStore = create<StoreState>()(
@@ -104,6 +107,8 @@ export const useStore = create<StoreState>()(
   serverConfig: {
     name: 'my-mcp-server',
     version: '1.0.0',
+    transport: 'stdio',
+    httpPort: 3000,
     tools: [],
     resources: [],
     prompts: [],
@@ -544,6 +549,16 @@ export const useStore = create<StoreState>()(
 
   clearMessages: () => {
     set({ messages: [] });
+  },
+
+  // Server config actions
+  updateServerConfig: (updates) => {
+    set((state) => ({
+      serverConfig: {
+        ...state.serverConfig,
+        ...updates,
+      },
+    }));
   },
     }),
     {

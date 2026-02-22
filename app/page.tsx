@@ -6,9 +6,10 @@ import { PreviewPanel } from '@/components/preview/PreviewPanel';
 import { ToolConfigPanel } from '@/components/config/ToolConfigPanel';
 import { ResourceConfigPanel } from '@/components/config/ResourceConfigPanel';
 import { PromptConfigPanel } from '@/components/config/PromptConfigPanel';
+import { ServerConfigPanel } from '@/components/config/ServerConfigPanel';
 import { CommandPalette, commandIcons } from '@/components/ui/command-palette';
 import { Button } from '@/components/ui/button';
-import { Download, Github, Zap, Code2, X, Command, Copy, Clipboard, Undo2, Redo2 } from 'lucide-react';
+import { Download, Github, Zap, Code2, X, Command, Copy, Clipboard, Undo2, Redo2, Settings } from 'lucide-react';
 import { useStore } from '@/lib/store/useStore';
 import { toolTemplates } from '@/lib/templates/toolTemplates';
 import { MCPTool } from '@/lib/types';
@@ -43,6 +44,7 @@ export default function Home() {
   }, [selectedNodeId, tools, resources, prompts]);
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [showServerSettings, setShowServerSettings] = useState(false);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -289,6 +291,15 @@ export default function Home() {
           <Button
             variant="outline"
             size="sm"
+            onClick={() => setShowServerSettings(true)}
+            className="hidden sm:flex items-center gap-2"
+          >
+            <Settings className="w-4 h-4" />
+            <span className="hidden md:inline">Settings</span>
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => window.open('https://github.com/modelcontextprotocol/specification', '_blank')}
             className="hidden md:flex"
           >
@@ -349,6 +360,12 @@ export default function Home() {
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
         commands={commands}
+      />
+
+      {/* Server Settings Panel */}
+      <ServerConfigPanel
+        isOpen={showServerSettings}
+        onClose={() => setShowServerSettings(false)}
       />
     </div>
   );
