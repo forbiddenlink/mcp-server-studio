@@ -21,6 +21,8 @@ export interface MCPServerConfig {
   name: string;
   version: string;
   tools: MCPTool[];
+  resources: MCPResource[];
+  prompts: MCPPrompt[];
 }
 
 export interface ChatMessage {
@@ -39,4 +41,19 @@ export interface ToolTemplate {
   description: string;
   icon: string;
   defaultParameters: MCPParameter[];
+}
+
+export interface MCPResource {
+  id: string;
+  name: string;
+  description: string;
+  uri: string;  // e.g., "file://README.md", "db://users/schema"
+  mimeType: string;  // e.g., "text/plain", "application/json"
+}
+
+export interface MCPPrompt {
+  id: string;
+  name: string;
+  description: string;
+  arguments: MCPParameter[];  // reuse MCPParameter for prompt args
 }

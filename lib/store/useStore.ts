@@ -1,14 +1,35 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Node, Edge } from '@xyflow/react';
-import { MCPTool, MCPServerConfig, ChatMessage } from '../types';
+import { MCPTool, MCPResource, MCPPrompt, MCPServerConfig, ChatMessage } from '../types';
 
 const MAX_HISTORY_SIZE = 50;
 
 interface HistoryEntry {
   tools: MCPTool[];
+  resources: MCPResource[];
+  prompts: MCPPrompt[];
   nodes: Node[];
   edges: Edge[];
+}
+
+/**
+ * Helper to create a history entry from current state
+ */
+function createHistoryEntry(
+  tools: MCPTool[],
+  resources: MCPResource[],
+  prompts: MCPPrompt[],
+  nodes: Node[],
+  edges: Edge[]
+): HistoryEntry {
+  return {
+    tools: tools.map(t => ({ ...t, parameters: [...t.parameters] })),
+    resources: resources.map(r => ({ ...r })),
+    prompts: prompts.map(p => ({ ...p, arguments: [...p.arguments] })),
+    nodes: nodes.map(n => ({ ...n })),
+    edges: edges.map(e => ({ ...e })),
+  };
 }
 
 interface StoreState {
@@ -16,8 +37,10 @@ interface StoreState {
   nodes: Node[];
   edges: Edge[];
 
-  // Tools and config
+  // Tools, resources, prompts, and config
   tools: MCPTool[];
+  resources: MCPResource[];
+  prompts: MCPPrompt[];
   serverConfig: MCPServerConfig;
   selectedNodeId: string | null;
 
@@ -31,12 +54,22 @@ interface StoreState {
   history: HistoryEntry[];
   historyIndex: number;
 
-  // Actions
+  // Tool actions
   addTool: (tool: MCPTool) => void;
   updateTool: (id: string, tool: Partial<MCPTool>) => void;
   deleteTool: (id: string) => void;
   selectNode: (id: string | null) => void;
   duplicateTool: (id: string) => void;
+
+  // Resource actions
+  addResource: (resource: MCPResource) => void;
+  updateResource: (id: string, resource: Partial<MCPResource>) => void;
+  deleteResource: (id: string) => void;
+
+  // Prompt actions
+  addPrompt: (prompt: MCPPrompt) => void;
+  updatePrompt: (id: string, prompt: Partial<MCPPrompt>) => void;
+  deletePrompt: (id: string) => void;
 
   // Clipboard actions
   copyTool: (id: string) => void;
@@ -66,10 +99,14 @@ export const useStore = create<StoreState>()(
   nodes: [],
   edges: [],
   tools: [],
+  resources: [],
+  prompts: [],
   serverConfig: {
     name: 'my-mcp-server',
     version: '1.0.0',
     tools: [],
+    resources: [],
+    prompts: [],
   },
   selectedNodeId: null,
   messages: [],
@@ -79,11 +116,11 @@ export const useStore = create<StoreState>()(
 
   // Tool actions
   addTool: (tool) => {
-    const { tools, nodes, edges, history, historyIndex } = get();
+    const { tools, resources, prompts, nodes, edges, history, historyIndex } = get();
 
     // Initialize history with current state if empty
     let newHistory = history.length === 0
-      ? [{ tools: [], nodes: [], edges: [] }]
+      ? [createHistoryEntry([], [], [], [], [])]
       : history.slice(0, historyIndex + 1);
 
     // Calculate new state
@@ -97,11 +134,7 @@ export const useStore = create<StoreState>()(
     const newNodes = [...nodes, newNode];
 
     // Push NEW state to history
-    newHistory.push({
-      tools: newTools.map(t => ({ ...t, parameters: [...t.parameters] })),
-      nodes: newNodes.map(n => ({ ...n })),
-      edges: edges.map(e => ({ ...e })),
-    });
+    newHistory.push(createHistoryEntry(newTools, resources, prompts, newNodes, edges));
 
     // Trim old history if exceeds max size
     if (newHistory.length > MAX_HISTORY_SIZE) {
@@ -121,15 +154,11 @@ export const useStore = create<StoreState>()(
   },
 
   updateTool: (id, updates) => {
-    const { tools, nodes, edges, history, historyIndex } = get();
+    const { tools, resources, prompts, nodes, edges, history, historyIndex } = get();
 
     // Initialize history with current state if empty
     let newHistory = history.length === 0
-      ? [{
-          tools: tools.map(t => ({ ...t, parameters: [...t.parameters] })),
-          nodes: nodes.map(n => ({ ...n })),
-          edges: edges.map(e => ({ ...e })),
-        }]
+      ? [createHistoryEntry(tools, resources, prompts, nodes, edges)]
       : history.slice(0, historyIndex + 1);
 
     // Calculate new state
@@ -143,11 +172,7 @@ export const useStore = create<StoreState>()(
     );
 
     // Push NEW state to history
-    newHistory.push({
-      tools: updatedTools.map(t => ({ ...t, parameters: [...t.parameters] })),
-      nodes: updatedNodes.map(n => ({ ...n })),
-      edges: edges.map(e => ({ ...e })),
-    });
+    newHistory.push(createHistoryEntry(updatedTools, resources, prompts, updatedNodes, edges));
 
     // Trim old history if exceeds max size
     if (newHistory.length > MAX_HISTORY_SIZE) {
@@ -167,15 +192,11 @@ export const useStore = create<StoreState>()(
   },
 
   deleteTool: (id) => {
-    const { tools, nodes, edges, history, historyIndex } = get();
+    const { tools, resources, prompts, nodes, edges, history, historyIndex } = get();
 
     // Initialize history with current state if empty
     let newHistory = history.length === 0
-      ? [{
-          tools: tools.map(t => ({ ...t, parameters: [...t.parameters] })),
-          nodes: nodes.map(n => ({ ...n })),
-          edges: edges.map(e => ({ ...e })),
-        }]
+      ? [createHistoryEntry(tools, resources, prompts, nodes, edges)]
       : history.slice(0, historyIndex + 1);
 
     // Calculate new state
@@ -183,11 +204,7 @@ export const useStore = create<StoreState>()(
     const newNodes = nodes.filter((node) => node.id !== id);
 
     // Push NEW state to history
-    newHistory.push({
-      tools: newTools.map(t => ({ ...t, parameters: [...t.parameters] })),
-      nodes: newNodes.map(n => ({ ...n })),
-      edges: edges.map(e => ({ ...e })),
-    });
+    newHistory.push(createHistoryEntry(newTools, resources, prompts, newNodes, edges));
 
     // Trim old history if exceeds max size
     if (newHistory.length > MAX_HISTORY_SIZE) {
@@ -212,7 +229,7 @@ export const useStore = create<StoreState>()(
   },
 
   duplicateTool: (id) => {
-    const { tools, nodes, addTool } = get();
+    const { tools, addTool } = get();
     const tool = tools.find((t) => t.id === id);
     if (!tool) return;
 
@@ -223,6 +240,202 @@ export const useStore = create<StoreState>()(
       parameters: [...tool.parameters],
     };
     addTool(newTool);
+  },
+
+  // Resource actions
+  addResource: (resource) => {
+    const { tools, resources, prompts, nodes, edges, history, historyIndex } = get();
+
+    let newHistory = history.length === 0
+      ? [createHistoryEntry(tools, [], prompts, nodes, edges)]
+      : history.slice(0, historyIndex + 1);
+
+    const newResources = [...resources, resource];
+    const newNode: Node = {
+      id: resource.id,
+      type: 'resourceNode',
+      position: { x: 300 + nodes.length * 50, y: 100 + nodes.length * 50 },
+      data: { resource },
+    };
+    const newNodes = [...nodes, newNode];
+
+    newHistory.push(createHistoryEntry(tools, newResources, prompts, newNodes, edges));
+
+    if (newHistory.length > MAX_HISTORY_SIZE) {
+      newHistory = newHistory.slice(newHistory.length - MAX_HISTORY_SIZE);
+    }
+
+    set({
+      resources: newResources,
+      nodes: newNodes,
+      history: newHistory,
+      historyIndex: newHistory.length - 1,
+      serverConfig: {
+        ...get().serverConfig,
+        resources: newResources,
+      },
+    });
+  },
+
+  updateResource: (id, updates) => {
+    const { tools, resources, prompts, nodes, edges, history, historyIndex } = get();
+
+    let newHistory = history.length === 0
+      ? [createHistoryEntry(tools, resources, prompts, nodes, edges)]
+      : history.slice(0, historyIndex + 1);
+
+    const updatedResources = resources.map((resource) =>
+      resource.id === id ? { ...resource, ...updates } : resource
+    );
+    const updatedNodes = nodes.map((node) =>
+      node.id === id
+        ? { ...node, data: { ...node.data, resource: updatedResources.find((r) => r.id === id) } }
+        : node
+    );
+
+    newHistory.push(createHistoryEntry(tools, updatedResources, prompts, updatedNodes, edges));
+
+    if (newHistory.length > MAX_HISTORY_SIZE) {
+      newHistory = newHistory.slice(newHistory.length - MAX_HISTORY_SIZE);
+    }
+
+    set({
+      resources: updatedResources,
+      nodes: updatedNodes,
+      history: newHistory,
+      historyIndex: newHistory.length - 1,
+      serverConfig: {
+        ...get().serverConfig,
+        resources: updatedResources,
+      },
+    });
+  },
+
+  deleteResource: (id) => {
+    const { tools, resources, prompts, nodes, edges, history, historyIndex } = get();
+
+    let newHistory = history.length === 0
+      ? [createHistoryEntry(tools, resources, prompts, nodes, edges)]
+      : history.slice(0, historyIndex + 1);
+
+    const newResources = resources.filter((resource) => resource.id !== id);
+    const newNodes = nodes.filter((node) => node.id !== id);
+
+    newHistory.push(createHistoryEntry(tools, newResources, prompts, newNodes, edges));
+
+    if (newHistory.length > MAX_HISTORY_SIZE) {
+      newHistory = newHistory.slice(newHistory.length - MAX_HISTORY_SIZE);
+    }
+
+    set({
+      resources: newResources,
+      nodes: newNodes,
+      history: newHistory,
+      historyIndex: newHistory.length - 1,
+      selectedNodeId: get().selectedNodeId === id ? null : get().selectedNodeId,
+      serverConfig: {
+        ...get().serverConfig,
+        resources: newResources,
+      },
+    });
+  },
+
+  // Prompt actions
+  addPrompt: (prompt) => {
+    const { tools, resources, prompts, nodes, edges, history, historyIndex } = get();
+
+    let newHistory = history.length === 0
+      ? [createHistoryEntry(tools, resources, [], nodes, edges)]
+      : history.slice(0, historyIndex + 1);
+
+    const newPrompts = [...prompts, prompt];
+    const newNode: Node = {
+      id: prompt.id,
+      type: 'promptNode',
+      position: { x: 500 + nodes.length * 50, y: 100 + nodes.length * 50 },
+      data: { prompt },
+    };
+    const newNodes = [...nodes, newNode];
+
+    newHistory.push(createHistoryEntry(tools, resources, newPrompts, newNodes, edges));
+
+    if (newHistory.length > MAX_HISTORY_SIZE) {
+      newHistory = newHistory.slice(newHistory.length - MAX_HISTORY_SIZE);
+    }
+
+    set({
+      prompts: newPrompts,
+      nodes: newNodes,
+      history: newHistory,
+      historyIndex: newHistory.length - 1,
+      serverConfig: {
+        ...get().serverConfig,
+        prompts: newPrompts,
+      },
+    });
+  },
+
+  updatePrompt: (id, updates) => {
+    const { tools, resources, prompts, nodes, edges, history, historyIndex } = get();
+
+    let newHistory = history.length === 0
+      ? [createHistoryEntry(tools, resources, prompts, nodes, edges)]
+      : history.slice(0, historyIndex + 1);
+
+    const updatedPrompts = prompts.map((prompt) =>
+      prompt.id === id ? { ...prompt, ...updates } : prompt
+    );
+    const updatedNodes = nodes.map((node) =>
+      node.id === id
+        ? { ...node, data: { ...node.data, prompt: updatedPrompts.find((p) => p.id === id) } }
+        : node
+    );
+
+    newHistory.push(createHistoryEntry(tools, resources, updatedPrompts, updatedNodes, edges));
+
+    if (newHistory.length > MAX_HISTORY_SIZE) {
+      newHistory = newHistory.slice(newHistory.length - MAX_HISTORY_SIZE);
+    }
+
+    set({
+      prompts: updatedPrompts,
+      nodes: updatedNodes,
+      history: newHistory,
+      historyIndex: newHistory.length - 1,
+      serverConfig: {
+        ...get().serverConfig,
+        prompts: updatedPrompts,
+      },
+    });
+  },
+
+  deletePrompt: (id) => {
+    const { tools, resources, prompts, nodes, edges, history, historyIndex } = get();
+
+    let newHistory = history.length === 0
+      ? [createHistoryEntry(tools, resources, prompts, nodes, edges)]
+      : history.slice(0, historyIndex + 1);
+
+    const newPrompts = prompts.filter((prompt) => prompt.id !== id);
+    const newNodes = nodes.filter((node) => node.id !== id);
+
+    newHistory.push(createHistoryEntry(tools, resources, newPrompts, newNodes, edges));
+
+    if (newHistory.length > MAX_HISTORY_SIZE) {
+      newHistory = newHistory.slice(newHistory.length - MAX_HISTORY_SIZE);
+    }
+
+    set({
+      prompts: newPrompts,
+      nodes: newNodes,
+      history: newHistory,
+      historyIndex: newHistory.length - 1,
+      selectedNodeId: get().selectedNodeId === id ? null : get().selectedNodeId,
+      serverConfig: {
+        ...get().serverConfig,
+        prompts: newPrompts,
+      },
+    });
   },
 
   copyTool: (id) => {
@@ -255,12 +468,16 @@ export const useStore = create<StoreState>()(
     const entry = history[prevIndex];
     set({
       tools: entry.tools,
+      resources: entry.resources,
+      prompts: entry.prompts,
       nodes: entry.nodes,
       edges: entry.edges,
       historyIndex: prevIndex,
       serverConfig: {
         ...get().serverConfig,
         tools: entry.tools,
+        resources: entry.resources,
+        prompts: entry.prompts,
       },
     });
   },
@@ -274,12 +491,16 @@ export const useStore = create<StoreState>()(
     const entry = history[nextIndex];
     set({
       tools: entry.tools,
+      resources: entry.resources,
+      prompts: entry.prompts,
       nodes: entry.nodes,
       edges: entry.edges,
       historyIndex: nextIndex,
       serverConfig: {
         ...get().serverConfig,
         tools: entry.tools,
+        resources: entry.resources,
+        prompts: entry.prompts,
       },
     });
   },
@@ -290,7 +511,7 @@ export const useStore = create<StoreState>()(
   // React Flow actions
   setNodes: (nodes) => set({ nodes }),
   setEdges: (edges) => set({ edges }),
-  
+
   onNodesChange: (changes) => {
     // Handle node changes from React Flow
     set((state) => {
@@ -304,12 +525,12 @@ export const useStore = create<StoreState>()(
         }
         return acc;
       }, state.nodes);
-      
+
       return { nodes: updatedNodes };
     });
   },
-  
-  onEdgesChange: (changes) => {
+
+  onEdgesChange: () => {
     // Handle edge changes (for future workflow features)
     set((state) => ({ edges: state.edges }));
   },
@@ -329,6 +550,8 @@ export const useStore = create<StoreState>()(
       name: 'mcp-server-studio',
       partialize: (state) => ({
         tools: state.tools,
+        resources: state.resources,
+        prompts: state.prompts,
         nodes: state.nodes,
         edges: state.edges,
         serverConfig: state.serverConfig,

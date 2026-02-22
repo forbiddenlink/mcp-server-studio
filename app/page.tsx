@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { CanvasPanel } from '@/components/canvas/CanvasPanel';
 import { PreviewPanel } from '@/components/preview/PreviewPanel';
 import { ToolConfigPanel } from '@/components/config/ToolConfigPanel';
+import { ResourceConfigPanel } from '@/components/config/ResourceConfigPanel';
+import { PromptConfigPanel } from '@/components/config/PromptConfigPanel';
 import { CommandPalette, commandIcons } from '@/components/ui/command-palette';
 import { Button } from '@/components/ui/button';
 import { Download, Github, Zap, Code2, X, Command, Copy, Clipboard, Undo2, Redo2 } from 'lucide-react';
@@ -17,6 +19,8 @@ export default function Home() {
   const {
     serverConfig,
     tools,
+    resources,
+    prompts,
     addTool,
     selectNode,
     selectedNodeId,
@@ -28,6 +32,15 @@ export default function Home() {
     canUndo,
     canRedo
   } = useStore();
+
+  // Detect selected node type
+  const selectedNodeType = useMemo(() => {
+    if (!selectedNodeId) return null;
+    if (tools.some(t => t.id === selectedNodeId)) return 'tool';
+    if (resources.some(r => r.id === selectedNodeId)) return 'resource';
+    if (prompts.some(p => p.id === selectedNodeId)) return 'prompt';
+    return null;
+  }, [selectedNodeId, tools, resources, prompts]);
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
 
@@ -326,8 +339,10 @@ export default function Home() {
         )}
       </div>
 
-      {/* Tool Config Panel (slides in when node selected) */}
-      <ToolConfigPanel />
+      {/* Config Panels (slides in when node selected) */}
+      {selectedNodeType === 'tool' && <ToolConfigPanel />}
+      {selectedNodeType === 'resource' && <ResourceConfigPanel />}
+      {selectedNodeType === 'prompt' && <PromptConfigPanel />}
 
       {/* Command Palette */}
       <CommandPalette

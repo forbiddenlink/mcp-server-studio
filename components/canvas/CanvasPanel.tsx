@@ -16,6 +16,8 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { ToolNode } from './ToolNode';
+import { ResourceNode } from './ResourceNode';
+import { PromptNode } from './PromptNode';
 import { DataFlowEdge } from './DataFlowEdge';
 import { Button } from '@/components/ui/button';
 import {
@@ -41,7 +43,7 @@ import {
 } from 'lucide-react';
 import { useStore } from '@/lib/store/useStore';
 import { toolTemplates } from '@/lib/templates/toolTemplates';
-import { MCPTool } from '@/lib/types';
+import { MCPTool, MCPResource, MCPPrompt } from '@/lib/types';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,11 +73,13 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export function CanvasPanel() {
-  const { nodes, edges, setNodes, setEdges, onNodesChange, onEdgesChange, addTool, selectNode } = useStore();
+  const { nodes, edges, setNodes, setEdges, onNodesChange, onEdgesChange, addTool, addResource, addPrompt, selectNode } = useStore();
 
   const nodeTypes = useMemo(
     () => ({
       toolNode: ToolNode as any,
+      resourceNode: ResourceNode as any,
+      promptNode: PromptNode as any,
     }),
     []
   );
@@ -122,6 +126,29 @@ export function CanvasPanel() {
     };
     addTool(newTool);
     selectNode(newTool.id);
+  };
+
+  const handleAddResource = () => {
+    const newResource: MCPResource = {
+      id: `resource-${Date.now()}`,
+      name: 'new_resource',
+      uri: 'file:///path/to/resource',
+      mimeType: 'text/plain',
+      description: 'A new resource',
+    };
+    addResource(newResource);
+    selectNode(newResource.id);
+  };
+
+  const handleAddPrompt = () => {
+    const newPrompt: MCPPrompt = {
+      id: `prompt-${Date.now()}`,
+      name: 'new_prompt',
+      description: 'A new prompt template',
+      arguments: [],
+    };
+    addPrompt(newPrompt);
+    selectNode(newPrompt.id);
   };
 
   const isValidConnection = useCallback(
@@ -214,6 +241,31 @@ export function CanvasPanel() {
               <div className="min-w-0">
                 <div className="font-medium text-sm text-[var(--text-primary)]">Custom Tool</div>
                 <div className="text-xs text-[var(--text-tertiary)] truncate">Create from scratch</div>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-[var(--border-default)]" />
+            <DropdownMenuItem
+              onClick={handleAddResource}
+              className="cursor-pointer p-3 rounded-lg hover:bg-[var(--bg-hover)] focus:bg-[var(--bg-hover)]"
+            >
+              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center mr-3">
+                <Database className="w-4 h-4 text-emerald-500" strokeWidth={1.5} />
+              </div>
+              <div className="min-w-0">
+                <div className="font-medium text-sm text-[var(--text-primary)]">Add Resource</div>
+                <div className="text-xs text-[var(--text-tertiary)] truncate">Expose data to clients</div>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={handleAddPrompt}
+              className="cursor-pointer p-3 rounded-lg hover:bg-[var(--bg-hover)] focus:bg-[var(--bg-hover)]"
+            >
+              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center mr-3">
+                <MessageSquare className="w-4 h-4 text-violet-500" strokeWidth={1.5} />
+              </div>
+              <div className="min-w-0">
+                <div className="font-medium text-sm text-[var(--text-primary)]">Add Prompt</div>
+                <div className="text-xs text-[var(--text-tertiary)] truncate">Reusable prompt template</div>
               </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
