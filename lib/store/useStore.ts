@@ -3,31 +3,55 @@ import { persist } from 'zustand/middleware';
 import { Node, Edge } from '@xyflow/react';
 import { MCPTool, MCPServerConfig, ChatMessage } from '../types';
 
+interface HistoryEntry {
+  tools: MCPTool[];
+  nodes: Node[];
+  edges: Edge[];
+}
+
 interface StoreState {
   // React Flow state
   nodes: Node[];
   edges: Edge[];
-  
+
   // Tools and config
   tools: MCPTool[];
   serverConfig: MCPServerConfig;
   selectedNodeId: string | null;
-  
+
   // Chat state
   messages: ChatMessage[];
-  
+
+  // Clipboard
+  clipboard: MCPTool | null;
+
+  // History for undo/redo
+  history: HistoryEntry[];
+  historyIndex: number;
+
   // Actions
   addTool: (tool: MCPTool) => void;
   updateTool: (id: string, tool: Partial<MCPTool>) => void;
   deleteTool: (id: string) => void;
   selectNode: (id: string | null) => void;
-  
+  duplicateTool: (id: string) => void;
+
+  // Clipboard actions
+  copyTool: (id: string) => void;
+  pasteTool: () => void;
+
+  // History actions
+  undo: () => void;
+  redo: () => void;
+  canUndo: () => boolean;
+  canRedo: () => boolean;
+
   // React Flow actions
   setNodes: (nodes: Node[]) => void;
   setEdges: (edges: Edge[]) => void;
   onNodesChange: (changes: any) => void;
   onEdgesChange: (changes: any) => void;
-  
+
   // Chat actions
   addMessage: (message: ChatMessage) => void;
   clearMessages: () => void;
@@ -47,6 +71,9 @@ export const useStore = create<StoreState>()(
   },
   selectedNodeId: null,
   messages: [],
+  clipboard: null,
+  history: [],
+  historyIndex: -1,
 
   // Tool actions
   addTool: (tool) => {
@@ -118,6 +145,78 @@ export const useStore = create<StoreState>()(
   selectNode: (id) => {
     set({ selectedNodeId: id });
   },
+
+  duplicateTool: (id) => {
+    const { tools, nodes, addTool } = get();
+    const tool = tools.find((t) => t.id === id);
+    if (!tool) return;
+
+    const newTool: MCPTool = {
+      ...tool,
+      id: `tool-${Date.now()}`,
+      name: `${tool.name} (copy)`,
+      parameters: [...tool.parameters],
+    };
+    addTool(newTool);
+  },
+
+  copyTool: (id) => {
+    const { tools } = get();
+    const tool = tools.find((t) => t.id === id);
+    if (tool) {
+      set({ clipboard: { ...tool, parameters: [...tool.parameters] } });
+    }
+  },
+
+  pasteTool: () => {
+    const { clipboard, addTool } = get();
+    if (!clipboard) return;
+
+    const newTool: MCPTool = {
+      ...clipboard,
+      id: `tool-${Date.now()}`,
+      name: `${clipboard.name} (copy)`,
+      parameters: [...clipboard.parameters],
+    };
+    addTool(newTool);
+  },
+
+  undo: () => {
+    const { history, historyIndex } = get();
+    if (historyIndex < 0) return;
+
+    const entry = history[historyIndex];
+    set({
+      tools: entry.tools,
+      nodes: entry.nodes,
+      edges: entry.edges,
+      historyIndex: historyIndex - 1,
+      serverConfig: {
+        ...get().serverConfig,
+        tools: entry.tools,
+      },
+    });
+  },
+
+  redo: () => {
+    const { history, historyIndex } = get();
+    if (historyIndex >= history.length - 1) return;
+
+    const entry = history[historyIndex + 1];
+    set({
+      tools: entry.tools,
+      nodes: entry.nodes,
+      edges: entry.edges,
+      historyIndex: historyIndex + 1,
+      serverConfig: {
+        ...get().serverConfig,
+        tools: entry.tools,
+      },
+    });
+  },
+
+  canUndo: () => get().historyIndex >= 0,
+  canRedo: () => get().historyIndex < get().history.length - 1,
 
   // React Flow actions
   setNodes: (nodes) => set({ nodes }),

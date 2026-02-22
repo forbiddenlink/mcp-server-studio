@@ -1,20 +1,113 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { CanvasPanel } from '@/components/canvas/CanvasPanel';
 import { PreviewPanel } from '@/components/preview/PreviewPanel';
 import { ToolConfigPanel } from '@/components/config/ToolConfigPanel';
+import { CommandPalette, commandIcons } from '@/components/ui/command-palette';
 import { Button } from '@/components/ui/button';
-import { Download, Github, Zap, Code2, X } from 'lucide-react';
+import { Download, Github, Zap, Code2, X, Command, Copy, Clipboard, Undo2, Redo2 } from 'lucide-react';
 import { useStore } from '@/lib/store/useStore';
+import { toolTemplates } from '@/lib/templates/toolTemplates';
+import { MCPTool } from '@/lib/types';
 import { generateMCPServer } from '@/lib/generators/mcpServerGenerator';
 import confetti from 'canvas-confetti';
 
 export default function Home() {
-  const { serverConfig } = useStore();
+  const {
+    serverConfig,
+    tools,
+    addTool,
+    selectNode,
+    selectedNodeId,
+    copyTool,
+    pasteTool,
+    duplicateTool,
+    undo,
+    redo,
+    canUndo,
+    canRedo
+  } = useStore();
   const [showMobilePreview, setShowMobilePreview] = useState(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
 
-  const handleExport = () => {
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts when typing in inputs
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      const isMod = e.metaKey || e.ctrlKey;
+
+      // Cmd+K - Command palette
+      if (isMod && e.key === 'k') {
+        e.preventDefault();
+        setShowCommandPalette((prev) => !prev);
+      }
+
+      // Cmd+C - Copy selected tool
+      if (isMod && e.key === 'c' && selectedNodeId) {
+        e.preventDefault();
+        copyTool(selectedNodeId);
+      }
+
+      // Cmd+V - Paste tool
+      if (isMod && e.key === 'v') {
+        e.preventDefault();
+        pasteTool();
+      }
+
+      // Cmd+D - Duplicate selected tool
+      if (isMod && e.key === 'd' && selectedNodeId) {
+        e.preventDefault();
+        duplicateTool(selectedNodeId);
+      }
+
+      // Cmd+Z - Undo
+      if (isMod && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
+
+      // Cmd+Shift+Z - Redo
+      if (isMod && e.key === 'z' && e.shiftKey) {
+        e.preventDefault();
+        redo();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedNodeId, copyTool, pasteTool, duplicateTool, undo, redo]);
+
+  // Add tool helper
+  const handleAddTool = useCallback((templateIndex: number) => {
+    const template = toolTemplates[templateIndex];
+    const newTool: MCPTool = {
+      id: `tool-${Date.now()}`,
+      name: template.name,
+      description: template.description,
+      icon: template.icon,
+      parameters: [...template.defaultParameters],
+    };
+    addTool(newTool);
+  }, [addTool]);
+
+  const handleAddCustomTool = useCallback(() => {
+    const newTool: MCPTool = {
+      id: `tool-${Date.now()}`,
+      name: 'custom_tool',
+      description: 'A custom tool',
+      icon: 'Terminal',
+      parameters: [],
+    };
+    addTool(newTool);
+    selectNode(newTool.id);
+  }, [addTool, selectNode]);
+
+  const handleExport = useCallback(() => {
     const code = generateMCPServer(serverConfig);
     const blob = new Blob([code], { type: 'text/typescript' });
     const url = URL.createObjectURL(blob);
@@ -23,7 +116,7 @@ export default function Home() {
     a.download = `${serverConfig.name}.ts`;
     a.click();
     URL.revokeObjectURL(url);
-    
+
     // Celebration confetti!
     confetti({
       particleCount: 100,
@@ -31,7 +124,116 @@ export default function Home() {
       origin: { y: 0.6 },
       colors: ['#6366f1', '#8b5cf6', '#10b981'],
     });
-  };
+  }, [serverConfig]);
+
+  // Build commands for palette
+  const commands = useMemo(() => {
+    const cmds: Array<{
+      id: string;
+      label: string;
+      category: 'add' | 'action' | 'navigate';
+      icon: typeof Download;
+      keywords?: string[];
+      action: () => void;
+    }> = [];
+
+    // Add tool commands
+    toolTemplates.forEach((template, index) => {
+      cmds.push({
+        id: `add-${template.name}`,
+        label: `Add ${template.name}`,
+        category: 'add',
+        icon: commandIcons[template.icon] || commandIcons.Terminal,
+        keywords: [template.description, 'create', 'new'],
+        action: () => handleAddTool(index),
+      });
+    });
+
+    // Custom tool
+    cmds.push({
+      id: 'add-custom',
+      label: 'Add Custom Tool',
+      category: 'add',
+      icon: commandIcons.Plus,
+      keywords: ['create', 'new', 'blank', 'scratch'],
+      action: handleAddCustomTool,
+    });
+
+    // Action commands
+    cmds.push({
+      id: 'export',
+      label: 'Export Server',
+      category: 'action',
+      icon: commandIcons.Download,
+      keywords: ['download', 'save', 'generate'],
+      action: handleExport,
+    });
+
+    if (selectedNodeId) {
+      cmds.push({
+        id: 'copy',
+        label: 'Copy Tool',
+        category: 'action',
+        icon: commandIcons.Copy,
+        keywords: ['clipboard'],
+        action: () => copyTool(selectedNodeId),
+      });
+
+      cmds.push({
+        id: 'duplicate',
+        label: 'Duplicate Tool',
+        category: 'action',
+        icon: commandIcons.Copy,
+        keywords: ['clone', 'copy'],
+        action: () => duplicateTool(selectedNodeId),
+      });
+    }
+
+    cmds.push({
+      id: 'paste',
+      label: 'Paste Tool',
+      category: 'action',
+      icon: commandIcons.Clipboard,
+      keywords: ['clipboard'],
+      action: pasteTool,
+    });
+
+    if (canUndo()) {
+      cmds.push({
+        id: 'undo',
+        label: 'Undo',
+        category: 'action',
+        icon: commandIcons.Undo2,
+        keywords: ['back', 'revert'],
+        action: undo,
+      });
+    }
+
+    if (canRedo()) {
+      cmds.push({
+        id: 'redo',
+        label: 'Redo',
+        category: 'action',
+        icon: commandIcons.Redo2,
+        keywords: ['forward'],
+        action: redo,
+      });
+    }
+
+    // Navigate to existing tools
+    tools.forEach((tool) => {
+      cmds.push({
+        id: `nav-${tool.id}`,
+        label: tool.name,
+        category: 'navigate',
+        icon: commandIcons[tool.icon] || commandIcons.Terminal,
+        keywords: [tool.description],
+        action: () => selectNode(tool.id),
+      });
+    });
+
+    return cmds;
+  }, [tools, selectedNodeId, handleAddTool, handleAddCustomTool, handleExport, selectNode, copyTool, duplicateTool, pasteTool, undo, redo, canUndo, canRedo]);
 
   return (
     <div className="h-screen w-screen flex flex-col bg-[var(--bg-primary)] text-foreground overflow-hidden">
@@ -49,6 +251,18 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Command palette button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowCommandPalette(true)}
+            className="hidden sm:flex items-center gap-2"
+          >
+            <Command className="w-4 h-4" />
+            <kbd className="px-1.5 py-0.5 text-[10px] bg-[var(--bg-elevated)] rounded border border-[var(--border-default)]">
+              K
+            </kbd>
+          </Button>
           {/* Mobile preview toggle */}
           <Button
             variant="outline"
@@ -63,7 +277,7 @@ export default function Home() {
             variant="outline"
             size="sm"
             onClick={() => window.open('https://github.com/modelcontextprotocol/specification', '_blank')}
-            className="hidden sm:flex"
+            className="hidden md:flex"
           >
             <Github className="w-4 h-4 mr-2" />
             MCP Docs
@@ -114,6 +328,13 @@ export default function Home() {
 
       {/* Tool Config Panel (slides in when node selected) */}
       <ToolConfigPanel />
+
+      {/* Command Palette */}
+      <CommandPalette
+        isOpen={showCommandPalette}
+        onClose={() => setShowCommandPalette(false)}
+        commands={commands}
+      />
     </div>
   );
 }
