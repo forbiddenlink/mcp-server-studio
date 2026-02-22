@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   ReactFlow,
   Background,
@@ -20,6 +20,8 @@ import { ResourceNode } from './ResourceNode';
 import { PromptNode } from './PromptNode';
 import { DataFlowEdge } from './DataFlowEdge';
 import { Button } from '@/components/ui/button';
+import { AIGenerator } from '@/components/ui/ai-generator';
+import { ImportDialog } from '@/components/ui/import-dialog';
 import {
   Plus,
   Zap,
@@ -39,11 +41,14 @@ import {
   Code,
   Languages,
   Camera,
+  Sparkles,
+  FileUp,
+  LayoutGrid,
   type LucideIcon,
 } from 'lucide-react';
 import { useStore } from '@/lib/store/useStore';
 import { toolTemplates } from '@/lib/templates/toolTemplates';
-import { MCPTool, MCPResource, MCPPrompt } from '@/lib/types';
+import { MCPTool, MCPResource, MCPPrompt, ToolTemplate } from '@/lib/types';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,6 +56,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import { TemplateGallery } from '@/components/ui/template-gallery';
 
 // Icon mapping for dropdown menu
 const iconMap: Record<string, LucideIcon> = {
@@ -74,6 +80,36 @@ const iconMap: Record<string, LucideIcon> = {
 
 export function CanvasPanel() {
   const { nodes, edges, setNodes, setEdges, onNodesChange, onEdgesChange, addTool, addResource, addPrompt, selectNode } = useStore();
+  const [isAIGeneratorOpen, setIsAIGeneratorOpen] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [isTemplateGalleryOpen, setIsTemplateGalleryOpen] = useState(false);
+
+  const handleAIGenerate = (tool: MCPTool) => {
+    addTool(tool);
+    selectNode(tool.id);
+  };
+
+  const handleImport = (tools: MCPTool[]) => {
+    tools.forEach(tool => {
+      addTool(tool);
+    });
+    // Select the first imported tool
+    if (tools.length > 0) {
+      selectNode(tools[0].id);
+    }
+  };
+
+  const handleSelectTemplate = (template: ToolTemplate) => {
+    const newTool: MCPTool = {
+      id: `tool-${Date.now()}`,
+      name: template.name,
+      description: template.description,
+      icon: template.icon,
+      parameters: [...template.defaultParameters],
+    };
+    addTool(newTool);
+    selectNode(newTool.id);
+  };
 
   const nodeTypes = useMemo(
     () => ({
@@ -211,8 +247,26 @@ export function CanvasPanel() {
               Add Tool
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-64 surface-overlay p-1">
-            {toolTemplates.map((template, index) => {
+          <DropdownMenuContent align="start" className="w-64 surface-overlay p-1 max-h-[70vh] overflow-y-auto">
+            {/* Browse Templates - Opens Gallery */}
+            <DropdownMenuItem
+              onClick={() => setIsTemplateGalleryOpen(true)}
+              className="cursor-pointer p-3 rounded-lg hover:bg-[var(--accent)] hover:text-white focus:bg-[var(--accent)] focus:text-white group"
+            >
+              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-[var(--accent-muted)] group-hover:bg-white/20 flex items-center justify-center mr-3 transition-colors">
+                <LayoutGrid className="w-4 h-4 text-[var(--accent)] group-hover:text-white" strokeWidth={1.5} />
+              </div>
+              <div className="min-w-0">
+                <div className="font-medium text-sm">Browse Templates</div>
+                <div className="text-xs opacity-70">29 templates in 7 categories</div>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-[var(--border-default)]" />
+            {/* Quick Add - Show first 5 common templates */}
+            <div className="px-2 py-1.5 text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wider">
+              Quick Add
+            </div>
+            {toolTemplates.slice(0, 5).map((template, index) => {
               const IconComponent = iconMap[template.icon] || Terminal;
               return (
                 <DropdownMenuItem
@@ -231,6 +285,18 @@ export function CanvasPanel() {
               );
             })}
             <DropdownMenuSeparator className="bg-[var(--border-default)]" />
+            <DropdownMenuItem
+              onClick={() => setIsAIGeneratorOpen(true)}
+              className="cursor-pointer p-3 rounded-lg hover:bg-[var(--bg-hover)] focus:bg-[var(--bg-hover)]"
+            >
+              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center mr-3">
+                <Sparkles className="w-4 h-4 text-violet-500" strokeWidth={1.5} />
+              </div>
+              <div className="min-w-0">
+                <div className="font-medium text-sm text-[var(--text-primary)]">Generate with AI</div>
+                <div className="text-xs text-[var(--text-tertiary)] truncate">Describe in natural language</div>
+              </div>
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleAddCustomTool}
               className="cursor-pointer p-3 rounded-lg hover:bg-[var(--bg-hover)] focus:bg-[var(--bg-hover)]"
@@ -268,9 +334,43 @@ export function CanvasPanel() {
                 <div className="text-xs text-[var(--text-tertiary)] truncate">Reusable prompt template</div>
               </div>
             </DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-[var(--border-default)]" />
+            <DropdownMenuItem
+              onClick={() => setIsImportDialogOpen(true)}
+              className="cursor-pointer p-3 rounded-lg hover:bg-[var(--bg-hover)] focus:bg-[var(--bg-hover)]"
+            >
+              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center mr-3">
+                <FileUp className="w-4 h-4 text-cyan-500" strokeWidth={1.5} />
+              </div>
+              <div className="min-w-0">
+                <div className="font-medium text-sm text-[var(--text-primary)]">Import from OpenAPI</div>
+                <div className="text-xs text-[var(--text-tertiary)] truncate">Import tools from API spec</div>
+              </div>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      {/* Import Dialog */}
+      <ImportDialog
+        isOpen={isImportDialogOpen}
+        onClose={() => setIsImportDialogOpen(false)}
+        onImport={handleImport}
+      />
+
+      {/* AI Generator Dialog */}
+      <AIGenerator
+        isOpen={isAIGeneratorOpen}
+        onClose={() => setIsAIGeneratorOpen(false)}
+        onGenerate={handleAIGenerate}
+      />
+
+      {/* Template Gallery Modal */}
+      <TemplateGallery
+        isOpen={isTemplateGalleryOpen}
+        onClose={() => setIsTemplateGalleryOpen(false)}
+        onSelectTemplate={handleSelectTemplate}
+      />
 
       {/* Empty State - Clean & Professional */}
       {nodes.length === 0 && (
