@@ -11,12 +11,48 @@ export interface MCPParameter {
   required: boolean;
 }
 
+// Sampling configuration - allows tools to request LLM inference from clients
+export interface SamplingConfig {
+  enabled: boolean;
+  maxTokens: number;        // Required, prevents runaway
+  temperature?: number;     // 0-2, default 0.7
+  systemPrompt?: string;
+  modelHint?: 'fastest' | 'balanced' | 'smartest';
+}
+
+// Elicitation configuration - allows tools to request user input
+export type ElicitationMode = 'form' | 'url';
+
+export interface ElicitationFormField {
+  name: string;
+  type: 'string' | 'number' | 'boolean';
+  description: string;
+  required: boolean;
+}
+
+export interface ElicitationConfig {
+  enabled: boolean;
+  mode: ElicitationMode;
+  message: string;
+  formFields?: ElicitationFormField[];  // Form mode
+  url?: string;                          // URL mode
+}
+
+// Tasks configuration - for long-running async tools (experimental)
+export interface TasksConfig {
+  enabled: boolean;
+  ttl?: number;  // milliseconds
+}
+
 export interface MCPTool {
   id: string;
   name: string;
   description: string;
   icon: string;
   parameters: MCPParameter[];
+  sampling?: SamplingConfig;
+  elicitation?: ElicitationConfig;
+  tasks?: TasksConfig;
 }
 
 export interface MCPServerConfig {

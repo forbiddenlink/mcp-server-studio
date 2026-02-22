@@ -24,7 +24,16 @@ function createHistoryEntry(
   edges: Edge[]
 ): HistoryEntry {
   return {
-    tools: tools.map(t => ({ ...t, parameters: [...t.parameters] })),
+    tools: tools.map(t => ({
+      ...t,
+      parameters: [...t.parameters],
+      sampling: t.sampling ? { ...t.sampling } : undefined,
+      elicitation: t.elicitation ? {
+        ...t.elicitation,
+        formFields: t.elicitation.formFields ? [...t.elicitation.formFields] : undefined,
+      } : undefined,
+      tasks: t.tasks ? { ...t.tasks } : undefined,
+    })),
     resources: resources.map(r => ({ ...r })),
     prompts: prompts.map(p => ({ ...p, arguments: [...p.arguments] })),
     nodes: nodes.map(n => ({ ...n })),
@@ -243,6 +252,12 @@ export const useStore = create<StoreState>()(
       id: `tool-${Date.now()}`,
       name: `${tool.name} (copy)`,
       parameters: [...tool.parameters],
+      sampling: tool.sampling ? { ...tool.sampling } : undefined,
+      elicitation: tool.elicitation ? {
+        ...tool.elicitation,
+        formFields: tool.elicitation.formFields ? [...tool.elicitation.formFields] : undefined,
+      } : undefined,
+      tasks: tool.tasks ? { ...tool.tasks } : undefined,
     };
     addTool(newTool);
   },
@@ -447,7 +462,18 @@ export const useStore = create<StoreState>()(
     const { tools } = get();
     const tool = tools.find((t) => t.id === id);
     if (tool) {
-      set({ clipboard: { ...tool, parameters: [...tool.parameters] } });
+      set({
+        clipboard: {
+          ...tool,
+          parameters: [...tool.parameters],
+          sampling: tool.sampling ? { ...tool.sampling } : undefined,
+          elicitation: tool.elicitation ? {
+            ...tool.elicitation,
+            formFields: tool.elicitation.formFields ? [...tool.elicitation.formFields] : undefined,
+          } : undefined,
+          tasks: tool.tasks ? { ...tool.tasks } : undefined,
+        }
+      });
     }
   },
 
@@ -460,6 +486,12 @@ export const useStore = create<StoreState>()(
       id: `tool-${Date.now()}`,
       name: `${clipboard.name} (copy)`,
       parameters: [...clipboard.parameters],
+      sampling: clipboard.sampling ? { ...clipboard.sampling } : undefined,
+      elicitation: clipboard.elicitation ? {
+        ...clipboard.elicitation,
+        formFields: clipboard.elicitation.formFields ? [...clipboard.elicitation.formFields] : undefined,
+      } : undefined,
+      tasks: clipboard.tasks ? { ...clipboard.tasks } : undefined,
     };
     addTool(newTool);
   },

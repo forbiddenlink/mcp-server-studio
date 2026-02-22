@@ -23,6 +23,8 @@ import {
   Languages,
   Camera,
   AlertTriangle,
+  Sparkles,
+  Clock,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -95,10 +97,28 @@ function ToolNodeComponent({ id, data, selected }: NodeProps) {
           </p>
 
           {/* Footer */}
-          <div className="flex items-center gap-2 mt-3 pt-2 border-t border-[var(--border-default)]">
+          <div className="flex items-center gap-2 mt-3 pt-2 border-t border-[var(--border-default)] flex-wrap">
             <span className="text-xs text-[var(--text-tertiary)]">
               {tool.parameters.length} {tool.parameters.length === 1 ? 'param' : 'params'}
             </span>
+            {tool.sampling?.enabled && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded-full bg-violet-500/10 text-violet-400">
+                <Sparkles className="w-2.5 h-2.5" />
+                Sampling
+              </span>
+            )}
+            {tool.elicitation?.enabled && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded-full bg-cyan-500/10 text-cyan-400">
+                <MessageSquare className="w-2.5 h-2.5" />
+                Elicitation
+              </span>
+            )}
+            {tool.tasks?.enabled && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded-full bg-amber-500/10 text-amber-400">
+                <Clock className="w-2.5 h-2.5" />
+                Tasks
+              </span>
+            )}
             {hasIncompleteParams && (
               <div className="flex items-center gap-1 text-xs text-[var(--warning)]">
                 <AlertTriangle className="w-3 h-3" />

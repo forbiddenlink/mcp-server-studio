@@ -8,8 +8,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X, Plus, Trash2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { MCPParameter, ParameterType } from '@/lib/types';
+import { MCPParameter, ParameterType, SamplingConfig, ElicitationConfig, TasksConfig } from '@/lib/types';
 import { motion, AnimatePresence } from 'framer-motion';
+import { CapabilitiesSection } from './CapabilitiesSection';
 
 export function ToolConfigPanel() {
   const { selectedNodeId, tools, updateTool, deleteTool, selectNode } = useStore();
@@ -18,12 +19,18 @@ export function ToolConfigPanel() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [parameters, setParameters] = useState<MCPParameter[]>([]);
+  const [sampling, setSampling] = useState<SamplingConfig | undefined>(undefined);
+  const [elicitation, setElicitation] = useState<ElicitationConfig | undefined>(undefined);
+  const [tasks, setTasks] = useState<TasksConfig | undefined>(undefined);
 
   useEffect(() => {
     if (selectedTool) {
       setName(selectedTool.name);
       setDescription(selectedTool.description);
       setParameters([...selectedTool.parameters]);
+      setSampling(selectedTool.sampling);
+      setElicitation(selectedTool.elicitation);
+      setTasks(selectedTool.tasks);
     }
   }, [selectedTool]);
 
@@ -33,6 +40,9 @@ export function ToolConfigPanel() {
         name,
         description,
         parameters,
+        sampling,
+        elicitation,
+        tasks,
       });
     }
   };
@@ -207,6 +217,16 @@ export function ToolConfigPanel() {
                 </div>
               )}
             </div>
+
+            {/* Advanced Capabilities */}
+            <CapabilitiesSection
+              sampling={sampling}
+              elicitation={elicitation}
+              tasks={tasks}
+              onSamplingChange={setSampling}
+              onElicitationChange={setElicitation}
+              onTasksChange={setTasks}
+            />
           </div>
 
           {/* Footer Actions */}

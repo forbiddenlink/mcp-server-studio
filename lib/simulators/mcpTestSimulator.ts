@@ -1,4 +1,4 @@
-import { MCPTool, MCPResource, MCPPrompt, MCPParameter, ChatMessage } from '../types';
+import { MCPTool, MCPResource, MCPPrompt, MCPParameter, ChatMessage, SamplingConfig, ElicitationConfig } from '../types';
 
 // Structured test result format
 export interface TestResult {
@@ -340,6 +340,53 @@ export function runBatchValidation(
   };
 }
 
+function validateSamplingConfig(sampling: SamplingConfig): ValidationError[] {
+  const errors: ValidationError[] = [];
+
+  if (sampling.enabled) {
+    if (!sampling.maxTokens || sampling.maxTokens < 1) {
+      errors.push({ field: 'sampling.maxTokens', message: 'Max tokens must be at least 1' });
+    }
+
+    if (sampling.temperature !== undefined && (sampling.temperature < 0 || sampling.temperature > 2)) {
+      errors.push({ field: 'sampling.temperature', message: 'Temperature must be between 0 and 2' });
+    }
+  }
+
+  return errors;
+}
+
+function validateElicitationConfig(elicitation: ElicitationConfig): ValidationError[] {
+  const errors: ValidationError[] = [];
+
+  if (elicitation.enabled) {
+    if (!elicitation.message || elicitation.message.trim() === '') {
+      errors.push({ field: 'elicitation.message', message: 'Elicitation message is required' });
+    }
+
+    if (elicitation.mode === 'form') {
+      if (!elicitation.formFields || elicitation.formFields.length === 0) {
+        errors.push({ field: 'elicitation.formFields', message: 'At least one form field is required in form mode' });
+      } else {
+        for (let i = 0; i < elicitation.formFields.length; i++) {
+          const field = elicitation.formFields[i];
+          if (!field.name || field.name.trim() === '') {
+            errors.push({ field: `elicitation.formFields[${i}].name`, message: 'Form field name is required' });
+          }
+        }
+      }
+    }
+
+    if (elicitation.mode === 'url') {
+      if (!elicitation.url || elicitation.url.trim() === '') {
+        errors.push({ field: 'elicitation.url', message: 'URL is required in URL mode' });
+      }
+    }
+  }
+
+  return errors;
+}
+
 function validateToolSchema(tool: MCPTool): TestResult {
   const errors: ValidationError[] = [];
 
@@ -359,6 +406,16 @@ function validateToolSchema(tool: MCPTool): TestResult {
     if (!param.name || param.name.trim() === '') {
       errors.push({ field: `parameters[${i}].name`, message: 'Parameter name is required' });
     }
+  }
+
+  // Validate sampling config
+  if (tool.sampling) {
+    errors.push(...validateSamplingConfig(tool.sampling));
+  }
+
+  // Validate elicitation config
+  if (tool.elicitation) {
+    errors.push(...validateElicitationConfig(tool.elicitation));
   }
 
   return {

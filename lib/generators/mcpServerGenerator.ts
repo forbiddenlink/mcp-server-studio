@@ -1,4 +1,4 @@
-import { MCPServerConfig, MCPTool, MCPParameter, MCPResource, MCPPrompt, TransportType } from '../types';
+import { MCPServerConfig, MCPTool, MCPParameter, MCPResource, MCPPrompt, TransportType, SamplingConfig, ElicitationConfig } from '../types';
 
 /**
  * Converts a name to snake_case for MCP tool identifiers
@@ -51,6 +51,108 @@ function generateZodSchema(tool: MCPTool): string {
 }
 
 /**
+ * Generates sampling code for a tool
+ */
+function generateSamplingCode(config: SamplingConfig): string {
+  const options: string[] = [
+    `maxTokens: ${config.maxTokens}`,
+  ];
+
+  if (config.temperature !== undefined) {
+    options.push(`temperature: ${config.temperature}`);
+  }
+
+  if (config.modelHint) {
+    options.push(`modelHint: "${config.modelHint}"`);
+  }
+
+  if (config.systemPrompt) {
+    options.push(`systemPrompt: "${config.systemPrompt.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`);
+  }
+
+  return `
+      // Request LLM sampling from client
+      const samplingResult = await server.createMessage({
+        messages: [
+          {
+            role: "user",
+            content: {
+              type: "text",
+              text: "Your prompt here", // TODO: Customize the prompt
+            },
+          },
+        ],
+        ${options.join(',\n        ')},
+      });
+
+      // Handle sampling result
+      const sampledContent = samplingResult.content;
+`;
+}
+
+/**
+ * Generates elicitation code for a tool
+ */
+function generateElicitationCode(config: ElicitationConfig): string {
+  if (config.mode === 'url') {
+    return `
+      // Request user input via URL
+      const elicitResult = await server.elicitInput({
+        mode: "url",
+        message: "${config.message.replace(/"/g, '\\"').replace(/\n/g, '\\n')}",
+        url: "${config.url || ''}",
+      });
+
+      // Handle elicitation result
+      if (elicitResult.action === "cancel") {
+        return {
+          content: [{ type: "text", text: "User cancelled the operation" }],
+          isError: true,
+        };
+      }
+`;
+  }
+
+  // Form mode
+  const schemaProperties: string[] = (config.formFields || []).map(field => {
+    const prop: string[] = [`type: "${field.type}"`];
+    if (field.description) {
+      prop.push(`description: "${field.description.replace(/"/g, '\\"')}"`);
+    }
+    return `${field.name}: { ${prop.join(', ')} }`;
+  });
+
+  const requiredFields = (config.formFields || [])
+    .filter(f => f.required)
+    .map(f => `"${f.name}"`);
+
+  return `
+      // Request user input via form
+      const elicitResult = await server.elicitInput({
+        mode: "form",
+        message: "${config.message.replace(/"/g, '\\"').replace(/\n/g, '\\n')}",
+        requestedSchema: {
+          type: "object",
+          properties: {
+            ${schemaProperties.join(',\n            ')}
+          },
+          ${requiredFields.length > 0 ? `required: [${requiredFields.join(', ')}],` : ''}
+        },
+      });
+
+      // Handle elicitation result
+      if (elicitResult.action === "cancel") {
+        return {
+          content: [{ type: "text", text: "User cancelled the operation" }],
+          isError: true,
+        };
+      }
+
+      const userInput = elicitResult.content;
+`;
+}
+
+/**
  * Generates the tool registration code using server.tool()
  */
 function generateToolRegistration(tool: MCPTool): string {
@@ -61,9 +163,22 @@ function generateToolRegistration(tool: MCPTool): string {
   const paramNames = tool.parameters.map(p => p.name).join(', ');
   const handlerParams = tool.parameters.length > 0 ? `{ ${paramNames} }` : '_args';
 
+  // Generate capability code blocks
+  const samplingCode = tool.sampling?.enabled ? generateSamplingCode(tool.sampling) : '';
+  const elicitationCode = tool.elicitation?.enabled ? generateElicitationCode(tool.elicitation) : '';
+
+  // Build capability comments
+  const capabilities: string[] = [];
+  if (tool.sampling?.enabled) capabilities.push('Sampling');
+  if (tool.elicitation?.enabled) capabilities.push('Elicitation');
+  if (tool.tasks?.enabled) capabilities.push('Tasks (async)');
+  const capabilitiesComment = capabilities.length > 0
+    ? `\n * Capabilities: ${capabilities.join(', ')}`
+    : '';
+
   return `/**
  * ${tool.icon} ${tool.name}
- * ${tool.description}
+ * ${tool.description}${capabilitiesComment}
  */
 server.tool(
   "${toolId}",
@@ -71,7 +186,7 @@ server.tool(
   async (${handlerParams}) => {
     try {
       console.error(\`[${toolId}] Tool invoked\`);
-
+${elicitationCode}${samplingCode}
       // TODO: Implement ${tool.name} logic here
 
       return {
@@ -322,6 +437,8 @@ export function generateMCPServer(config: MCPServerConfig): string {
   // Determine capabilities based on what's configured
   const capabilities: string[] = [];
   if (config.tools.length > 0) capabilities.push('tools: {}');
+  if (config.tools.some(t => t.sampling?.enabled)) capabilities.push('sampling: {}');
+  if (config.tools.some(t => t.elicitation?.enabled)) capabilities.push('elicitation: {}');
   if ((config.resources || []).length > 0) capabilities.push('resources: {}');
   if ((config.prompts || []).length > 0) capabilities.push('prompts: {}');
   const capabilitiesStr = capabilities.join(',\n      ');
