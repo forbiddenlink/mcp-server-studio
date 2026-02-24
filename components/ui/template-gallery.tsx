@@ -82,6 +82,16 @@ const iconMap: Record<string, LucideIcon> = {
   Plus,
 };
 
+const CategoryIcon = ({ iconName }: { iconName: string }) => {
+  const Icon = iconMap[iconName] || Terminal;
+  return <Icon className="w-5 h-5" strokeWidth={1.5} />;
+};
+
+const TemplateIcon = ({ iconName }: { iconName: string }) => {
+  const Icon = iconMap[iconName] || Terminal;
+  return <Icon className="w-4 h-4" strokeWidth={1.5} />;
+};
+
 interface TemplateGalleryProps {
   isOpen: boolean;
   onClose: () => void;
@@ -97,10 +107,13 @@ export function TemplateGallery({ isOpen, onClose, onSelectTemplate }: TemplateG
   // Focus search input when opening
   useEffect(() => {
     if (isOpen) {
-      setSearchQuery('');
-      setSelectedCategory(null);
-      setPreviewTemplate(null);
-      setTimeout(() => searchInputRef.current?.focus(), 50);
+      const timer = setTimeout(() => {
+        setSearchQuery('');
+        setSelectedCategory(null);
+        setPreviewTemplate(null);
+        searchInputRef.current?.focus();
+      }, 50);
+      return () => clearTimeout(timer);
     }
   }, [isOpen]);
 
@@ -160,16 +173,6 @@ export function TemplateGallery({ isOpen, onClose, onSelectTemplate }: TemplateG
   );
 
   if (!isOpen) return null;
-
-  const CategoryIcon = ({ iconName }: { iconName: string }) => {
-    const Icon = iconMap[iconName] || Terminal;
-    return <Icon className="w-5 h-5" strokeWidth={1.5} />;
-  };
-
-  const TemplateIcon = ({ iconName }: { iconName: string }) => {
-    const Icon = iconMap[iconName] || Terminal;
-    return <Icon className="w-4 h-4" strokeWidth={1.5} />;
-  };
 
   return (
     <AnimatePresence>

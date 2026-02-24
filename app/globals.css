@@ -48,7 +48,7 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0.5rem; /* Reduced from 0.625rem for precision feel */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -89,32 +89,32 @@
      ═══════════════════════════════════════════════════════════════ */
 
   /* ─── 3-Tier Surface System ─── */
-  --bg-base: #09090b;           /* zinc-950 - Page background */
-  --bg-surface: #18181b;        /* zinc-900 - Cards, panels */
-  --bg-elevated: #27272a;       /* zinc-800 - Overlays, popovers */
-  --bg-hover: #3f3f46;          /* zinc-700 - Hover states */
+  --bg-base: #09090b; /* zinc-950 - Page background */
+  --bg-surface: #18181b; /* zinc-900 - Cards, panels */
+  --bg-elevated: #27272a; /* zinc-800 - Overlays, popovers */
+  --bg-hover: #3f3f46; /* zinc-700 - Hover states */
 
   /* ─── Primary Accent (Indigo) ─── */
-  --accent: #6366f1;            /* indigo-500 - Primary actions */
-  --accent-hover: #818cf8;      /* indigo-400 - Hover state */
-  --accent-muted: rgba(99, 102, 241, 0.15);   /* Tinted backgrounds */
-  --accent-subtle: rgba(99, 102, 241, 0.08);  /* Very subtle tints */
+  --accent: #6366f1; /* indigo-500 - Primary actions */
+  --accent-hover: #818cf8; /* indigo-400 - Hover state */
+  --accent-muted: rgba(99, 102, 241, 0.15); /* Tinted backgrounds */
+  --accent-subtle: rgba(99, 102, 241, 0.08); /* Very subtle tints */
 
   /* ─── 4-Tier Text Hierarchy ─── */
-  --text-primary: #fafafa;      /* zinc-50 - Headlines, emphasis */
-  --text-secondary: #a1a1aa;    /* zinc-400 - Body text */
-  --text-tertiary: #71717a;     /* zinc-500 - Captions, placeholders */
-  --text-disabled: #52525b;     /* zinc-600 - Disabled states */
+  --text-primary: #fafafa; /* zinc-50 - Headlines, emphasis */
+  --text-secondary: #a1a1aa; /* zinc-400 - Body text */
+  --text-tertiary: #71717a; /* zinc-500 - Captions, placeholders */
+  --text-disabled: #52525b; /* zinc-600 - Disabled states */
 
   /* ─── Borders ─── */
-  --border-default: #27272a;    /* zinc-800 - Default borders */
-  --border-strong: #3f3f46;     /* zinc-700 - Emphasized borders */
-  --border-accent: rgba(99, 102, 241, 0.4);   /* Accent borders */
+  --border-default: #27272a; /* zinc-800 - Default borders */
+  --border-strong: #3f3f46; /* zinc-700 - Emphasized borders */
+  --border-accent: rgba(99, 102, 241, 0.4); /* Accent borders */
 
   /* ─── Semantic Colors ─── */
-  --success: #22c55e;           /* green-500 */
-  --warning: #f59e0b;           /* amber-500 */
-  --error: #ef4444;             /* red-500 */
+  --success: #22c55e; /* green-500 */
+  --warning: #f59e0b; /* amber-500 */
+  --error: #ef4444; /* red-500 */
 
   /* ─── Shadows ─── */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
@@ -129,13 +129,14 @@
   --card-foreground: var(--text-primary);
   --popover: var(--bg-elevated);
   --popover-foreground: var(--text-primary);
+  /* Use indigo-500 exactly for precision */
   --primary: #6366f1;
   --primary-foreground: #ffffff;
   --secondary: var(--bg-surface);
   --secondary-foreground: var(--text-primary);
   --muted: var(--bg-surface);
   --muted-foreground: var(--text-secondary);
-  --accent-bg: var(--bg-elevated);
+  --accent-bg: var(--bg-hover);
   --accent-foreground: #ffffff;
   --destructive: var(--error);
   --border: var(--border-default);
@@ -162,7 +163,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter", sans-serif;
   }
 }
 
@@ -171,13 +172,13 @@
   .surface-base {
     background: var(--bg-surface);
     border: 1px solid var(--border-default);
-    border-radius: 12px;
+    border-radius: var(--radius);
   }
 
   .surface-elevated {
     background: var(--bg-elevated);
     border: 1px solid var(--border-strong);
-    border-radius: 12px;
+    border-radius: var(--radius);
     box-shadow: var(--shadow-md);
   }
 
@@ -191,19 +192,23 @@
 
   /* Legacy glass-panel - mapped to overlay for backwards compat */
   .glass-panel {
-    background: rgba(24, 24, 27, 0.9);
+    background: rgba(24, 24, 27, 0.75);
     backdrop-filter: blur(12px);
     border: 1px solid var(--border-default);
-    border-radius: 12px;
+    border-radius: var(--radius);
   }
 
-  /* ─── Glow Effects (interaction only) ─── */
+  /* ─── Interaction States (Solid, no glows) ─── */
   .hover\:glow-accent:hover {
-    box-shadow: var(--shadow-glow);
+    background-color: var(--bg-hover);
+    transition: background-color 0.1s ease;
   }
 
   .focus-visible\:glow-accent:focus-visible {
-    box-shadow: var(--shadow-glow);
+    box-shadow:
+      0 0 0 2px var(--bg-base),
+      0 0 0 4px var(--accent);
+    outline: none;
   }
 
   /* ─── Icon Containers ─── */
@@ -228,33 +233,49 @@
   .grid-bg {
     background-color: var(--bg-base);
     background-image:
-      linear-gradient(rgba(63, 63, 70, 0.3) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(63, 63, 70, 0.3) 1px, transparent 1px);
+      linear-gradient(rgba(63, 63, 70, 0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(63, 63, 70, 0.15) 1px, transparent 1px);
     background-size: 24px 24px;
   }
 
   /* ─── Spacing Helpers ─── */
-  .gap-element { gap: 8px; }
-  .gap-component { gap: 16px; }
-  .gap-section { gap: 32px; }
+  .gap-element {
+    gap: 8px;
+  }
+  .gap-component {
+    gap: 16px;
+  }
+  .gap-section {
+    gap: 32px;
+  }
 
   /* ─── React Flow Handle Effects ─── */
   .react-flow__handle {
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition:
+      transform 0.15s ease,
+      background-color 0.15s ease;
+    width: 6px !important;
+    height: 6px !important;
+    border: 2px solid var(--border-strong) !important;
+    background: var(--bg-surface) !important;
   }
 
   .react-flow__handle:hover {
-    transform: scale(1.4);
-    box-shadow: 0 0 0 4px var(--accent-muted), var(--shadow-glow);
+    transform: scale(1.5);
+    border-color: var(--accent) !important;
+    background: var(--accent-muted) !important;
   }
 
   .react-flow__handle.connecting {
-    transform: scale(1.4);
-    box-shadow: 0 0 0 4px var(--accent-muted), var(--shadow-glow);
+    transform: scale(1.5);
+    border-color: var(--accent) !important;
+    background: var(--accent-muted) !important;
   }
 
   .react-flow__handle.valid {
-    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2), 0 0 12px rgba(34, 197, 94, 0.4);
+    box-shadow:
+      0 0 0 4px rgba(34, 197, 94, 0.2),
+      0 0 12px rgba(34, 197, 94, 0.4);
   }
 
   /* ─── React Flow Edge Selection ─── */

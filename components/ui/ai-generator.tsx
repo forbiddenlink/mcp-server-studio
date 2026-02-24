@@ -40,23 +40,26 @@ export function AIGenerator({ isOpen, onClose, onGenerate }: AIGeneratorProps) {
   // Focus textarea when modal opens
   useEffect(() => {
     if (isOpen) {
-      setDescription('');
-      setGeneratedTool(null);
-      setAnalysis(null);
-      setTimeout(() => textareaRef.current?.focus(), 100);
+      const timer = setTimeout(() => {
+        setDescription('');
+        setGeneratedTool(null);
+        setAnalysis(null);
+        textareaRef.current?.focus();
+      }, 50);
+      return () => clearTimeout(timer);
     }
   }, [isOpen]);
 
   // Analyze description as user types (debounced)
   useEffect(() => {
-    if (description.length >= 5) {
-      const timer = setTimeout(() => {
+    const timer = setTimeout(() => {
+      if (description.length >= 5) {
         setAnalysis(analyzeDescription(description));
-      }, 300);
-      return () => clearTimeout(timer);
-    } else {
-      setAnalysis(null);
-    }
+      } else {
+        setAnalysis(null);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
   }, [description]);
 
   const handleGenerate = useCallback(() => {

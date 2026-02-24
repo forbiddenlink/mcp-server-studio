@@ -24,10 +24,9 @@ function PromptNodeComponent({ id, data, selected }: NodeProps) {
     <div
       onClick={handleClick}
       className={cn(
-        'surface-base p-4 min-w-[220px] cursor-pointer transition-all duration-200',
-        'hover:border-violet-500/50 hover:bg-[var(--bg-elevated)]',
-        isSelected && 'ring-2 ring-violet-500 border-violet-500/50',
-        isSelected && 'shadow-[0_0_20px_rgba(139,92,246,0.15)]'
+        'surface-base p-4 min-w-[220px] cursor-pointer transition-colors duration-100',
+        'hover:border-violet-500/50 hover:bg-[var(--bg-hover)]',
+        isSelected && 'ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-violet-500 border-violet-500/50'
       )}
     >
       <Handle

@@ -143,7 +143,7 @@ export function CanvasPanel() {
   const handleAddTool = (templateIndex: number) => {
     const template = toolTemplates[templateIndex];
     const newTool: MCPTool = {
-      id: `tool-${Date.now()}`,
+      id: `tool-${crypto.randomUUID()}`,
       name: template.name,
       description: template.description,
       icon: template.icon,
@@ -154,7 +154,7 @@ export function CanvasPanel() {
 
   const handleAddCustomTool = () => {
     const newTool: MCPTool = {
-      id: `tool-${Date.now()}`,
+      id: `tool-${crypto.randomUUID()}`,
       name: 'custom_tool',
       description: 'A custom tool',
       icon: 'Terminal',
@@ -166,7 +166,7 @@ export function CanvasPanel() {
 
   const handleAddResource = () => {
     const newResource: MCPResource = {
-      id: `resource-${Date.now()}`,
+      id: `resource-${crypto.randomUUID()}`,
       name: 'new_resource',
       uri: 'file:///path/to/resource',
       mimeType: 'text/plain',
@@ -178,7 +178,7 @@ export function CanvasPanel() {
 
   const handleAddPrompt = () => {
     const newPrompt: MCPPrompt = {
-      id: `prompt-${Date.now()}`,
+      id: `prompt-${crypto.randomUUID()}`,
       name: 'new_prompt',
       description: 'A new prompt template',
       arguments: [],

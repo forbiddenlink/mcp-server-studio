@@ -69,10 +69,9 @@ function ToolNodeComponent({ id, data, selected }: NodeProps) {
     <div
       onClick={handleClick}
       className={cn(
-        'surface-base p-4 min-w-[220px] cursor-pointer transition-all duration-200',
-        'hover:border-[var(--border-strong)] hover:bg-[var(--bg-elevated)]',
-        isSelected && 'ring-2 ring-[var(--accent)] border-[var(--border-accent)]',
-        isSelected && 'shadow-[var(--shadow-glow)]'
+        'surface-base p-4 min-w-[220px] cursor-pointer transition-colors duration-100',
+        'hover:border-[var(--border-strong)] hover:bg-[var(--bg-hover)]',
+        isSelected && 'ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-[var(--accent)] border-[var(--border-strong)]'
       )}
     >
       <Handle

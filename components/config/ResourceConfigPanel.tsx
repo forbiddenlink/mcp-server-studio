@@ -21,19 +21,10 @@ export function ResourceConfigPanel() {
   const { selectedNodeId, resources, updateResource, deleteResource, selectNode } = useStore();
   const selectedResource = resources.find(resource => resource.id === selectedNodeId);
 
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [uri, setUri] = useState('');
-  const [mimeType, setMimeType] = useState('text/plain');
-
-  useEffect(() => {
-    if (selectedResource) {
-      setName(selectedResource.name);
-      setDescription(selectedResource.description);
-      setUri(selectedResource.uri);
-      setMimeType(selectedResource.mimeType);
-    }
-  }, [selectedResource]);
+  const [name, setName] = useState(selectedResource?.name || '');
+  const [description, setDescription] = useState(selectedResource?.description || '');
+  const [uri, setUri] = useState(selectedResource?.uri || '');
+  const [mimeType, setMimeType] = useState(selectedResource?.mimeType || 'text/plain');
 
   const handleSave = () => {
     if (selectedNodeId) {
@@ -86,7 +77,7 @@ export function ResourceConfigPanel() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., config_file"
-                className="bg-[var(--bg-elevated)] border-[var(--border-default)] focus:border-[var(--accent)]"
+                className="bg-[var(--bg-base)] border-[var(--border-default)] focus:border-[var(--accent)]"
               />
             </div>
 
@@ -99,7 +90,7 @@ export function ResourceConfigPanel() {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="What does this resource provide?"
                 rows={3}
-                className="bg-[var(--bg-elevated)] border-[var(--border-default)] focus:border-[var(--accent)]"
+                className="bg-[var(--bg-base)] border-[var(--border-default)] focus:border-[var(--accent)]"
               />
             </div>
 
@@ -111,7 +102,7 @@ export function ResourceConfigPanel() {
                 value={uri}
                 onChange={(e) => setUri(e.target.value)}
                 placeholder="e.g., file://config.json, db://users/schema, api://endpoint"
-                className="bg-[var(--bg-elevated)] border-[var(--border-default)] focus:border-[var(--accent)]"
+                className="bg-[var(--bg-base)] border-[var(--border-default)] focus:border-[var(--accent)]"
               />
               <p className="text-xs text-[var(--text-tertiary)]">
                 Examples: file://README.md, db://users/schema, api://v1/status
@@ -141,7 +132,7 @@ export function ResourceConfigPanel() {
 
           {/* Footer Actions */}
           <div className="p-5 border-t border-[var(--border-default)] space-y-3">
-            <Button onClick={handleSave} className="w-full hover:shadow-[var(--shadow-glow)] transition-shadow">
+            <Button onClick={handleSave} className="w-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white border-0 transition-colors">
               Save Changes
             </Button>
             <Button

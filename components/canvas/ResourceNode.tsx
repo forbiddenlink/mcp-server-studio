@@ -27,10 +27,9 @@ function ResourceNodeComponent({ id, data, selected }: NodeProps) {
     <div
       onClick={handleClick}
       className={cn(
-        'surface-base p-4 min-w-[220px] cursor-pointer transition-all duration-200',
-        'hover:border-emerald-500/50 hover:bg-[var(--bg-elevated)]',
-        isSelected && 'ring-2 ring-emerald-500 border-emerald-500/50',
-        isSelected && 'shadow-[0_0_20px_rgba(16,185,129,0.15)]'
+        'surface-base p-4 min-w-[220px] cursor-pointer transition-colors duration-100',
+        'hover:border-emerald-500/50 hover:bg-[var(--bg-hover)]',
+        isSelected && 'ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-emerald-500 border-emerald-500/50'
       )}
     >
       <Handle

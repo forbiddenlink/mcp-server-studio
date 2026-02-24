@@ -15,17 +15,9 @@ export function PromptConfigPanel() {
   const { selectedNodeId, prompts, updatePrompt, deletePrompt, selectNode } = useStore();
   const selectedPrompt = prompts.find(prompt => prompt.id === selectedNodeId);
 
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [args, setArgs] = useState<MCPParameter[]>([]);
-
-  useEffect(() => {
-    if (selectedPrompt) {
-      setName(selectedPrompt.name);
-      setDescription(selectedPrompt.description);
-      setArgs([...selectedPrompt.arguments]);
-    }
-  }, [selectedPrompt]);
+  const [name, setName] = useState(selectedPrompt?.name || '');
+  const [description, setDescription] = useState(selectedPrompt?.description || '');
+  const [args, setArgs] = useState<MCPParameter[]>(selectedPrompt?.arguments ? [...selectedPrompt.arguments] : []);
 
   const handleSave = () => {
     if (selectedNodeId) {
@@ -99,7 +91,7 @@ export function PromptConfigPanel() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., summarize_text"
-                className="bg-[var(--bg-elevated)] border-[var(--border-default)] focus:border-[var(--accent)]"
+                className="bg-[var(--bg-base)] border-[var(--border-default)] focus:border-[var(--accent)]"
               />
             </div>
 
@@ -112,7 +104,7 @@ export function PromptConfigPanel() {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="What does this prompt do?"
                 rows={3}
-                className="bg-[var(--bg-elevated)] border-[var(--border-default)] focus:border-[var(--accent)]"
+                className="bg-[var(--bg-base)] border-[var(--border-default)] focus:border-[var(--accent)]"
               />
             </div>
 
@@ -137,9 +129,9 @@ export function PromptConfigPanel() {
                   <p className="text-xs text-[var(--text-tertiary)] mt-1">Click &quot;Add&quot; to add an argument</p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-0">
                   {args.map((arg, index) => (
-                    <div key={index} className="surface-elevated p-4 space-y-3">
+                    <div key={index} className="py-5 border-t border-[var(--border-default)] first:border-t-0 first:pt-0 space-y-4">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-medium text-[var(--text-tertiary)]">
                           Argument {index + 1}
@@ -159,7 +151,7 @@ export function PromptConfigPanel() {
                           placeholder="Argument name"
                           value={arg.name}
                           onChange={(e) => handleUpdateArgument(index, { name: e.target.value })}
-                          className="bg-[var(--bg-surface)] border-[var(--border-default)]"
+                          className="bg-[var(--bg-base)] border-[var(--border-default)]"
                         />
 
                         <Select
@@ -168,7 +160,7 @@ export function PromptConfigPanel() {
                             handleUpdateArgument(index, { type: value })
                           }
                         >
-                          <SelectTrigger className="bg-[var(--bg-surface)] border-[var(--border-default)]">
+                          <SelectTrigger className="bg-[var(--bg-base)] border-[var(--border-default)]">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="surface-overlay">
@@ -187,7 +179,7 @@ export function PromptConfigPanel() {
                             handleUpdateArgument(index, { description: e.target.value })
                           }
                           rows={2}
-                          className="bg-[var(--bg-surface)] border-[var(--border-default)]"
+                          className="bg-[var(--bg-base)] border-[var(--border-default)]"
                         />
 
                         <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)] cursor-pointer">
@@ -211,7 +203,7 @@ export function PromptConfigPanel() {
 
           {/* Footer Actions */}
           <div className="p-5 border-t border-[var(--border-default)] space-y-3">
-            <Button onClick={handleSave} className="w-full hover:shadow-[var(--shadow-glow)] transition-shadow">
+            <Button onClick={handleSave} className="w-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white border-0 transition-colors">
               Save Changes
             </Button>
             <Button

@@ -16,23 +16,12 @@ export function ToolConfigPanel() {
   const { selectedNodeId, tools, updateTool, deleteTool, selectNode } = useStore();
   const selectedTool = tools.find(tool => tool.id === selectedNodeId);
 
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [parameters, setParameters] = useState<MCPParameter[]>([]);
-  const [sampling, setSampling] = useState<SamplingConfig | undefined>(undefined);
-  const [elicitation, setElicitation] = useState<ElicitationConfig | undefined>(undefined);
-  const [tasks, setTasks] = useState<TasksConfig | undefined>(undefined);
-
-  useEffect(() => {
-    if (selectedTool) {
-      setName(selectedTool.name);
-      setDescription(selectedTool.description);
-      setParameters([...selectedTool.parameters]);
-      setSampling(selectedTool.sampling);
-      setElicitation(selectedTool.elicitation);
-      setTasks(selectedTool.tasks);
-    }
-  }, [selectedTool]);
+  const [name, setName] = useState(selectedTool?.name || '');
+  const [description, setDescription] = useState(selectedTool?.description || '');
+  const [parameters, setParameters] = useState<MCPParameter[]>(selectedTool?.parameters ? [...selectedTool.parameters] : []);
+  const [sampling, setSampling] = useState<SamplingConfig | undefined>(selectedTool?.sampling);
+  const [elicitation, setElicitation] = useState<ElicitationConfig | undefined>(selectedTool?.elicitation);
+  const [tasks, setTasks] = useState<TasksConfig | undefined>(selectedTool?.tasks);
 
   const handleSave = () => {
     if (selectedNodeId) {
@@ -134,7 +123,7 @@ export function ToolConfigPanel() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., Web Search"
-                className="bg-[var(--bg-elevated)] border-[var(--border-default)] focus:border-[var(--accent)]"
+                className="bg-[var(--bg-base)] border-[var(--border-default)] focus:border-[var(--accent)]"
               />
             </div>
 
@@ -147,7 +136,7 @@ export function ToolConfigPanel() {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="What does this tool do?"
                 rows={3}
-                className="bg-[var(--bg-elevated)] border-[var(--border-default)] focus:border-[var(--accent)]"
+                className="bg-[var(--bg-base)] border-[var(--border-default)] focus:border-[var(--accent)]"
               />
             </div>
 
@@ -172,9 +161,9 @@ export function ToolConfigPanel() {
                   <p className="text-xs text-[var(--text-tertiary)] mt-1">Click "Add" to add a parameter</p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-0">
                   {parameters.map((param, index) => (
-                    <div key={index} className="surface-elevated p-4 space-y-3">
+                    <div key={index} className="py-5 border-t border-[var(--border-default)] first:border-t-0 first:pt-0 space-y-4">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-medium text-[var(--text-tertiary)]">
                           Parameter {index + 1}
@@ -194,7 +183,7 @@ export function ToolConfigPanel() {
                           placeholder="Parameter name"
                           value={param.name}
                           onChange={(e) => handleUpdateParameter(index, { name: e.target.value })}
-                          className="bg-[var(--bg-surface)] border-[var(--border-default)]"
+                          className="bg-[var(--bg-base)] border-[var(--border-default)]"
                         />
 
                         <Select
@@ -203,7 +192,7 @@ export function ToolConfigPanel() {
                             handleUpdateParameter(index, { type: value })
                           }
                         >
-                          <SelectTrigger className="bg-[var(--bg-surface)] border-[var(--border-default)]">
+                          <SelectTrigger className="bg-[var(--bg-base)] border-[var(--border-default)]">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="surface-overlay">
@@ -222,7 +211,7 @@ export function ToolConfigPanel() {
                             handleUpdateParameter(index, { description: e.target.value })
                           }
                           rows={2}
-                          className="bg-[var(--bg-surface)] border-[var(--border-default)]"
+                          className="bg-[var(--bg-base)] border-[var(--border-default)]"
                         />
 
                         <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)] cursor-pointer">
@@ -286,7 +275,7 @@ export function ToolConfigPanel() {
                                 handleUpdateParameter(index, { default: parsedValue });
                               }
                             }}
-                            className="bg-[var(--bg-surface)] border-[var(--border-default)]"
+                            className="bg-[var(--bg-base)] border-[var(--border-default)]"
                           />
                         </div>
 
@@ -304,7 +293,7 @@ export function ToolConfigPanel() {
                                 })
                               }
                             >
-                              <SelectTrigger className="bg-[var(--bg-surface)] border-[var(--border-default)]">
+                              <SelectTrigger className="bg-[var(--bg-base)] border-[var(--border-default)]">
                                 <SelectValue placeholder="Format (optional)" />
                               </SelectTrigger>
                               <SelectContent className="surface-overlay">
@@ -328,7 +317,7 @@ export function ToolConfigPanel() {
                                   enum: enumValues && enumValues.length > 0 ? enumValues : undefined,
                                 });
                               }}
-                              className="bg-[var(--bg-surface)] border-[var(--border-default)]"
+                              className="bg-[var(--bg-base)] border-[var(--border-default)]"
                             />
                             <div className="flex gap-2">
                               <Input
@@ -340,7 +329,7 @@ export function ToolConfigPanel() {
                                     minLength: e.target.value === '' ? undefined : Number(e.target.value),
                                   })
                                 }
-                                className="bg-[var(--bg-surface)] border-[var(--border-default)] flex-1"
+                                className="bg-[var(--bg-base)] border-[var(--border-default)] flex-1"
                               />
                               <Input
                                 type="number"
@@ -351,7 +340,7 @@ export function ToolConfigPanel() {
                                     maxLength: e.target.value === '' ? undefined : Number(e.target.value),
                                   })
                                 }
-                                className="bg-[var(--bg-surface)] border-[var(--border-default)] flex-1"
+                                className="bg-[var(--bg-base)] border-[var(--border-default)] flex-1"
                               />
                             </div>
                             <Input
@@ -362,7 +351,7 @@ export function ToolConfigPanel() {
                                   pattern: e.target.value === '' ? undefined : e.target.value,
                                 })
                               }
-                              className="bg-[var(--bg-surface)] border-[var(--border-default)]"
+                              className="bg-[var(--bg-base)] border-[var(--border-default)]"
                             />
                           </div>
                         )}
@@ -383,7 +372,7 @@ export function ToolConfigPanel() {
                                     minimum: e.target.value === '' ? undefined : Number(e.target.value),
                                   })
                                 }
-                                className="bg-[var(--bg-surface)] border-[var(--border-default)] flex-1"
+                                className="bg-[var(--bg-base)] border-[var(--border-default)] flex-1"
                               />
                               <Input
                                 type="number"
@@ -394,7 +383,7 @@ export function ToolConfigPanel() {
                                     maximum: e.target.value === '' ? undefined : Number(e.target.value),
                                   })
                                 }
-                                className="bg-[var(--bg-surface)] border-[var(--border-default)] flex-1"
+                                className="bg-[var(--bg-base)] border-[var(--border-default)] flex-1"
                               />
                             </div>
                           </div>
@@ -416,7 +405,7 @@ export function ToolConfigPanel() {
                                     minItems: e.target.value === '' ? undefined : Number(e.target.value),
                                   })
                                 }
-                                className="bg-[var(--bg-surface)] border-[var(--border-default)] flex-1"
+                                className="bg-[var(--bg-base)] border-[var(--border-default)] flex-1"
                               />
                               <Input
                                 type="number"
@@ -427,7 +416,7 @@ export function ToolConfigPanel() {
                                     maxItems: e.target.value === '' ? undefined : Number(e.target.value),
                                   })
                                 }
-                                className="bg-[var(--bg-surface)] border-[var(--border-default)] flex-1"
+                                className="bg-[var(--bg-base)] border-[var(--border-default)] flex-1"
                               />
                             </div>
                             <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)] cursor-pointer">
@@ -465,7 +454,7 @@ export function ToolConfigPanel() {
 
           {/* Footer Actions */}
           <div className="p-5 border-t border-[var(--border-default)] space-y-3">
-            <Button onClick={handleSave} className="w-full hover:shadow-[var(--shadow-glow)] transition-shadow">
+            <Button onClick={handleSave} className="w-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white border-0 transition-colors">
               Save Changes
             </Button>
             <Button

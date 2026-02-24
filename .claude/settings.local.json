@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:dribbble.com)",
+      "WebFetch(domain:linear.app)",
+      "WebFetch(domain:www.radix-ui.com)",
+      "WebFetch(domain:ui.shadcn.com)",
+      "WebFetch(domain:vercel.com)",
+      "WebFetch(domain:tailwindcolor.com)",
+      "WebFetch(domain:lucide.dev)",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_type",
+      "mcp__plugin_playwright_playwright__browser_close",
+      "Bash(~/.claude/scripts/spec_metadata.sh:*)",
+      "Bash(npx tsc:*)",
+      "WebFetch(domain:reactflow.dev)",
+      "WebFetch(domain:docs.n8n.io)",
+      "Bash(git add:*)",
+      "Bash(bash:*)",
+      "WebFetch(domain:docs.retool.com)",
+      "Bash(ls:*)",
+      "Bash(npm run build:*)",
+      "Bash(git commit:*)",
+      "Bash(node:*)",
+      "Bash(npx tsx:*)",
+      "Bash(git push:*)",
+      "Bash(tree:*)",
+      "mcp__plugin_playwright_playwright__browser_fill_form",
+      "Bash(railway:*)",
+      "Bash(cat:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(pnpm test:run:*)",
+      "Bash(pnpm build:*)",
+      "Bash(python:*)"
+    ]
+  }
+}
