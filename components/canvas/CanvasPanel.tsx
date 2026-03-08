@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import {
   ReactFlow,
   Background,
@@ -19,6 +19,7 @@ import { ToolNode } from './ToolNode';
 import { ResourceNode } from './ResourceNode';
 import { PromptNode } from './PromptNode';
 import { DataFlowEdge } from './DataFlowEdge';
+import { QuickAddMenu } from './QuickAddMenu';
 import { Button } from '@/components/ui/button';
 import { AIGenerator } from '@/components/ui/ai-generator';
 import { ImportDialog } from '@/components/ui/import-dialog';
@@ -83,6 +84,8 @@ export function CanvasPanel() {
   const [isAIGeneratorOpen, setIsAIGeneratorOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isTemplateGalleryOpen, setIsTemplateGalleryOpen] = useState(false);
+  const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
+  const [quickAddPosition, setQuickAddPosition] = useState({ x: 0, y: 0 });
 
   const handleAIGenerate = (tool: MCPTool) => {
     addTool(tool);
@@ -110,6 +113,41 @@ export function CanvasPanel() {
     addTool(newTool);
     selectNode(newTool.id);
   };
+
+  // Quick Add Menu handlers
+  const handleQuickAddTool = useCallback((tool: MCPTool) => {
+    addTool(tool);
+    selectNode(tool.id);
+  }, [addTool, selectNode]);
+
+  const handleCanvasContextMenu = useCallback((event: React.MouseEvent) => {
+    event.preventDefault();
+    setQuickAddPosition({ x: event.clientX, y: event.clientY });
+    setIsQuickAddOpen(true);
+  }, []);
+
+  // Space key to open Quick Add Menu
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only trigger if not typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      if (e.key === ' ' && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+        e.preventDefault();
+        // Open in center of viewport
+        setQuickAddPosition({
+          x: window.innerWidth / 2 - 260, // Half of menu width (520px)
+          y: window.innerHeight / 2 - 300 // Half of menu height (600px)
+        });
+        setIsQuickAddOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const nodeTypes: NodeTypes = useMemo(
     () => ({
@@ -230,6 +268,7 @@ export function CanvasPanel() {
           strokeWidth: 2,
           strokeDasharray: '5,5',
         }}
+        onContextMenu={handleCanvasContextMenu}
         fitView
         className="bg-transparent"
       >
@@ -383,11 +422,22 @@ export function CanvasPanel() {
               Start Building
             </h3>
             <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-              Add your first tool to begin creating your MCP server
+              Add your first tool to begin creating your MCP server<br />
+              <span className="text-xs mt-1 opacity-60">
+                Right-click or press Space to add tools
+              </span>
             </p>
           </div>
         </div>
       )}
+
+      {/* Quick Add Menu */}
+      <QuickAddMenu
+        isOpen={isQuickAddOpen}
+        position={quickAddPosition}
+        onClose={() => setIsQuickAddOpen(false)}
+        onAddTool={handleQuickAddTool}
+      />
     </div>
   );
 }
