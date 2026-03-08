@@ -489,8 +489,10 @@ function validateToolSchema(tool: MCPTool): TestResult {
 
   if (!tool.name || tool.name.trim() === '') {
     errors.push({ field: 'name', message: 'Tool name is required' });
-  } else if (!/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(tool.name)) {
-    errors.push({ field: 'name', message: 'Tool name must start with a letter and contain only letters, numbers, underscores, and hyphens' });
+  } else if (!/^[a-zA-Z]/.test(tool.name.trim())) {
+    // Tool names must start with a letter, but can contain spaces and other characters
+    // since they are sanitized to snake_case during code generation
+    errors.push({ field: 'name', message: 'Tool name must start with a letter' });
   }
 
   if (!tool.description || tool.description.trim() === '') {

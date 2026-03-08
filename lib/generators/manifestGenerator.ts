@@ -1,11 +1,11 @@
 import { MCPServerConfig, MCPParameter, MCPTool } from '../types';
 
-function generateJsonSchema(parameters: MCPParameter[]): Record<string, any> {
-  const properties: Record<string, any> = {};
+function generateJsonSchema(parameters: MCPParameter[]): Record<string, unknown> {
+  const properties: Record<string, Record<string, unknown>> = {};
   const required: string[] = [];
 
   parameters.forEach((param) => {
-    const property: Record<string, any> = {
+    const property: Record<string, unknown> = {
       type: param.type,
       description: param.description,
     };
@@ -65,9 +65,9 @@ function generateJsonSchema(parameters: MCPParameter[]): Record<string, any> {
   };
 }
 
-function generateToolManifest(tool: MCPTool): Record<string, any> {
-  const manifest: Record<string, any> = {
-    name: tool.name.toLowerCase().replace(/\s+/g, '_'),
+function generateToolManifest(tool: MCPTool): Record<string, unknown> {
+  const manifest: Record<string, unknown> = {
+    name: tool.name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, ''),
     description: tool.description,
     icon: tool.icon,
     inputSchema: generateJsonSchema(tool.parameters),
@@ -87,7 +87,7 @@ function generateToolManifest(tool: MCPTool): Record<string, any> {
   return manifest;
 }
 
-export function generateManifest(config: MCPServerConfig): Record<string, any> {
+export function generateManifest(config: MCPServerConfig): Record<string, unknown> {
   const hasSampling = config.tools.some(t => t.sampling?.enabled);
   const hasElicitation = config.tools.some(t => t.elicitation?.enabled);
 

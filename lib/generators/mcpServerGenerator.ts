@@ -1,10 +1,11 @@
 import { MCPServerConfig, MCPTool, MCPParameter, MCPResource, MCPPrompt, TransportType, SamplingConfig, ElicitationConfig } from '../types';
+import { escapeTemplateLiteral, escapeDoubleQuoted, sanitizeIdentifier } from '../utils/sanitize';
 
 /**
  * Converts a name to snake_case for MCP tool identifiers
  */
 function toSnakeCase(name: string): string {
-  return name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+  return sanitizeIdentifier(name);
 }
 
 /**
@@ -28,7 +29,7 @@ function typeToZodSchema(param: MCPParameter): string {
     }
   })();
 
-  const withDescription = `${baseSchema}.describe("${param.description.replace(/"/g, '\\"')}")`;
+  const withDescription = `${baseSchema}.describe("${escapeDoubleQuoted(param.description)}")`;
 
   // Add default value if specified
   const withDefault = param.default !== undefined
@@ -43,7 +44,7 @@ function typeToZodSchema(param: MCPParameter): string {
  */
 function formatDefaultValue(value: string | number | boolean | unknown[] | Record<string, unknown>): string {
   if (typeof value === 'string') {
-    return `"${value.replace(/"/g, '\\"')}"`;
+    return `"${escapeDoubleQuoted(value)}"`;
   }
   if (typeof value === 'number' || typeof value === 'boolean') {
     return String(value);
@@ -59,9 +60,9 @@ function buildStringSchema(param: MCPParameter): string {
   // Handle enum constraint - use z.enum() for multiple values, z.literal() for single
   if (param.enum && param.enum.length > 0) {
     if (param.enum.length === 1) {
-      return `z.literal("${param.enum[0].replace(/"/g, '\\"')}")`;
+      return `z.literal("${escapeDoubleQuoted(param.enum[0])}")`;
     }
-    const enumValues = param.enum.map(v => `"${v.replace(/"/g, '\\"')}"`).join(', ');
+    const enumValues = param.enum.map(v => `"${escapeDoubleQuoted(v)}"`).join(', ');
     return `z.enum([${enumValues}])`;
   }
 
@@ -180,7 +181,7 @@ function generateSamplingCode(config: SamplingConfig): string {
   }
 
   if (config.systemPrompt) {
-    options.push(`systemPrompt: "${config.systemPrompt.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`);
+    options.push(`systemPrompt: "${escapeDoubleQuoted(config.systemPrompt)}"`);
   }
 
   return `
@@ -212,8 +213,8 @@ function generateElicitationCode(config: ElicitationConfig): string {
       // Request user input via URL
       const elicitResult = await server.elicitInput({
         mode: "url",
-        message: "${config.message.replace(/"/g, '\\"').replace(/\n/g, '\\n')}",
-        url: "${config.url || ''}",
+        message: "${escapeDoubleQuoted(config.message)}",
+        url: "${escapeDoubleQuoted(config.url || '')}",
       });
 
       // Handle elicitation result
@@ -230,7 +231,7 @@ function generateElicitationCode(config: ElicitationConfig): string {
   const schemaProperties: string[] = (config.formFields || []).map(field => {
     const prop: string[] = [`type: "${field.type}"`];
     if (field.description) {
-      prop.push(`description: "${field.description.replace(/"/g, '\\"')}"`);
+      prop.push(`description: "${escapeDoubleQuoted(field.description)}"`);
     }
     return `${field.name}: { ${prop.join(', ')} }`;
   });
@@ -243,7 +244,7 @@ function generateElicitationCode(config: ElicitationConfig): string {
       // Request user input via form
       const elicitResult = await server.elicitInput({
         mode: "form",
-        message: "${config.message.replace(/"/g, '\\"').replace(/\n/g, '\\n')}",
+        message: "${escapeDoubleQuoted(config.message)}",
         requestedSchema: {
           type: "object",
           properties: {
@@ -306,7 +307,7 @@ ${elicitationCode}${samplingCode}
         content: [
           {
             type: "text",
-            text: \`${tool.name} executed successfully\`,
+            text: \`${escapeTemplateLiteral(tool.name)} executed successfully\`,
           },
         ],
       };
@@ -317,7 +318,7 @@ ${elicitationCode}${samplingCode}
         content: [
           {
             type: "text",
-            text: \`Error executing ${tool.name}: \${errorMessage}\`,
+            text: \`Error executing ${escapeTemplateLiteral(tool.name)}: \${errorMessage}\`,
           },
         ],
         isError: true,
@@ -412,7 +413,7 @@ server.prompt(
             role: "user",
             content: {
               type: "text",
-              text: "${prompt.description}",
+      text: "${escapeDoubleQuoted(prompt.description)}",
             },
           },
         ],
@@ -448,6 +449,9 @@ import { z } from "zod";`;
  */
 function generateServerStartup(config: MCPServerConfig): string {
   const port = config.httpPort || 3000;
+  const safeName = escapeTemplateLiteral(config.name);
+  const safeNameDQ = escapeDoubleQuoted(config.name);
+  const safeVersionDQ = escapeDoubleQuoted(config.version);
 
   if (config.transport === 'http') {
     return `// ============================================================================
@@ -460,7 +464,7 @@ app.use(express.json());
 
 // Health check endpoint
 app.get("/health", (_req: Request, res: Response) => {
-  res.json({ status: "ok", server: "${config.name}", version: "${config.version}" });
+  res.json({ status: "ok", server: "${safeNameDQ}", version: "${safeVersionDQ}" });
 });
 
 // Store active transports for cleanup
@@ -468,14 +472,14 @@ const transports: Map<string, SSEServerTransport> = new Map();
 
 // SSE endpoint for MCP communication
 app.get("/sse", async (req: Request, res: Response) => {
-  console.error(\`[${config.name}] New SSE connection\`);
+  console.error(\`[${safeName}] New SSE connection\`);
 
   const transport = new SSEServerTransport("/messages", res);
   const sessionId = crypto.randomUUID();
   transports.set(sessionId, transport);
 
   res.on("close", () => {
-    console.error(\`[${config.name}] SSE connection closed\`);
+    console.error(\`[${safeName}] SSE connection closed\`);
     transports.delete(sessionId);
   });
 
@@ -501,14 +505,14 @@ async function main(): Promise<void> {
   const PORT = process.env.PORT || ${port};
 
   app.listen(PORT, () => {
-    console.error(\`[${config.name}] MCP server running on http://localhost:\${PORT}\`);
-    console.error(\`[${config.name}] Health check: http://localhost:\${PORT}/health\`);
-    console.error(\`[${config.name}] SSE endpoint: http://localhost:\${PORT}/sse\`);
+    console.error(\`[${safeName}] MCP server running on http://localhost:\${PORT}\`);
+    console.error(\`[${safeName}] Health check: http://localhost:\${PORT}/health\`);
+    console.error(\`[${safeName}] SSE endpoint: http://localhost:\${PORT}/sse\`);
   });
 }
 
 main().catch((error) => {
-  console.error("[${config.name}] Fatal error:", error);
+  console.error("[${safeNameDQ}] Fatal error:", error);
   process.exit(1);
 });`;
   }
@@ -523,11 +527,11 @@ main().catch((error) => {
 async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error(\`[${config.name}] MCP server running on stdio\`);
+  console.error(\`[${safeName}] MCP server running on stdio\`);
 }
 
 main().catch((error) => {
-  console.error("[${config.name}] Fatal error:", error);
+  console.error("[${safeNameDQ}] Fatal error:", error);
   process.exit(1);
 });`;
 }
@@ -569,8 +573,8 @@ export function generateMCPServer(config: MCPServerConfig): string {
 
 // Initialize MCP Server
 const server = new McpServer({
-  name: "${config.name}",
-  version: "${config.version}",
+  name: "${escapeDoubleQuoted(config.name)}",
+  version: "${escapeDoubleQuoted(config.version)}",
   capabilities: {
     ${capabilitiesStr}
   },

@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X, Plus, Trash2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { MCPParameter, ParameterType, StringFormat, SamplingConfig, ElicitationConfig, TasksConfig } from '@/lib/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CapabilitiesSection } from './CapabilitiesSection';
@@ -50,7 +50,7 @@ export function ToolConfigPanel() {
 
   const handleUpdateParameter = (index: number, updates: Partial<MCPParameter>) => {
     const newParams = [...parameters];
-    let updatedParam = { ...newParams[index], ...updates };
+    const updatedParam = { ...newParams[index], ...updates };
 
     // Clear irrelevant constraints when type changes
     if (updates.type) {
@@ -107,6 +107,7 @@ export function ToolConfigPanel() {
               variant="ghost"
               size="icon-sm"
               onClick={() => selectNode(null)}
+              aria-label="Close configuration panel"
               className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
             >
               <X className="w-4 h-4" />
@@ -158,7 +159,7 @@ export function ToolConfigPanel() {
               {parameters.length === 0 ? (
                 <div className="text-center py-8 border border-dashed border-[var(--border-default)] rounded-lg">
                   <p className="text-sm text-[var(--text-secondary)]">No parameters yet</p>
-                  <p className="text-xs text-[var(--text-tertiary)] mt-1">Click "Add" to add a parameter</p>
+                  <p className="text-xs text-[var(--text-tertiary)] mt-1">Click &quot;Add&quot; to add a parameter</p>
                 </div>
               ) : (
                 <div className="space-y-0">

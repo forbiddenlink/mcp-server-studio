@@ -117,8 +117,6 @@ function extractAction(description: string): { action: string; category: keyof t
 
 // Extract noun/object from description (what the tool operates on)
 function extractObject(description: string): string | null {
-  const lower = description.toLowerCase();
-
   // Common patterns: "search [for] users", "get user", "create a document"
   const patterns = [
     /\b(?:search|find|get|fetch|create|update|delete|send)\s+(?:for\s+)?(?:a|an|the|all)?\s*(\w+)/i,
@@ -256,7 +254,7 @@ function generateToolName(description: string): string {
 }
 
 // Generate description (clean up the original or create one)
-function generateDescription(original: string, toolName: string): string {
+function generateDescription(original: string): string {
   // Clean up the description
   let desc = original.trim();
 
@@ -278,7 +276,7 @@ export function parseToolDescription(description: string): MCPTool {
   const name = generateToolName(description);
   const parameters = extractParameters(description);
   const icon = selectIcon(description);
-  const toolDescription = generateDescription(description, name);
+  const toolDescription = generateDescription(description);
 
   return {
     id: `tool-${Date.now()}`,

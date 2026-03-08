@@ -6,13 +6,13 @@ import {
   Background,
   Controls,
   MiniMap,
-  useNodesState,
-  useEdgesState,
   addEdge,
   Connection,
   Edge,
   MarkerType,
   ConnectionLineType,
+  NodeTypes,
+  EdgeTypes,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { ToolNode } from './ToolNode';
@@ -79,7 +79,7 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export function CanvasPanel() {
-  const { nodes, edges, setNodes, setEdges, onNodesChange, onEdgesChange, addTool, addResource, addPrompt, selectNode } = useStore();
+  const { nodes, edges, setEdges, onNodesChange, onEdgesChange, addTool, addResource, addPrompt, selectNode } = useStore();
   const [isAIGeneratorOpen, setIsAIGeneratorOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isTemplateGalleryOpen, setIsTemplateGalleryOpen] = useState(false);
@@ -111,19 +111,19 @@ export function CanvasPanel() {
     selectNode(newTool.id);
   };
 
-  const nodeTypes = useMemo(
+  const nodeTypes: NodeTypes = useMemo(
     () => ({
-      toolNode: ToolNode as any,
-      resourceNode: ResourceNode as any,
-      promptNode: PromptNode as any,
-    }),
+      toolNode: ToolNode,
+      resourceNode: ResourceNode,
+      promptNode: PromptNode,
+    }) as NodeTypes,
     []
   );
 
-  const edgeTypes = useMemo(
+  const edgeTypes: EdgeTypes = useMemo(
     () => ({
-      dataFlow: DataFlowEdge as any,
-    }),
+      dataFlow: DataFlowEdge,
+    }) as EdgeTypes,
     []
   );
 

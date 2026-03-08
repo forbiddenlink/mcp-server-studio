@@ -68,6 +68,10 @@ function ToolNodeComponent({ id, data, selected }: NodeProps) {
   return (
     <div
       onClick={handleClick}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Tool: ${tool.name}`}
       className={cn(
         'surface-base p-4 min-w-[220px] cursor-pointer transition-colors duration-100',
         'hover:border-[var(--border-strong)] hover:bg-[var(--bg-hover)]',

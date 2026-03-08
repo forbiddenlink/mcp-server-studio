@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ElicitationConfig, ElicitationFormField, ElicitationMode } from '@/lib/types';
+import { ElicitationConfig, ElicitationFormField } from '@/lib/types';
 import { Plus, Trash2 } from 'lucide-react';
 
 interface ElicitationConfigPanelProps {

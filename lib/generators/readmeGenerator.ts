@@ -1,4 +1,4 @@
-import { MCPServerConfig, MCPTool, MCPParameter, MCPResource, MCPPrompt } from '../types';
+import { MCPServerConfig, MCPParameter } from '../types';
 
 /**
  * Converts a name to snake_case for identifiers

@@ -3,9 +3,18 @@
 import { useStore } from '@/lib/store/useStore';
 import { generateMCPServer } from '@/lib/generators/mcpServerGenerator';
 import { Button } from '@/components/ui/button';
-import { Copy, Download, Check } from 'lucide-react';
+import { Copy, Download, Check, Loader2 } from 'lucide-react';
 import { useState } from 'react';
-import Editor from '@monaco-editor/react';
+import dynamic from 'next/dynamic';
+
+const Editor = dynamic(() => import('@monaco-editor/react'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex-1 flex items-center justify-center bg-[var(--bg-base)] rounded-lg border border-[var(--border-default)]">
+      <Loader2 className="w-5 h-5 animate-spin text-[var(--text-tertiary)]" />
+    </div>
+  ),
+});
 
 export function CodeTab() {
   const { serverConfig } = useStore();

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useStore } from '@/lib/store/useStore';
 import {
   executeTool,
@@ -279,12 +279,14 @@ export function TestTab() {
           )}
 
           {/* Test result */}
-          {testResult && (
-            <div className="space-y-2">
-              <h4 className="text-xs font-medium text-[var(--text-tertiary)]">Result</h4>
-              <TestResultDisplay result={testResult} />
-            </div>
-          )}
+          <div aria-live="polite" aria-atomic="true">
+            {testResult && (
+              <div className="space-y-2">
+                <h4 className="text-xs font-medium text-[var(--text-tertiary)]">Result</h4>
+                <TestResultDisplay result={testResult} />
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Test button */}

@@ -6,7 +6,6 @@ import { MCPServerConfig } from '../types';
  */
 export function generateRailwayJson(config: MCPServerConfig): string {
   const isHttp = config.transport === 'http';
-  const port = config.httpPort || 3000;
 
   const railwayConfig: Record<string, unknown> = {
     $schema: 'https://railway.app/railway.schema.json',
@@ -41,7 +40,6 @@ export function generateRailwayJson(config: MCPServerConfig): string {
  */
 export function generateRailwayToml(config: MCPServerConfig): string {
   const isHttp = config.transport === 'http';
-  const port = config.httpPort || 3000;
 
   let toml = `# Railway Configuration for ${config.name}
 # https://docs.railway.app/reference/config-as-code

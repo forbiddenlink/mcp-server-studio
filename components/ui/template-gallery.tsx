@@ -41,7 +41,7 @@ import {
   Braces,
   type LucideIcon,
 } from 'lucide-react';
-import { templateCategories, TemplateCategory } from '@/lib/templates/templateCategories';
+import { templateCategories } from '@/lib/templates/templateCategories';
 import { ToolTemplate } from '@/lib/types';
 
 // Icon mapping for templates

@@ -2,16 +2,17 @@
 
 **Visual builder for Model Context Protocol servers**
 
-Build MCP servers with drag-and-drop tools, test them in real-time, and export production-ready TypeScript code.
+Design MCP tools, resources, and prompts on a drag-and-drop canvas. Test them in a built-in simulator. Export production-ready TypeScript server code with Docker and Railway deployment bundles.
 
-![MCP Server Studio](https://img.shields.io/badge/Status-MVP-green)
-![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)
+![CI](https://github.com/lizstein/mcp-server-studio/actions/workflows/ci.yml/badge.svg)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
+![Tests](https://img.shields.io/badge/Tests-466_passing-brightgreen)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
 ---
 
-## 🎯 What is this?
+## What is this?
 
 MCP Server Studio makes it easy to create [Model Context Protocol](https://modelcontextprotocol.io) servers without writing boilerplate code. Design your tools visually, test them in a playground, and export ready-to-use TypeScript code.
 
@@ -23,51 +24,32 @@ MCP Server Studio makes it easy to create [Model Context Protocol](https://model
 
 ---
 
-## ✨ Features
+## Features
 
-### 🎨 Visual Canvas
-- Drag-and-drop tool creation
-- 8 pre-built templates (Web Search, File Read, API Call, Database Query, Send Email, Create File, Run Command, Get Weather)
-- Intuitive node-based interface
-- Real-time manifest generation
+**Visual Canvas** — Drag-and-drop tool, resource, and prompt creation with 29 templates across 7 categories. Intuitive node-based interface with real-time manifest generation.
 
-### 🧪 Test Playground
-- Simulated MCP server responses
-- Chat-style interface
-- Instant tool call testing
-- Parameter validation
+**Test Simulator** — Interactive test inspector with parameter validation, batch schema validation, and structured test results for tools, resources, and prompts.
 
-### 💻 Code Generation
-- Production-ready TypeScript output
-- Full MCP SDK integration
-- Proper error handling
-- Clean, readable code
+**Code Generation** — Production-ready TypeScript with Zod schemas, full MCP SDK integration, proper error handling, and support for both stdio and HTTP/SSE transports.
 
-### 🎨 Modern UI
-- Dark theme with glassmorphism
-- Futuristic design
-- Smooth animations
-- Responsive layout
+**Export & Deploy** — Export as TypeScript, Docker bundle, or Railway bundle. Includes Dockerfile, docker-compose, package.json, tsconfig, and deployment instructions.
+
+**AI Tool Generator** — Describe a tool in natural language and the parser generates a full MCP tool definition with parameters, types, and icons.
+
+**OpenAPI Import** — Paste an OpenAPI/Swagger spec (JSON or YAML) and automatically convert API operations to MCP tools.
+
+**Advanced Capabilities** — Configure sampling (LLM inference), elicitation (user input), and tasks (async operations) on a per-tool basis.
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
-### Prerequisites
-- Node.js 18+
-- pnpm 8+
-
-### Installation
+**Prerequisites:** Node.js 18+ and pnpm 8+
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/mcp-server-studio.git
+git clone https://github.com/lizstein/mcp-server-studio.git
 cd mcp-server-studio
-
-# Install dependencies
 pnpm install
-
-# Start development server
 pnpm dev
 ```
 
@@ -75,134 +57,143 @@ Visit `http://localhost:3000`
 
 ---
 
-## 📖 How to Use
+## Development
 
-### 1. Add Tools
-Click **"Add Tool"** and select a template. The tool appears on the canvas as a node.
-
-### 2. Configure
-Click a tool node to open the configuration panel:
-- Edit tool name and description
-- Add/remove parameters
-- Set parameter types (string, number, boolean, array, object)
-- Mark parameters as required
-
-### 3. Test
-Switch to the **Test tab** and send prompts:
-```
-"Search for TypeScript best practices"
-"Read package.json"
-"Get weather for New York"
+```bash
+pnpm dev          # Start dev server (localhost:3000)
+pnpm build        # Production build (includes TypeScript checking)
+pnpm lint         # ESLint (flat config, strict no-explicit-any)
+pnpm test:run     # Vitest single run (466 tests)
+pnpm test         # Vitest watch mode
 ```
 
-The simulator matches your prompt to tools and shows responses.
-
-### 4. Export
-Click **"Export Server"** to download a complete TypeScript MCP server ready to run:
-
-```typescript
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-// ... full working code
+Run a single test file:
+```bash
+pnpm vitest run lib/generators/__tests__/constraints.test.ts
 ```
 
 ---
 
-## 🏗️ Tech Stack
+## Tech Stack
 
-| Technology | Purpose |
-|------------|---------|
-| **Next.js 15** | React framework with App Router |
-| **TypeScript** | Type safety (strict mode) |
-| **React Flow** | Visual canvas and node system |
-| **Zustand** | Global state management |
-| **Monaco Editor** | Code preview/export |
-| **shadcn/ui** | UI component library |
-| **Tailwind CSS** | Styling with custom theme |
-| **Framer Motion** | Animations |
+- **Next.js 16** — React 19, App Router, Turbopack
+- **TypeScript 5** — Strict mode
+- **React Flow** (`@xyflow/react`) — Visual canvas and node system
+- **Zustand** — Global state management with localStorage persistence
+- **Monaco Editor** — Code preview and export
+- **shadcn/ui + Radix** — UI component library
+- **Tailwind CSS v4** — Styling with custom dark theme
+- **Framer Motion** — Animations
+- **Vitest** — Testing with jsdom environment
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 mcp-server-studio/
-├── app/                    # Next.js App Router
-│   ├── layout.tsx         # Root layout
-│   └── page.tsx           # Main app page
+├── app/                         # Next.js App Router
+│   ├── layout.tsx               # Root layout with metadata
+│   └── page.tsx                 # Main app page (client component)
 ├── components/
-│   ├── canvas/            # React Flow canvas
-│   │   ├── CanvasPanel.tsx
-│   │   └── ToolNode.tsx
-│   ├── config/            # Tool configuration
-│   │   └── ToolConfigPanel.tsx
-│   ├── preview/           # Preview tabs
-│   │   ├── PreviewPanel.tsx
-│   │   ├── StructureTab.tsx
-│   │   ├── TestTab.tsx
-│   │   └── CodeTab.tsx
-│   └── ui/                # shadcn components
+│   ├── canvas/                  # React Flow canvas
+│   │   ├── CanvasPanel.tsx      # Main canvas with toolbar
+│   │   ├── ToolNode.tsx         # Tool node component
+│   │   ├── ResourceNode.tsx     # Resource node component
+│   │   ├── PromptNode.tsx       # Prompt node component
+│   │   └── DataFlowEdge.tsx     # Custom edge component
+│   ├── config/                  # Slide-in configuration panels
+│   │   ├── ToolConfigPanel.tsx
+│   │   ├── ResourceConfigPanel.tsx
+│   │   ├── PromptConfigPanel.tsx
+│   │   ├── ServerConfigPanel.tsx
+│   │   ├── CapabilitiesSection.tsx
+│   │   ├── SamplingConfigPanel.tsx
+│   │   └── ElicitationConfigPanel.tsx
+│   ├── preview/                 # Right sidebar tabs
+│   │   ├── PreviewPanel.tsx     # Tab container
+│   │   ├── StructureTab.tsx     # JSON manifest viewer
+│   │   ├── TestTab.tsx          # Interactive test simulator
+│   │   └── CodeTab.tsx          # Monaco code editor
+│   └── ui/                      # shadcn/ui + custom components
+│       ├── ai-generator.tsx     # Natural language tool generator
+│       ├── command-palette.tsx  # Cmd+K command palette
+│       ├── import-dialog.tsx    # OpenAPI import dialog
+│       ├── template-gallery.tsx # Template browser
+│       └── error-boundary.tsx   # React error boundary
 ├── lib/
-│   ├── generators/        # Code generation
+│   ├── generators/              # Code generation (pure functions)
 │   │   ├── mcpServerGenerator.ts
-│   │   └── manifestGenerator.ts
-│   ├── simulators/        # Test simulation
-│   │   └── mcpTestSimulator.ts
-│   ├── store/             # Zustand store
-│   │   └── useStore.ts
-│   ├── templates/         # Pre-built tools
-│   │   └── toolTemplates.ts
-│   └── types.ts           # TypeScript types
-└── docs/
-    └── plans/             # Design documents
+│   │   ├── manifestGenerator.ts
+│   │   ├── dockerGenerator.ts
+│   │   ├── railwayGenerator.ts
+│   │   ├── readmeGenerator.ts
+│   │   ├── exportBundler.ts
+│   │   ├── zipCreator.ts
+│   │   ├── aiToolGenerator.ts
+│   │   └── __tests__/           # Generator tests
+│   ├── importers/
+│   │   ├── openApiImporter.ts
+│   │   └── __tests__/           # Importer tests
+│   ├── simulators/
+│   │   ├── mcpTestSimulator.ts
+│   │   └── __tests__/           # Simulator tests
+│   ├── store/
+│   │   └── useStore.ts          # Zustand store with undo/redo
+│   ├── utils/
+│   │   ├── sanitize.ts          # Code generation sanitization
+│   │   └── __tests__/           # Utility tests
+│   ├── templates/
+│   │   └── toolTemplates.ts     # 29 pre-built tool templates
+│   └── types.ts                 # TypeScript type definitions
+└── .github/workflows/ci.yml    # CI pipeline (lint, test, build)
 ```
 
 ---
 
-## 🎨 Design Philosophy
+## Testing
 
-**Futuristic & Premium**
-- Dark theme (#0a0a0f base)
-- Glassmorphism effects
-- Indigo/purple accents
-- Smooth animations
-
-**User Experience**
-- Minimal clicks to value
-- Real-time feedback
-- Clear visual hierarchy
-- Helpful empty states
+183 tests across 10 test files covering:
+- Zod schema generation with all constraint types
+- JSON Schema manifest generation
+- Runtime parameter validation (all types and formats)
+- MCP server code generation (stdio + HTTP transports)
+- Docker and Railway config generation
+- OpenAPI/Swagger import parsing
+- AI tool description parsing
+- Test simulator execution and batch validation
+- Export bundle composition
+- Input sanitization for safe code generation
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
-### Current (MVP)
-- [x] Visual tool builder
-- [x] 8 pre-built templates
-- [x] Test playground
-- [x] TypeScript code generation
-- [x] Export functionality
+### Done
+- [x] Visual tool, resource, and prompt builder
+- [x] 29 templates across 7 categories
+- [x] Interactive test simulator
+- [x] TypeScript code generation (stdio + HTTP/SSE)
+- [x] Docker and Railway deployment exports
+- [x] AI tool generator (natural language → MCP tool)
+- [x] OpenAPI/Swagger import
+- [x] Sampling, elicitation, and tasks configuration
+- [x] Undo/redo with history stack
+- [x] Command palette (Cmd+K)
+- [x] localStorage persistence
+- [x] CI pipeline
 
 ### Next
-- [ ] Save/load projects (localStorage)
 - [ ] Custom tool icons
-- [ ] Advanced parameter types
 - [ ] npm package scaffolding
-- [ ] Import existing MCP servers
-- [ ] Team sharing (QR codes)
-
-### Future
-- [ ] User accounts
-- [ ] Marketplace
-- [ ] Version control
-- [ ] AI code suggestions
-- [ ] Workflow connections
+- [ ] Team sharing
+- [ ] Workflow connections between tools
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-Contributions welcome! This is a portfolio project but PRs are appreciated.
+Contributions welcome!
 
 1. Fork the repo
 2. Create your feature branch (`git checkout -b feature/amazing`)
@@ -212,29 +203,21 @@ Contributions welcome! This is a portfolio project but PRs are appreciated.
 
 ---
 
-## 📄 License
+## License
 
 MIT License - see [LICENSE](LICENSE) for details
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [Model Context Protocol](https://modelcontextprotocol.io) by Anthropic
-- [React Flow](https://reactflow.dev) for the amazing canvas library
-- [shadcn/ui](https://ui.shadcn.com) for beautiful components
+- [React Flow](https://reactflow.dev) for the canvas library
+- [shadcn/ui](https://ui.shadcn.com) for UI components
 - [Vercel](https://vercel.com) for deployment
 
 ---
 
-## 📧 Contact
-
-Built by **Liz Stein** as part of a portfolio project series.
-
-- Portfolio: [your-portfolio.com](#)
-- GitHub: [@yourusername](#)
-- LinkedIn: [linkedin.com/in/yourprofile](#)
-
----
+Built by **Liz Stein**.
 
 **⚡ Start building MCP servers visually!**

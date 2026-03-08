@@ -23,6 +23,10 @@ function PromptNodeComponent({ id, data, selected }: NodeProps) {
   return (
     <div
       onClick={handleClick}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Prompt: ${prompt.name}`}
       className={cn(
         'surface-base p-4 min-w-[220px] cursor-pointer transition-colors duration-100',
         'hover:border-violet-500/50 hover:bg-[var(--bg-hover)]',

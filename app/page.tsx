@@ -16,20 +16,16 @@ import {
   Code2,
   X,
   Command,
-  Copy,
-  Clipboard,
-  Undo2,
-  Redo2,
   Settings,
   ChevronDown,
   FileCode,
   Container,
   Train,
+  Rocket,
 } from "lucide-react";
 import { useStore } from "@/lib/store/useStore";
 import { toolTemplates } from "@/lib/templates/toolTemplates";
 import { MCPTool } from "@/lib/types";
-import { generateMCPServer } from "@/lib/generators/mcpServerGenerator";
 import {
   createExportBundle,
   ExportFormat,
@@ -44,6 +40,7 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import confetti from "canvas-confetti";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 export default function Home() {
   const {
@@ -404,17 +401,29 @@ export default function Home() {
                     <Train className="w-4 h-4 mr-2" />
                     Railway Bundle (.zip)
                   </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => handleExport("v0")}>
+                    <Rocket className="w-4 h-4 mr-2" />
+                    <div className="flex flex-col">
+                      <span>v0 Bundle (.zip)</span>
+                      <span className="text-xs text-muted-foreground">Deploy to Vercel v0 API</span>
+                    </div>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
           </header>
 
-          <CanvasPanel />
+          <ErrorBoundary label="Canvas">
+            <CanvasPanel />
+          </ErrorBoundary>
         </div>
 
         {/* Preview Panel - Desktop */}
         <div className="hidden lg:block w-[500px] border-l border-[var(--border-default)] bg-[var(--bg-surface)] relative z-10">
-          <PreviewPanel />
+          <ErrorBoundary label="Preview">
+            <PreviewPanel />
+          </ErrorBoundary>
         </div>
 
         {/* Preview Panel - Mobile Slide-up */}
@@ -440,9 +449,11 @@ export default function Home() {
       </div>
 
       {/* Config Panels (slides in when node selected) */}
-      {selectedNodeType === "tool" && <ToolConfigPanel key={selectedNodeId} />}
-      {selectedNodeType === "resource" && <ResourceConfigPanel key={selectedNodeId} />}
-      {selectedNodeType === "prompt" && <PromptConfigPanel key={selectedNodeId} />}
+      <ErrorBoundary label="Configuration">
+        {selectedNodeType === "tool" && <ToolConfigPanel key={selectedNodeId} />}
+        {selectedNodeType === "resource" && <ResourceConfigPanel key={selectedNodeId} />}
+        {selectedNodeType === "prompt" && <PromptConfigPanel key={selectedNodeId} />}
+      </ErrorBoundary>
 
       {/* Command Palette */}
       <CommandPalette

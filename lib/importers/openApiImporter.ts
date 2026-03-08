@@ -1,4 +1,5 @@
 import { MCPTool, MCPParameter, ParameterType } from '../types';
+import yaml from 'js-yaml';
 
 /**
  * Represents a parsed OpenAPI parameter
@@ -70,7 +71,7 @@ export interface ParseResult {
 /**
  * Maps OpenAPI type to MCP ParameterType
  */
-function mapOpenAPIType(type: string | undefined, format?: string): ParameterType {
+function mapOpenAPIType(type: string | undefined): ParameterType {
   switch (type) {
     case 'string':
       return 'string';
@@ -96,7 +97,7 @@ function convertParameter(param: OpenAPIParameter): MCPParameter {
 
   // OpenAPI 3.x uses schema
   if (param.schema) {
-    type = mapOpenAPIType(param.schema.type, param.schema.format);
+    type = mapOpenAPIType(param.schema.type);
   }
   // Swagger 2.0 uses type directly
   else if (param.type) {
@@ -155,22 +156,44 @@ function extractBodyParameters(
 }
 
 /**
- * Resolves a $ref to its actual schema
+ * Resolves a $ref to its actual schema, handling recursive references.
+ * Uses a seen-set to prevent infinite loops on circular $refs.
  */
-function resolveSchema(schema: OpenAPISchema, spec: OpenAPISpec): OpenAPISchema {
+function resolveSchema(
+  schema: OpenAPISchema,
+  spec: OpenAPISpec,
+  seen: Set<string> = new Set(),
+): OpenAPISchema {
   if (!schema.$ref) {
     return schema;
   }
 
+  // Guard against circular references
+  if (seen.has(schema.$ref)) {
+    return schema;
+  }
+  seen.add(schema.$ref);
+
   // Handle $ref like "#/components/schemas/Pet" or "#/definitions/Pet"
   const refPath = schema.$ref.replace(/^#\//, '').split('/');
 
-  let resolved: any = spec;
+  let resolved: Record<string, unknown> = spec as unknown as Record<string, unknown>;
   for (const part of refPath) {
-    resolved = resolved?.[part];
+    resolved = (resolved as Record<string, Record<string, unknown>>)?.[part] as Record<string, unknown>;
   }
 
-  return resolved || schema;
+  if (!resolved) {
+    return schema;
+  }
+
+  const resolvedSchema = resolved as unknown as OpenAPISchema;
+
+  // Recursively resolve if the resolved schema itself has a $ref
+  if (resolvedSchema.$ref) {
+    return resolveSchema(resolvedSchema, spec, seen);
+  }
+
+  return resolvedSchema;
 }
 
 /**
@@ -252,19 +275,22 @@ export function parseOpenApiSpec(spec: string): ParseResult {
   const warnings: string[] = [];
   const tools: MCPTool[] = [];
 
-  // Try to parse as JSON
+  // Try to parse as JSON, then fall back to YAML
   let parsedSpec: OpenAPISpec;
   try {
     parsedSpec = JSON.parse(spec);
-  } catch (jsonError) {
-    // Try basic YAML parsing for simple cases
+  } catch {
     try {
-      parsedSpec = parseSimpleYaml(spec);
+      parsedSpec = yaml.load(spec) as OpenAPISpec;
     } catch (yamlError) {
       return {
         success: false,
         tools: [],
-        errors: ['Failed to parse specification. Please provide valid JSON or simple YAML.'],
+        errors: [
+          `Failed to parse specification: ${
+            yamlError instanceof Error ? yamlError.message : 'Invalid JSON or YAML'
+          }`,
+        ],
         warnings: [],
       };
     }
@@ -310,8 +336,7 @@ export function parseOpenApiSpec(spec: string): ParseResult {
         const toolName = generateToolName(method, path, operation);
         const parameters: MCPParameter[] = [];
 
-        // Add path parameters as context in description
-        const pathParams = path.match(/\{([^}]+)\}/g)?.map(p => p.slice(1, -1)) || [];
+    // Path parameters available as context
 
         // Process operation parameters
         if (operation.parameters) {
@@ -369,98 +394,6 @@ export function parseOpenApiSpec(spec: string): ParseResult {
   };
 }
 
-/**
- * Simple YAML parser for basic OpenAPI specs
- * Only handles simple key-value pairs, arrays, and nested objects
- */
-function parseSimpleYaml(yaml: string): OpenAPISpec {
-  const lines = yaml.split('\n');
-  const result: any = {};
-  const stack: { obj: any; indent: number }[] = [{ obj: result, indent: -1 }];
-  let currentKey = '';
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const trimmed = line.trim();
-
-    // Skip empty lines and comments
-    if (!trimmed || trimmed.startsWith('#')) {
-      continue;
-    }
-
-    const indent = line.search(/\S/);
-
-    // Pop stack until we find the right parent
-    while (stack.length > 1 && stack[stack.length - 1].indent >= indent) {
-      stack.pop();
-    }
-
-    const parent = stack[stack.length - 1].obj;
-
-    // Array item
-    if (trimmed.startsWith('- ')) {
-      const value = trimmed.substring(2).trim();
-      if (!Array.isArray(parent[currentKey])) {
-        parent[currentKey] = [];
-      }
-
-      if (value.includes(':')) {
-        // Object in array
-        const obj: any = {};
-        const [k, v] = value.split(':').map(s => s.trim());
-        obj[k] = parseYamlValue(v);
-        parent[currentKey].push(obj);
-        stack.push({ obj: obj, indent: indent });
-      } else {
-        parent[currentKey].push(parseYamlValue(value));
-      }
-      continue;
-    }
-
-    // Key-value pair
-    const colonIndex = trimmed.indexOf(':');
-    if (colonIndex > 0) {
-      const key = trimmed.substring(0, colonIndex).trim();
-      const value = trimmed.substring(colonIndex + 1).trim();
-
-      if (value) {
-        parent[key] = parseYamlValue(value);
-      } else {
-        parent[key] = {};
-        currentKey = key;
-        stack.push({ obj: parent[key], indent: indent });
-      }
-    }
-  }
-
-  return result;
-}
-
-/**
- * Parses a YAML value string
- */
-function parseYamlValue(value: string): any {
-  if (!value) return '';
-
-  // Remove quotes
-  if ((value.startsWith('"') && value.endsWith('"')) ||
-      (value.startsWith("'") && value.endsWith("'"))) {
-    return value.slice(1, -1);
-  }
-
-  // Boolean
-  if (value === 'true') return true;
-  if (value === 'false') return false;
-
-  // Null
-  if (value === 'null' || value === '~') return null;
-
-  // Number
-  const num = Number(value);
-  if (!isNaN(num)) return num;
-
-  return value;
-}
 
 /**
  * Fetches and parses an OpenAPI spec from a URL

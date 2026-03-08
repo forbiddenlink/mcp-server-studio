@@ -93,8 +93,10 @@ interface StoreState {
   // React Flow actions
   setNodes: (nodes: Node[]) => void;
   setEdges: (edges: Edge[]) => void;
-  onNodesChange: (changes: any) => void;
-  onEdgesChange: (changes: any) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onNodesChange: (changes: any[]) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onEdgesChange: (changes: any[]) => void;
 
   // Chat actions
   addMessage: (message: ChatMessage) => void;
@@ -175,13 +177,14 @@ export const useStore = create<StoreState>()(
       ? [createHistoryEntry(tools, resources, prompts, nodes, edges)]
       : history.slice(0, historyIndex + 1);
 
-    // Calculate new state
+    // Calculate new state — only create new objects for the changed tool/node
+    const updatedTool = { ...tools.find((t) => t.id === id)!, ...updates };
     const updatedTools = tools.map((tool) =>
-      tool.id === id ? { ...tool, ...updates } : tool
+      tool.id === id ? updatedTool : tool
     );
     const updatedNodes = nodes.map((node) =>
       node.id === id
-        ? { ...node, data: { ...node.data, tool: updatedTools.find((t) => t.id === id) } }
+        ? { ...node, data: { ...node.data, tool: updatedTool } }
         : node
     );
 
@@ -304,12 +307,13 @@ export const useStore = create<StoreState>()(
       ? [createHistoryEntry(tools, resources, prompts, nodes, edges)]
       : history.slice(0, historyIndex + 1);
 
+    const updatedResource = { ...resources.find((r) => r.id === id)!, ...updates };
     const updatedResources = resources.map((resource) =>
-      resource.id === id ? { ...resource, ...updates } : resource
+      resource.id === id ? updatedResource : resource
     );
     const updatedNodes = nodes.map((node) =>
       node.id === id
-        ? { ...node, data: { ...node.data, resource: updatedResources.find((r) => r.id === id) } }
+        ? { ...node, data: { ...node.data, resource: updatedResource } }
         : node
     );
 
@@ -402,12 +406,13 @@ export const useStore = create<StoreState>()(
       ? [createHistoryEntry(tools, resources, prompts, nodes, edges)]
       : history.slice(0, historyIndex + 1);
 
+    const updatedPrompt = { ...prompts.find((p) => p.id === id)!, ...updates };
     const updatedPrompts = prompts.map((prompt) =>
-      prompt.id === id ? { ...prompt, ...updates } : prompt
+      prompt.id === id ? updatedPrompt : prompt
     );
     const updatedNodes = nodes.map((node) =>
       node.id === id
-        ? { ...node, data: { ...node.data, prompt: updatedPrompts.find((p) => p.id === id) } }
+        ? { ...node, data: { ...node.data, prompt: updatedPrompt } }
         : node
     );
 
@@ -465,11 +470,13 @@ export const useStore = create<StoreState>()(
       set({
         clipboard: {
           ...tool,
-          parameters: [...tool.parameters],
+          parameters: tool.parameters.map(p => ({ ...p, enum: p.enum ? [...p.enum] : undefined })),
           sampling: tool.sampling ? { ...tool.sampling } : undefined,
           elicitation: tool.elicitation ? {
             ...tool.elicitation,
-            formFields: tool.elicitation.formFields ? [...tool.elicitation.formFields] : undefined,
+            formFields: tool.elicitation.formFields
+              ? tool.elicitation.formFields.map(f => ({ ...f }))
+              : undefined,
           } : undefined,
           tasks: tool.tasks ? { ...tool.tasks } : undefined,
         }
@@ -485,11 +492,13 @@ export const useStore = create<StoreState>()(
       ...clipboard,
       id: `tool-${Date.now()}`,
       name: `${clipboard.name} (copy)`,
-      parameters: [...clipboard.parameters],
+      parameters: clipboard.parameters.map(p => ({ ...p, enum: p.enum ? [...p.enum] : undefined })),
       sampling: clipboard.sampling ? { ...clipboard.sampling } : undefined,
       elicitation: clipboard.elicitation ? {
         ...clipboard.elicitation,
-        formFields: clipboard.elicitation.formFields ? [...clipboard.elicitation.formFields] : undefined,
+        formFields: clipboard.elicitation.formFields
+          ? clipboard.elicitation.formFields.map(f => ({ ...f }))
+          : undefined,
       } : undefined,
       tasks: clipboard.tasks ? { ...clipboard.tasks } : undefined,
     };
@@ -552,6 +561,7 @@ export const useStore = create<StoreState>()(
   onNodesChange: (changes) => {
     // Handle node changes from React Flow
     set((state) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const updatedNodes = changes.reduce((acc: Node[], change: any) => {
         if (change.type === 'position' && change.dragging) {
           return acc.map((node) =>
