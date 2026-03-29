@@ -1,0 +1,42 @@
+name: Security Scan
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Dependency scanning with Socket.dev
+      - name: Socket Security
+        uses: socketsecurity/socket-action@v1
+        continue-on-error: true
+
+      # SAST with Semgrep
+      - name: Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/default
+            p/security-audit
+            p/secrets
+        continue-on-error: true
+
+      # Secret scanning with TruffleHog
+      - name: TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --only-verified
+        continue-on-error: true
+
