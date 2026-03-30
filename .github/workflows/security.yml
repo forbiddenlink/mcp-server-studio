@@ -18,11 +18,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Dependency scanning with Socket.dev
-      - name: Socket Security
-        uses: socketsecurity/socket-action@v1
-        continue-on-error: true
-
       # SAST with Semgrep
       - name: Semgrep
         uses: returntocorp/semgrep-action@v1
