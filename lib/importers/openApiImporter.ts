@@ -1,5 +1,6 @@
 import { MCPTool, MCPParameter, ParameterType } from '../types';
 import yaml from 'js-yaml';
+import { logger } from '../logger';
 
 /**
  * Represents a parsed OpenAPI parameter
@@ -399,10 +400,13 @@ export function parseOpenApiSpec(spec: string): ParseResult {
  * Fetches and parses an OpenAPI spec from a URL
  */
 export async function fetchAndParseOpenApiSpec(url: string): Promise<ParseResult> {
+  logger.debug({ url }, 'Fetching OpenAPI spec');
+
   try {
     const response = await fetch(url);
 
     if (!response.ok) {
+      logger.warn({ url, status: response.status }, 'Failed to fetch OpenAPI spec');
       return {
         success: false,
         tools: [],
@@ -412,8 +416,11 @@ export async function fetchAndParseOpenApiSpec(url: string): Promise<ParseResult
     }
 
     const spec = await response.text();
-    return parseOpenApiSpec(spec);
+    const result = parseOpenApiSpec(spec);
+    logger.info({ url, toolCount: result.tools.length }, 'Parsed OpenAPI spec');
+    return result;
   } catch (error) {
+    logger.error({ err: error, url }, 'Error fetching OpenAPI spec');
     return {
       success: false,
       tools: [],
