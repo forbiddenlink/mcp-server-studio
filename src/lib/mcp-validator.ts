@@ -14,6 +14,7 @@ export const MCPInputSchemaSchema = z.object({
   type: z.literal("object"),
   properties: z
     .record(
+      z.string(),
       z.object({
         type: z.string(),
         description: z.string().optional(),
@@ -80,7 +81,7 @@ export function validateMCPServer(serverDef: unknown): {
   if (result.success) {
     return { valid: true, errors: [], data: result.data };
   }
-  const errors = result.error.errors.map(
+  const errors = result.error.issues.map(
     (e) => `${e.path.join(".")}: ${e.message}`,
   );
   return { valid: false, errors };
@@ -89,11 +90,13 @@ export function validateMCPServer(serverDef: unknown): {
 // ── JSON Schema Generation ─────────────────────────────────────────────────────
 
 export function generateJSONSchema(zodSchema: z.ZodTypeAny): object {
-  return zodToJsonSchema(zodSchema, { name: "schema" });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return zodToJsonSchema(zodSchema as any, { name: "schema" });
 }
 
 export function generateMCPServerJSONSchema(): object {
-  return zodToJsonSchema(MCPServerSchema, { name: "MCPServer" });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return zodToJsonSchema(MCPServerSchema as any, { name: "MCPServer" });
 }
 
 // ── Tool Name Validation ───────────────────────────────────────────────────────
