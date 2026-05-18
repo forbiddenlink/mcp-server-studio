@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { generateManifest } from '../manifestGenerator';
-import { MCPServerConfig } from '../../types';
+import { describe, expect, it } from 'vitest'
+import type { MCPServerConfig } from '../../types'
+import { generateManifest } from '../manifestGenerator'
 
 describe('manifestGenerator', () => {
   describe('generateManifest', () => {
@@ -13,13 +13,13 @@ describe('manifestGenerator', () => {
         tools: [],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
+      const manifest = generateManifest(config)
 
-      expect(manifest.name).toBe('test-server');
-      expect(manifest.version).toBe('1.0.0');
-    });
+      expect(manifest.name).toBe('test-server')
+      expect(manifest.version).toBe('1.0.0')
+    })
 
     it('sets capabilities based on tool/resource/prompt presence', () => {
       const config: MCPServerConfig = {
@@ -53,15 +53,15 @@ describe('manifestGenerator', () => {
             arguments: [],
           },
         ],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const capabilities = manifest.capabilities as Record<string, boolean>;
+      const manifest = generateManifest(config)
+      const capabilities = manifest.capabilities as Record<string, boolean>
 
-      expect(capabilities.tools).toBe(true);
-      expect(capabilities.resources).toBe(true);
-      expect(capabilities.prompts).toBe(true);
-    });
+      expect(capabilities.tools).toBe(true)
+      expect(capabilities.resources).toBe(true)
+      expect(capabilities.prompts).toBe(true)
+    })
 
     it('sets capabilities to false when collections are empty', () => {
       const config: MCPServerConfig = {
@@ -72,15 +72,15 @@ describe('manifestGenerator', () => {
         tools: [],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const capabilities = manifest.capabilities as Record<string, boolean>;
+      const manifest = generateManifest(config)
+      const capabilities = manifest.capabilities as Record<string, boolean>
 
-      expect(capabilities.tools).toBe(false);
-      expect(capabilities.resources).toBe(false);
-      expect(capabilities.prompts).toBe(false);
-    });
+      expect(capabilities.tools).toBe(false)
+      expect(capabilities.resources).toBe(false)
+      expect(capabilities.prompts).toBe(false)
+    })
 
     it('sets sampling capability when any tool has sampling enabled', () => {
       const config: MCPServerConfig = {
@@ -103,13 +103,13 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const capabilities = manifest.capabilities as Record<string, boolean>;
+      const manifest = generateManifest(config)
+      const capabilities = manifest.capabilities as Record<string, boolean>
 
-      expect(capabilities.sampling).toBe(true);
-    });
+      expect(capabilities.sampling).toBe(true)
+    })
 
     it('sets elicitation capability when any tool has elicitation enabled', () => {
       const config: MCPServerConfig = {
@@ -133,14 +133,14 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const capabilities = manifest.capabilities as Record<string, boolean>;
+      const manifest = generateManifest(config)
+      const capabilities = manifest.capabilities as Record<string, boolean>
 
-      expect(capabilities.elicitation).toBe(true);
-    });
-  });
+      expect(capabilities.elicitation).toBe(true)
+    })
+  })
 
   describe('tool manifest generation', () => {
     it('sanitizes tool names to snake_case', () => {
@@ -160,13 +160,13 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
 
-      expect(tools[0].name).toBe('my_test_tool');
-    });
+      expect(tools[0].name).toBe('my_test_tool')
+    })
 
     it('removes special characters from tool names', () => {
       const config: MCPServerConfig = {
@@ -185,13 +185,13 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
 
-      expect(tools[0].name).toBe('toolwithsymbols');
-    });
+      expect(tools[0].name).toBe('toolwithsymbols')
+    })
 
     it('includes description and icon in tool manifest', () => {
       const config: MCPServerConfig = {
@@ -210,14 +210,14 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
 
-      expect(tools[0].description).toBe('A descriptive test tool');
-      expect(tools[0].icon).toBe('Wrench');
-    });
+      expect(tools[0].description).toBe('A descriptive test tool')
+      expect(tools[0].icon).toBe('Wrench')
+    })
 
     it('marks tool as using sampling when enabled', () => {
       const config: MCPServerConfig = {
@@ -240,13 +240,13 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
 
-      expect(tools[0].usesSampling).toBe(true);
-    });
+      expect(tools[0].usesSampling).toBe(true)
+    })
 
     it('marks tool as using elicitation when enabled', () => {
       const config: MCPServerConfig = {
@@ -271,13 +271,13 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
 
-      expect(tools[0].usesElicitation).toBe(true);
-    });
+      expect(tools[0].usesElicitation).toBe(true)
+    })
 
     it('marks tool as long running when tasks enabled', () => {
       const config: MCPServerConfig = {
@@ -300,14 +300,14 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
 
-      expect(tools[0].isLongRunning).toBe(true);
-    });
-  });
+      expect(tools[0].isLongRunning).toBe(true)
+    })
+  })
 
   describe('JSON Schema generation', () => {
     it('generates basic object schema structure', () => {
@@ -327,16 +327,16 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
-      const inputSchema = tools[0].inputSchema as Record<string, unknown>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
+      const inputSchema = tools[0].inputSchema as Record<string, unknown>
 
-      expect(inputSchema.type).toBe('object');
-      expect(inputSchema.properties).toEqual({});
-      expect(inputSchema.required).toEqual([]);
-    });
+      expect(inputSchema.type).toBe('object')
+      expect(inputSchema.properties).toEqual({})
+      expect(inputSchema.required).toEqual([])
+    })
 
     it('generates parameter with basic properties', () => {
       const config: MCPServerConfig = {
@@ -362,17 +362,17 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
-      const inputSchema = tools[0].inputSchema as Record<string, unknown>;
-      const properties = inputSchema.properties as Record<string, Record<string, unknown>>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
+      const inputSchema = tools[0].inputSchema as Record<string, unknown>
+      const properties = inputSchema.properties as Record<string, Record<string, unknown>>
 
-      expect(properties.query.type).toBe('string');
-      expect(properties.query.description).toBe('Search query');
-      expect(inputSchema.required).toContain('query');
-    });
+      expect(properties.query.type).toBe('string')
+      expect(properties.query.description).toBe('Search query')
+      expect(inputSchema.required).toContain('query')
+    })
 
     it('handles optional parameters correctly', () => {
       const config: MCPServerConfig = {
@@ -398,14 +398,14 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
-      const inputSchema = tools[0].inputSchema as Record<string, unknown>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
+      const inputSchema = tools[0].inputSchema as Record<string, unknown>
 
-      expect(inputSchema.required).not.toContain('optional_param');
-    });
+      expect(inputSchema.required).not.toContain('optional_param')
+    })
 
     it('includes enum constraint in schema', () => {
       const config: MCPServerConfig = {
@@ -432,15 +432,15 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
-      const inputSchema = tools[0].inputSchema as Record<string, unknown>;
-      const properties = inputSchema.properties as Record<string, Record<string, unknown>>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
+      const inputSchema = tools[0].inputSchema as Record<string, unknown>
+      const properties = inputSchema.properties as Record<string, Record<string, unknown>>
 
-      expect(properties.status.enum).toEqual(['active', 'inactive', 'pending']);
-    });
+      expect(properties.status.enum).toEqual(['active', 'inactive', 'pending'])
+    })
 
     it('includes format constraint in schema', () => {
       const config: MCPServerConfig = {
@@ -467,15 +467,15 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
-      const inputSchema = tools[0].inputSchema as Record<string, unknown>;
-      const properties = inputSchema.properties as Record<string, Record<string, unknown>>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
+      const inputSchema = tools[0].inputSchema as Record<string, unknown>
+      const properties = inputSchema.properties as Record<string, Record<string, unknown>>
 
-      expect(properties.email.format).toBe('email');
-    });
+      expect(properties.email.format).toBe('email')
+    })
 
     it('includes string length constraints', () => {
       const config: MCPServerConfig = {
@@ -503,16 +503,16 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
-      const inputSchema = tools[0].inputSchema as Record<string, unknown>;
-      const properties = inputSchema.properties as Record<string, Record<string, unknown>>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
+      const inputSchema = tools[0].inputSchema as Record<string, unknown>
+      const properties = inputSchema.properties as Record<string, Record<string, unknown>>
 
-      expect(properties.username.minLength).toBe(3);
-      expect(properties.username.maxLength).toBe(20);
-    });
+      expect(properties.username.minLength).toBe(3)
+      expect(properties.username.maxLength).toBe(20)
+    })
 
     it('includes pattern constraint', () => {
       const config: MCPServerConfig = {
@@ -539,15 +539,15 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
-      const inputSchema = tools[0].inputSchema as Record<string, unknown>;
-      const properties = inputSchema.properties as Record<string, Record<string, unknown>>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
+      const inputSchema = tools[0].inputSchema as Record<string, unknown>
+      const properties = inputSchema.properties as Record<string, Record<string, unknown>>
 
-      expect(properties.phone.pattern).toBe('^\\d{3}-\\d{3}-\\d{4}$');
-    });
+      expect(properties.phone.pattern).toBe('^\\d{3}-\\d{3}-\\d{4}$')
+    })
 
     it('includes number range constraints', () => {
       const config: MCPServerConfig = {
@@ -575,16 +575,16 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
-      const inputSchema = tools[0].inputSchema as Record<string, unknown>;
-      const properties = inputSchema.properties as Record<string, Record<string, unknown>>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
+      const inputSchema = tools[0].inputSchema as Record<string, unknown>
+      const properties = inputSchema.properties as Record<string, Record<string, unknown>>
 
-      expect(properties.age.minimum).toBe(0);
-      expect(properties.age.maximum).toBe(150);
-    });
+      expect(properties.age.minimum).toBe(0)
+      expect(properties.age.maximum).toBe(150)
+    })
 
     it('includes array constraints', () => {
       const config: MCPServerConfig = {
@@ -613,17 +613,17 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
-      const inputSchema = tools[0].inputSchema as Record<string, unknown>;
-      const properties = inputSchema.properties as Record<string, Record<string, unknown>>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
+      const inputSchema = tools[0].inputSchema as Record<string, unknown>
+      const properties = inputSchema.properties as Record<string, Record<string, unknown>>
 
-      expect(properties.tags.minItems).toBe(1);
-      expect(properties.tags.maxItems).toBe(10);
-      expect(properties.tags.uniqueItems).toBe(true);
-    });
+      expect(properties.tags.minItems).toBe(1)
+      expect(properties.tags.maxItems).toBe(10)
+      expect(properties.tags.uniqueItems).toBe(true)
+    })
 
     it('includes default value in schema', () => {
       const config: MCPServerConfig = {
@@ -650,15 +650,15 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
-      const inputSchema = tools[0].inputSchema as Record<string, unknown>;
-      const properties = inputSchema.properties as Record<string, Record<string, unknown>>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
+      const inputSchema = tools[0].inputSchema as Record<string, unknown>
+      const properties = inputSchema.properties as Record<string, Record<string, unknown>>
 
-      expect(properties.limit.default).toBe(10);
-    });
+      expect(properties.limit.default).toBe(10)
+    })
 
     it('does not include empty enum array', () => {
       const config: MCPServerConfig = {
@@ -685,15 +685,15 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
-      const inputSchema = tools[0].inputSchema as Record<string, unknown>;
-      const properties = inputSchema.properties as Record<string, Record<string, unknown>>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
+      const inputSchema = tools[0].inputSchema as Record<string, unknown>
+      const properties = inputSchema.properties as Record<string, Record<string, unknown>>
 
-      expect(properties.value.enum).toBeUndefined();
-    });
+      expect(properties.value.enum).toBeUndefined()
+    })
 
     it('handles multiple tools with multiple parameters', () => {
       const config: MCPServerConfig = {
@@ -751,22 +751,22 @@ describe('manifestGenerator', () => {
         ],
         resources: [],
         prompts: [],
-      };
+      }
 
-      const manifest = generateManifest(config);
-      const tools = manifest.tools as Array<Record<string, unknown>>;
+      const manifest = generateManifest(config)
+      const tools = manifest.tools as Array<Record<string, unknown>>
 
-      expect(tools).toHaveLength(2);
-      expect(tools[0].name).toBe('search');
-      expect(tools[1].name).toBe('create_item');
+      expect(tools).toHaveLength(2)
+      expect(tools[0].name).toBe('search')
+      expect(tools[1].name).toBe('create_item')
 
-      const searchSchema = tools[0].inputSchema as Record<string, unknown>;
-      expect((searchSchema.properties as Record<string, unknown>).query).toBeDefined();
-      expect((searchSchema.properties as Record<string, unknown>).limit).toBeDefined();
+      const searchSchema = tools[0].inputSchema as Record<string, unknown>
+      expect((searchSchema.properties as Record<string, unknown>).query).toBeDefined()
+      expect((searchSchema.properties as Record<string, unknown>).limit).toBeDefined()
 
-      const createSchema = tools[1].inputSchema as Record<string, unknown>;
-      expect((createSchema.properties as Record<string, unknown>).name).toBeDefined();
-      expect((createSchema.properties as Record<string, unknown>).tags).toBeDefined();
-    });
-  });
-});
+      const createSchema = tools[1].inputSchema as Record<string, unknown>
+      expect((createSchema.properties as Record<string, unknown>).name).toBeDefined()
+      expect((createSchema.properties as Record<string, unknown>).tags).toBeDefined()
+    })
+  })
+})

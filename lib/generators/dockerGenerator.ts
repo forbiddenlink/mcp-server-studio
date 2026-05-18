@@ -1,12 +1,12 @@
-import { MCPServerConfig } from '../types';
+import type { MCPServerConfig } from '../types'
 
 /**
  * Generates a Dockerfile for the MCP server
  * Uses multi-stage build with Node 20 alpine for minimal image size
  */
 export function generateDockerfile(config: MCPServerConfig): string {
-  const port = config.httpPort || 3000;
-  const isHttp = config.transport === 'http';
+  const port = config.httpPort || 3000
+  const isHttp = config.transport === 'http'
 
   return `# Build stage
 FROM node:20-alpine AS builder
@@ -51,7 +51,9 @@ RUN chown -R mcpuser:mcpuser /app
 # Switch to non-root user
 USER mcpuser
 
-${isHttp ? `# Expose HTTP port
+${
+  isHttp
+    ? `# Expose HTTP port
 EXPOSE ${port}
 
 # Set environment variables
@@ -62,12 +64,14 @@ ENV PORT=${port}
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \\
   CMD wget --no-verbose --tries=1 --spider http://localhost:${port}/health || exit 1
 
-` : `# Set environment variables
+`
+    : `# Set environment variables
 ENV NODE_ENV=production
 
-`}# Start the server
+`
+}# Start the server
 CMD ["node", "build/index.js"]
-`;
+`
 }
 
 /**
@@ -112,16 +116,16 @@ coverage/
 Dockerfile*
 docker-compose*.yml
 .dockerignore
-`;
+`
 }
 
 /**
  * Generates a docker-compose.yml for local development
  */
 export function generateDockerCompose(config: MCPServerConfig): string {
-  const port = config.httpPort || 3000;
-  const isHttp = config.transport === 'http';
-  const serviceName = config.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+  const port = config.httpPort || 3000
+  const isHttp = config.transport === 'http'
+  const serviceName = config.name.toLowerCase().replace(/[^a-z0-9]/g, '-')
 
   if (!isHttp) {
     // For stdio transport, docker-compose is less useful but we can still provide it
@@ -139,7 +143,7 @@ services:
     stdin_open: true
     tty: true
     restart: unless-stopped
-`;
+`
   }
 
   return `# Docker Compose for ${config.name}
@@ -169,7 +173,7 @@ services:
 # Uncomment to add volume mounts for persistence
 #    volumes:
 #      - ./data:/app/data
-`;
+`
 }
 
 /**
@@ -177,8 +181,8 @@ services:
  */
 export function generateDockerFiles(config: MCPServerConfig): Record<string, string> {
   return {
-    'Dockerfile': generateDockerfile(config),
+    Dockerfile: generateDockerfile(config),
     '.dockerignore': generateDockerIgnore(),
     'docker-compose.yml': generateDockerCompose(config),
-  };
+  }
 }

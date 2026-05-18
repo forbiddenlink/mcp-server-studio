@@ -1,36 +1,37 @@
-import { MCPServerConfig } from '../types';
-import { generateMCPServer } from './mcpServerGenerator';
-import { generateDockerFiles } from './dockerGenerator';
-import { generateRailwayFiles, generateRailwayInstructions } from './railwayGenerator';
-import { generateClaudeDesktopConfig, generatePackageJson, generateTsConfig } from './readmeGenerator';
-import { generateV0Bundle } from './v0Generator';
+import type { MCPServerConfig } from '../types'
+import { generateDockerFiles } from './dockerGenerator'
+import { generateMCPServer } from './mcpServerGenerator'
+import { generateRailwayFiles, generateRailwayInstructions } from './railwayGenerator'
+import {
+  generateClaudeDesktopConfig,
+  generatePackageJson,
+  generateTsConfig,
+} from './readmeGenerator'
+import { generateV0Bundle } from './v0Generator'
 
-export type ExportFormat = 'typescript' | 'docker' | 'railway' | 'v0';
+export type ExportFormat = 'typescript' | 'docker' | 'railway' | 'v0'
 
 export interface ExportFile {
-  name: string;
-  content: string;
+  name: string
+  content: string
 }
 
 export interface ExportBundle {
-  filename: string;
-  mimeType: string;
-  files: ExportFile[];
+  filename: string
+  mimeType: string
+  files: ExportFile[]
 }
 
-export function createExportBundle(
-  config: MCPServerConfig,
-  format: ExportFormat
-): ExportBundle {
-  const serverCode = generateMCPServer(config);
-  const safeName = config.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+export function createExportBundle(config: MCPServerConfig, format: ExportFormat): ExportBundle {
+  const serverCode = generateMCPServer(config)
+  const safeName = config.name.toLowerCase().replace(/[^a-z0-9]/g, '-')
 
   if (format === 'typescript') {
     return {
       filename: `${safeName}.ts`,
       mimeType: 'text/typescript',
       files: [{ name: 'index.ts', content: serverCode }],
-    };
+    }
   }
 
   const baseFiles: ExportFile[] = [
@@ -38,10 +39,10 @@ export function createExportBundle(
     { name: 'package.json', content: generatePackageJson(config) },
     { name: 'tsconfig.json', content: generateTsConfig() },
     { name: 'claude_desktop_config.json', content: generateClaudeDesktopConfig(config) },
-  ];
+  ]
 
   if (format === 'docker') {
-    const dockerFiles = generateDockerFiles(config);
+    const dockerFiles = generateDockerFiles(config)
     return {
       filename: `${safeName}-docker.zip`,
       mimeType: 'application/zip',
@@ -52,12 +53,12 @@ export function createExportBundle(
           content,
         })),
       ],
-    };
+    }
   }
 
   if (format === 'railway') {
-    const railwayFiles = generateRailwayFiles(config);
-    const instructions = generateRailwayInstructions(config);
+    const railwayFiles = generateRailwayFiles(config)
+    const instructions = generateRailwayInstructions(config)
     return {
       filename: `${safeName}-railway.zip`,
       mimeType: 'application/zip',
@@ -69,12 +70,12 @@ export function createExportBundle(
         })),
         { name: 'DEPLOY.md', content: instructions },
       ],
-    };
+    }
   }
 
   if (format === 'v0') {
-    const v0Bundle = generateV0Bundle(config);
-    const dockerFiles = generateDockerFiles(config);
+    const v0Bundle = generateV0Bundle(config)
+    const dockerFiles = generateDockerFiles(config)
     return {
       filename: `${safeName}-v0.zip`,
       mimeType: 'application/zip',
@@ -89,8 +90,8 @@ export function createExportBundle(
         { name: 'V0_QUICKSTART.md', content: v0Bundle.quickstart },
         { name: 'V0_DEPLOYMENT.md', content: v0Bundle.readme },
       ],
-    };
+    }
   }
 
-  throw new Error(`Unknown export format: ${format}`);
+  throw new Error(`Unknown export format: ${format}`)
 }

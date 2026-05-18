@@ -15,10 +15,7 @@
  * - Backslashes → escaped backslash (must come first)
  */
 export function escapeTemplateLiteral(str: string): string {
-  return str
-    .replace(/\\/g, '\\\\')
-    .replace(/`/g, '\\`')
-    .replace(/\$\{/g, '\\${');
+  return str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${')
 }
 
 /**
@@ -36,7 +33,7 @@ export function escapeDoubleQuoted(str: string): string {
     .replace(/"/g, '\\"')
     .replace(/\n/g, '\\n')
     .replace(/\r/g, '\\r')
-    .replace(/\t/g, '\\t');
+    .replace(/\t/g, '\\t')
 }
 
 /**
@@ -51,14 +48,14 @@ export function sanitizeIdentifier(str: string): string {
     .replace(/\s+/g, '_')
     .replace(/[^a-z0-9_]/g, '')
     .replace(/_+/g, '_')
-    .replace(/^_|_$/g, '');
+    .replace(/^_|_$/g, '')
 
   // Ensure starts with a letter (prefix with underscore if needed)
   if (!cleaned || /^[0-9]/.test(cleaned)) {
-    return `_${cleaned || 'unnamed'}`;
+    return `_${cleaned || 'unnamed'}`
   }
 
-  return cleaned;
+  return cleaned
 }
 
 /**
@@ -69,5 +66,5 @@ export function escapeMarkdown(str: string): string {
   return str
     .replace(/[\\`*_{}[\]()#+\-.!|~>]/g, '\\$&')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/>/g, '&gt;')
 }

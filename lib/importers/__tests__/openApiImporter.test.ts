@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { parseOpenApiSpec } from '../openApiImporter';
+import { describe, expect, it } from 'vitest'
+import { parseOpenApiSpec } from '../openApiImporter'
 
 const minimalSpec = {
   openapi: '3.0.0',
@@ -65,65 +65,65 @@ const minimalSpec = {
       },
     },
   },
-};
+}
 
 describe('openApiImporter', () => {
   describe('parseOpenApiSpec - JSON', () => {
     it('parses a valid OpenAPI 3.0 spec', () => {
-      const result = parseOpenApiSpec(JSON.stringify(minimalSpec));
-      expect(result.success).toBe(true);
-      expect(result.tools.length).toBe(4);
-      expect(result.errors).toHaveLength(0);
-    });
+      const result = parseOpenApiSpec(JSON.stringify(minimalSpec))
+      expect(result.success).toBe(true)
+      expect(result.tools.length).toBe(4)
+      expect(result.errors).toHaveLength(0)
+    })
 
     it('extracts tool names from operationId', () => {
-      const result = parseOpenApiSpec(JSON.stringify(minimalSpec));
-      const names = result.tools.map(t => t.name);
-      expect(names).toContain('list_users');
-      expect(names).toContain('create_user');
-      expect(names).toContain('get_user');
-    });
+      const result = parseOpenApiSpec(JSON.stringify(minimalSpec))
+      const names = result.tools.map((t) => t.name)
+      expect(names).toContain('list_users')
+      expect(names).toContain('create_user')
+      expect(names).toContain('get_user')
+    })
 
     it('generates tool name from method+path when no operationId', () => {
-      const result = parseOpenApiSpec(JSON.stringify(minimalSpec));
+      const result = parseOpenApiSpec(JSON.stringify(minimalSpec))
       // The delete operation has no operationId
-      const deleteTool = result.tools.find(t => t.name.includes('delete'));
-      expect(deleteTool).toBeDefined();
-    });
+      const deleteTool = result.tools.find((t) => t.name.includes('delete'))
+      expect(deleteTool).toBeDefined()
+    })
 
     it('extracts query parameters', () => {
-      const result = parseOpenApiSpec(JSON.stringify(minimalSpec));
-      const listTool = result.tools.find(t => t.name === 'list_users')!;
-      expect(listTool.parameters).toHaveLength(1);
-      expect(listTool.parameters[0].name).toBe('limit');
-      expect(listTool.parameters[0].type).toBe('number');
-    });
+      const result = parseOpenApiSpec(JSON.stringify(minimalSpec))
+      const listTool = result.tools.find((t) => t.name === 'list_users')!
+      expect(listTool.parameters).toHaveLength(1)
+      expect(listTool.parameters[0].name).toBe('limit')
+      expect(listTool.parameters[0].type).toBe('number')
+    })
 
     it('extracts request body properties', () => {
-      const result = parseOpenApiSpec(JSON.stringify(minimalSpec));
-      const createTool = result.tools.find(t => t.name === 'create_user')!;
-      expect(createTool.parameters.length).toBe(2);
-      const nameParam = createTool.parameters.find(p => p.name === 'name')!;
-      expect(nameParam.type).toBe('string');
-      expect(nameParam.required).toBe(true);
-      const ageParam = createTool.parameters.find(p => p.name === 'age')!;
-      expect(ageParam.type).toBe('number');
-      expect(ageParam.required).toBe(false);
-    });
+      const result = parseOpenApiSpec(JSON.stringify(minimalSpec))
+      const createTool = result.tools.find((t) => t.name === 'create_user')!
+      expect(createTool.parameters.length).toBe(2)
+      const nameParam = createTool.parameters.find((p) => p.name === 'name')!
+      expect(nameParam.type).toBe('string')
+      expect(nameParam.required).toBe(true)
+      const ageParam = createTool.parameters.find((p) => p.name === 'age')!
+      expect(ageParam.type).toBe('number')
+      expect(ageParam.required).toBe(false)
+    })
 
     it('selects appropriate icons based on path content', () => {
-      const result = parseOpenApiSpec(JSON.stringify(minimalSpec));
+      const result = parseOpenApiSpec(JSON.stringify(minimalSpec))
       // /users path matches 'user' keyword → Users icon takes priority over method-based icon
-      const deleteTool = result.tools.find(t => t.name.includes('delete'))!;
-      expect(deleteTool.icon).toBe('Users');
-    });
+      const deleteTool = result.tools.find((t) => t.name.includes('delete'))!
+      expect(deleteTool.icon).toBe('Users')
+    })
 
     it('assigns unique IDs to each tool', () => {
-      const result = parseOpenApiSpec(JSON.stringify(minimalSpec));
-      const ids = result.tools.map(t => t.id);
-      expect(new Set(ids).size).toBe(ids.length);
-    });
-  });
+      const result = parseOpenApiSpec(JSON.stringify(minimalSpec))
+      const ids = result.tools.map((t) => t.id)
+      expect(new Set(ids).size).toBe(ids.length)
+    })
+  })
 
   describe('parseOpenApiSpec - Swagger 2.0', () => {
     it('parses a Swagger 2.0 spec', () => {
@@ -135,40 +135,36 @@ describe('openApiImporter', () => {
             get: {
               operationId: 'getItems',
               summary: 'Get items',
-              parameters: [
-                { name: 'q', in: 'query', type: 'string', required: false },
-              ],
+              parameters: [{ name: 'q', in: 'query', type: 'string', required: false }],
             },
           },
         },
-      };
-      const result = parseOpenApiSpec(JSON.stringify(swagger));
-      expect(result.success).toBe(true);
-      expect(result.tools).toHaveLength(1);
-      expect(result.tools[0].parameters[0].type).toBe('string');
-    });
-  });
+      }
+      const result = parseOpenApiSpec(JSON.stringify(swagger))
+      expect(result.success).toBe(true)
+      expect(result.tools).toHaveLength(1)
+      expect(result.tools[0].parameters[0].type).toBe('string')
+    })
+  })
 
   describe('parseOpenApiSpec - error cases', () => {
     it('returns error for invalid JSON/YAML', () => {
-      const result = parseOpenApiSpec('not valid json {{{');
-      expect(result.success).toBe(false);
-      expect(result.errors.length).toBeGreaterThan(0);
-    });
+      const result = parseOpenApiSpec('not valid json {{{')
+      expect(result.success).toBe(false)
+      expect(result.errors.length).toBeGreaterThan(0)
+    })
 
     it('returns error when missing openapi/swagger field', () => {
-      const result = parseOpenApiSpec(JSON.stringify({ paths: {} }));
-      expect(result.success).toBe(false);
-      expect(result.errors[0]).toContain('missing');
-    });
+      const result = parseOpenApiSpec(JSON.stringify({ paths: {} }))
+      expect(result.success).toBe(false)
+      expect(result.errors[0]).toContain('missing')
+    })
 
     it('returns error when no paths defined', () => {
-      const result = parseOpenApiSpec(
-        JSON.stringify({ openapi: '3.0.0', paths: {} })
-      );
-      expect(result.success).toBe(false);
-      expect(result.errors[0]).toContain('No API paths');
-    });
+      const result = parseOpenApiSpec(JSON.stringify({ openapi: '3.0.0', paths: {} }))
+      expect(result.success).toBe(false)
+      expect(result.errors[0]).toContain('No API paths')
+    })
 
     it('returns error when no valid operations found', () => {
       const result = parseOpenApiSpec(
@@ -176,9 +172,9 @@ describe('openApiImporter', () => {
           openapi: '3.0.0',
           paths: { '/test': { summary: 'not an operation' } },
         })
-      );
-      expect(result.success).toBe(false);
-    });
+      )
+      expect(result.success).toBe(false)
+    })
 
     it('truncates overly long descriptions', () => {
       const longSpec = {
@@ -192,12 +188,12 @@ describe('openApiImporter', () => {
             },
           },
         },
-      };
-      const result = parseOpenApiSpec(JSON.stringify(longSpec));
-      expect(result.tools[0].description.length).toBeLessThanOrEqual(200);
-      expect(result.tools[0].description).toContain('...');
-    });
-  });
+      }
+      const result = parseOpenApiSpec(JSON.stringify(longSpec))
+      expect(result.tools[0].description.length).toBeLessThanOrEqual(200)
+      expect(result.tools[0].description).toContain('...')
+    })
+  })
 
   describe('parseOpenApiSpec - $ref resolution', () => {
     it('resolves $ref in request body schema', () => {
@@ -232,13 +228,13 @@ describe('openApiImporter', () => {
             },
           },
         },
-      };
-      const result = parseOpenApiSpec(JSON.stringify(specWithRef));
-      expect(result.success).toBe(true);
-      const tool = result.tools[0];
-      expect(tool.parameters.length).toBe(2);
-      expect(tool.parameters.find(p => p.name === 'name')!.required).toBe(true);
-    });
+      }
+      const result = parseOpenApiSpec(JSON.stringify(specWithRef))
+      expect(result.success).toBe(true)
+      const tool = result.tools[0]
+      expect(tool.parameters.length).toBe(2)
+      expect(tool.parameters.find((p) => p.name === 'name')!.required).toBe(true)
+    })
 
     it('resolves nested $ref chains', () => {
       const spec = {
@@ -273,12 +269,12 @@ describe('openApiImporter', () => {
             },
           },
         },
-      };
-      const result = parseOpenApiSpec(JSON.stringify(spec));
-      expect(result.success).toBe(true);
-      expect(result.tools[0].parameters.length).toBe(2);
-      expect(result.tools[0].parameters.find(p => p.name === 'product')!.required).toBe(true);
-    });
+      }
+      const result = parseOpenApiSpec(JSON.stringify(spec))
+      expect(result.success).toBe(true)
+      expect(result.tools[0].parameters.length).toBe(2)
+      expect(result.tools[0].parameters.find((p) => p.name === 'product')!.required).toBe(true)
+    })
 
     it('handles circular $ref without infinite loop', () => {
       const spec = {
@@ -311,11 +307,11 @@ describe('openApiImporter', () => {
             },
           },
         },
-      };
+      }
       // Should not hang — circular ref is handled gracefully
-      const result = parseOpenApiSpec(JSON.stringify(spec));
-      expect(result.success).toBe(true);
-    });
+      const result = parseOpenApiSpec(JSON.stringify(spec))
+      expect(result.success).toBe(true)
+    })
 
     it('returns original schema when $ref target is missing', () => {
       const spec = {
@@ -338,12 +334,12 @@ describe('openApiImporter', () => {
           },
         },
         components: { schemas: {} },
-      };
-      const result = parseOpenApiSpec(JSON.stringify(spec));
+      }
+      const result = parseOpenApiSpec(JSON.stringify(spec))
       // Should not crash, tool is still created
-      expect(result.success).toBe(true);
-    });
-  });
+      expect(result.success).toBe(true)
+    })
+  })
 
   describe('parseOpenApiSpec - YAML', () => {
     it('parses a valid OpenAPI YAML spec', () => {
@@ -363,14 +359,14 @@ paths:
           required: false
           schema:
             type: integer
-`;
-      const result = parseOpenApiSpec(yamlSpec);
-      expect(result.success).toBe(true);
-      expect(result.tools).toHaveLength(1);
-      expect(result.tools[0].name).toBe('list_pets');
-      expect(result.tools[0].parameters[0].name).toBe('limit');
-      expect(result.tools[0].parameters[0].type).toBe('number');
-    });
+`
+      const result = parseOpenApiSpec(yamlSpec)
+      expect(result.success).toBe(true)
+      expect(result.tools).toHaveLength(1)
+      expect(result.tools[0].name).toBe('list_pets')
+      expect(result.tools[0].parameters[0].name).toBe('limit')
+      expect(result.tools[0].parameters[0].type).toBe('number')
+    })
 
     it('parses YAML with $ref and components', () => {
       const yamlSpec = `
@@ -402,18 +398,18 @@ components:
           description: Widget weight
       required:
         - color
-`;
-      const result = parseOpenApiSpec(yamlSpec);
-      expect(result.success).toBe(true);
-      expect(result.tools[0].parameters).toHaveLength(2);
-      expect(result.tools[0].parameters.find(p => p.name === 'color')!.required).toBe(true);
-    });
+`
+      const result = parseOpenApiSpec(yamlSpec)
+      expect(result.success).toBe(true)
+      expect(result.tools[0].parameters).toHaveLength(2)
+      expect(result.tools[0].parameters.find((p) => p.name === 'color')!.required).toBe(true)
+    })
 
     it('returns descriptive error for invalid YAML', () => {
-      const result = parseOpenApiSpec('  :\n  bad: [yaml:');
-      expect(result.success).toBe(false);
-      expect(result.errors[0]).toContain('Failed to parse');
-    });
+      const result = parseOpenApiSpec('  :\n  bad: [yaml:')
+      expect(result.success).toBe(false)
+      expect(result.errors[0]).toContain('Failed to parse')
+    })
 
     it('parses Swagger 2.0 YAML', () => {
       const yamlSpec = `
@@ -431,11 +427,11 @@ paths:
           in: query
           type: string
           required: false
-`;
-      const result = parseOpenApiSpec(yamlSpec);
-      expect(result.success).toBe(true);
-      expect(result.tools).toHaveLength(1);
-      expect(result.tools[0].parameters[0].type).toBe('string');
-    });
-  });
-});
+`
+      const result = parseOpenApiSpec(yamlSpec)
+      expect(result.success).toBe(true)
+      expect(result.tools).toHaveLength(1)
+      expect(result.tools[0].parameters[0].type).toBe('string')
+    })
+  })
+})

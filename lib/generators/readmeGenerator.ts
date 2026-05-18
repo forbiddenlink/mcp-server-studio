@@ -1,73 +1,76 @@
-import { MCPServerConfig, MCPParameter } from '../types';
+import type { MCPParameter, MCPServerConfig } from '../types'
 
 /**
  * Converts a name to snake_case for identifiers
  */
 function toSnakeCase(name: string): string {
-  return name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+  return name
+    .toLowerCase()
+    .replace(/\s+/g, '_')
+    .replace(/[^a-z0-9_]/g, '')
 }
 
 /**
  * Generates constraint documentation for a parameter
  */
 function generateConstraintDocs(p: MCPParameter): string {
-  const constraints: string[] = [];
+  const constraints: string[] = []
 
   // Default value
   if (p.default !== undefined) {
-    const defaultStr = typeof p.default === 'string' ? p.default : JSON.stringify(p.default);
-    constraints.push(`Default: \`${defaultStr}\``);
+    const defaultStr = typeof p.default === 'string' ? p.default : JSON.stringify(p.default)
+    constraints.push(`Default: \`${defaultStr}\``)
   }
 
   // Enum values
   if (p.enum && p.enum.length > 0) {
-    const values = p.enum.map(v => `\`${v}\``).join(', ');
-    constraints.push(`Allowed values: ${values}`);
+    const values = p.enum.map((v) => `\`${v}\``).join(', ')
+    constraints.push(`Allowed values: ${values}`)
   }
 
   // String format
   if (p.format) {
-    constraints.push(`Format: ${p.format}`);
+    constraints.push(`Format: ${p.format}`)
   }
 
   // String length constraints
   if (p.minLength !== undefined && p.maxLength !== undefined) {
-    constraints.push(`Length: ${p.minLength}-${p.maxLength}`);
+    constraints.push(`Length: ${p.minLength}-${p.maxLength}`)
   } else if (p.minLength !== undefined) {
-    constraints.push(`Min length: ${p.minLength}`);
+    constraints.push(`Min length: ${p.minLength}`)
   } else if (p.maxLength !== undefined) {
-    constraints.push(`Max length: ${p.maxLength}`);
+    constraints.push(`Max length: ${p.maxLength}`)
   }
 
   // String pattern
   if (p.pattern) {
-    constraints.push(`Pattern: \`${p.pattern}\``);
+    constraints.push(`Pattern: \`${p.pattern}\``)
   }
 
   // Number range
   if (p.minimum !== undefined && p.maximum !== undefined) {
-    constraints.push(`Range: ${p.minimum}-${p.maximum}`);
+    constraints.push(`Range: ${p.minimum}-${p.maximum}`)
   } else if (p.minimum !== undefined) {
-    constraints.push(`Min: ${p.minimum}`);
+    constraints.push(`Min: ${p.minimum}`)
   } else if (p.maximum !== undefined) {
-    constraints.push(`Max: ${p.maximum}`);
+    constraints.push(`Max: ${p.maximum}`)
   }
 
   // Array items constraints
   if (p.minItems !== undefined && p.maxItems !== undefined) {
-    constraints.push(`Items: ${p.minItems}-${p.maxItems}`);
+    constraints.push(`Items: ${p.minItems}-${p.maxItems}`)
   } else if (p.minItems !== undefined) {
-    constraints.push(`Min items: ${p.minItems}`);
+    constraints.push(`Min items: ${p.minItems}`)
   } else if (p.maxItems !== undefined) {
-    constraints.push(`Max items: ${p.maxItems}`);
+    constraints.push(`Max items: ${p.maxItems}`)
   }
 
   // Unique items
   if (p.uniqueItems) {
-    constraints.push(`Unique items required`);
+    constraints.push(`Unique items required`)
   }
 
-  return constraints.length > 0 ? ` (${constraints.join(', ')})` : '';
+  return constraints.length > 0 ? ` (${constraints.join(', ')})` : ''
 }
 
 /**
@@ -75,25 +78,25 @@ function generateConstraintDocs(p: MCPParameter): string {
  */
 function generateParameterDocs(parameters: MCPParameter[]): string {
   if (parameters.length === 0) {
-    return '*No parameters*';
+    return '*No parameters*'
   }
 
   return parameters
-    .map(p => {
-      const requiredTag = p.required ? '**required**' : '*optional*';
-      const constraintDocs = generateConstraintDocs(p);
-      return `- \`${p.name}\` (${p.type}, ${requiredTag}): ${p.description}${constraintDocs}`;
+    .map((p) => {
+      const requiredTag = p.required ? '**required**' : '*optional*'
+      const constraintDocs = generateConstraintDocs(p)
+      return `- \`${p.name}\` (${p.type}, ${requiredTag}): ${p.description}${constraintDocs}`
     })
-    .join('\n');
+    .join('\n')
 }
 
 /**
  * Generates Docker documentation section
  */
 function generateDockerDocs(config: MCPServerConfig): string {
-  const port = config.httpPort || 3000;
-  const isHttp = config.transport === 'http';
-  const imageName = config.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+  const port = config.httpPort || 3000
+  const isHttp = config.transport === 'http'
+  const imageName = config.name.toLowerCase().replace(/[^a-z0-9]/g, '-')
 
   const dockerBuildRun = isHttp
     ? `\`\`\`bash
@@ -118,7 +121,7 @@ docker build -t ${imageName} .
 
 # Run interactively (stdio transport)
 docker run -it --rm ${imageName}
-\`\`\``;
+\`\`\``
 
   const dockerCompose = isHttp
     ? `Or use Docker Compose:
@@ -133,7 +136,7 @@ docker-compose logs -f
 # Stop the server
 docker-compose down
 \`\`\``
-    : '';
+    : ''
 
   return `## Docker
 
@@ -151,7 +154,7 @@ To deploy to Railway:
 2. Connect your repo to Railway
 3. Railway will automatically detect the Dockerfile and deploy
 ${isHttp ? `4. Your server will be available at the provided Railway URL` : ''}
-`;
+`
 }
 
 /**
@@ -159,8 +162,8 @@ ${isHttp ? `4. Your server will be available at the provided Railway URL` : ''}
  */
 export function generateReadme(config: MCPServerConfig): string {
   const toolDocs = (config.tools || [])
-    .map(tool => {
-      const toolId = toSnakeCase(tool.name);
+    .map((tool) => {
+      const toolId = toSnakeCase(tool.name)
       return `### ${tool.icon} ${tool.name}
 
 **ID:** \`${toolId}\`
@@ -169,25 +172,25 @@ ${tool.description}
 
 **Parameters:**
 ${generateParameterDocs(tool.parameters)}
-`;
+`
     })
-    .join('\n');
+    .join('\n')
 
   const resourceDocs = (config.resources || [])
-    .map(resource => {
+    .map((resource) => {
       return `### ${resource.name}
 
 **URI:** \`${resource.uri}\`
 **MIME Type:** \`${resource.mimeType}\`
 
 ${resource.description}
-`;
+`
     })
-    .join('\n');
+    .join('\n')
 
   const promptDocs = (config.prompts || [])
-    .map(prompt => {
-      const promptId = toSnakeCase(prompt.name);
+    .map((prompt) => {
+      const promptId = toSnakeCase(prompt.name)
       return `### ${prompt.name}
 
 **ID:** \`${promptId}\`
@@ -196,15 +199,15 @@ ${prompt.description}
 
 **Arguments:**
 ${generateParameterDocs(prompt.arguments)}
-`;
+`
     })
-    .join('\n');
+    .join('\n')
 
-  const hasTools = (config.tools || []).length > 0;
-  const hasResources = (config.resources || []).length > 0;
-  const hasPrompts = (config.prompts || []).length > 0;
-  const isHttp = config.transport === 'http';
-  const port = config.httpPort || 3000;
+  const hasTools = (config.tools || []).length > 0
+  const hasResources = (config.resources || []).length > 0
+  const hasPrompts = (config.prompts || []).length > 0
+  const isHttp = config.transport === 'http'
+  const port = config.httpPort || 3000
 
   // Transport-specific configuration
   const configSection = isHttp
@@ -253,7 +256,7 @@ Or for development:
     }
   }
 }
-\`\`\``;
+\`\`\``
 
   return `# ${config.name}
 
@@ -270,17 +273,29 @@ npm run build
 
 ${configSection}
 
-${hasTools ? `## Available Tools
+${
+  hasTools
+    ? `## Available Tools
 
-${toolDocs}` : ''}
+${toolDocs}`
+    : ''
+}
 
-${hasResources ? `## Available Resources
+${
+  hasResources
+    ? `## Available Resources
 
-${resourceDocs}` : ''}
+${resourceDocs}`
+    : ''
+}
 
-${hasPrompts ? `## Available Prompts
+${
+  hasPrompts
+    ? `## Available Prompts
 
-${promptDocs}` : ''}
+${promptDocs}`
+    : ''
+}
 
 ## Development
 
@@ -308,7 +323,7 @@ ${generateDockerDocs(config)}
 ## License
 
 MIT
-`;
+`
 }
 
 /**
@@ -322,22 +337,22 @@ export function generateClaudeDesktopConfig(config: MCPServerConfig): string {
         args: ['./build/index.js'],
       },
     },
-  };
+  }
 
-  return JSON.stringify(configObj, null, 2);
+  return JSON.stringify(configObj, null, 2)
 }
 
 /**
  * Generates package.json for the MCP server
  */
 export function generatePackageJson(config: MCPServerConfig): string {
-  const isHttp = config.transport === 'http';
+  const isHttp = config.transport === 'http'
 
   // Base dependencies
   const dependencies: Record<string, string> = {
     '@modelcontextprotocol/sdk': '^1.2.0',
     zod: '^3.24.0',
-  };
+  }
 
   // Base devDependencies
   const devDependencies: Record<string, string> = {
@@ -345,14 +360,14 @@ export function generatePackageJson(config: MCPServerConfig): string {
     typescript: '^5.7.0',
     tsx: '^4.19.0',
     eslint: '^9.0.0',
-  };
+  }
 
   // Add HTTP transport dependencies
   if (isHttp) {
-    dependencies['express'] = '^4.21.0';
-    dependencies['cors'] = '^2.8.5';
-    devDependencies['@types/express'] = '^4.17.21';
-    devDependencies['@types/cors'] = '^2.8.17';
+    dependencies.express = '^4.21.0'
+    dependencies.cors = '^2.8.5'
+    devDependencies['@types/express'] = '^4.17.21'
+    devDependencies['@types/cors'] = '^2.8.17'
   }
 
   const packageObj = {
@@ -378,9 +393,9 @@ export function generatePackageJson(config: MCPServerConfig): string {
     },
     keywords: ['mcp', 'model-context-protocol', 'ai', 'llm'],
     license: 'MIT',
-  };
+  }
 
-  return JSON.stringify(packageObj, null, 2);
+  return JSON.stringify(packageObj, null, 2)
 }
 
 /**
@@ -404,9 +419,9 @@ export function generateTsConfig(): string {
     },
     include: ['src/**/*'],
     exclude: ['node_modules', 'build'],
-  };
+  }
 
-  return JSON.stringify(tsconfigObj, null, 2);
+  return JSON.stringify(tsconfigObj, null, 2)
 }
 
 /**
@@ -418,5 +433,5 @@ export function generateProjectFiles(config: MCPServerConfig): Record<string, st
     'package.json': generatePackageJson(config),
     'tsconfig.json': generateTsConfig(),
     'claude_desktop_config.json': generateClaudeDesktopConfig(config),
-  };
+  }
 }

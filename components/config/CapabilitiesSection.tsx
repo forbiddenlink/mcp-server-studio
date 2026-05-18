@@ -1,18 +1,18 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { ChevronDown, Sparkles, MessageSquare, Clock } from 'lucide-react';
-import { SamplingConfig, ElicitationConfig, TasksConfig } from '@/lib/types';
-import { SamplingConfigPanel } from './SamplingConfigPanel';
-import { ElicitationConfigPanel } from './ElicitationConfigPanel';
+import { ChevronDown, Clock, MessageSquare, Sparkles } from 'lucide-react'
+import { useState } from 'react'
+import type { ElicitationConfig, SamplingConfig, TasksConfig } from '@/lib/types'
+import { ElicitationConfigPanel } from './ElicitationConfigPanel'
+import { SamplingConfigPanel } from './SamplingConfigPanel'
 
 interface CapabilitiesSectionProps {
-  sampling?: SamplingConfig;
-  elicitation?: ElicitationConfig;
-  tasks?: TasksConfig;
-  onSamplingChange: (config: SamplingConfig | undefined) => void;
-  onElicitationChange: (config: ElicitationConfig | undefined) => void;
-  onTasksChange: (config: TasksConfig | undefined) => void;
+  sampling?: SamplingConfig
+  elicitation?: ElicitationConfig
+  tasks?: TasksConfig
+  onSamplingChange: (config: SamplingConfig | undefined) => void
+  onElicitationChange: (config: ElicitationConfig | undefined) => void
+  onTasksChange: (config: TasksConfig | undefined) => void
 }
 
 const DEFAULT_SAMPLING: SamplingConfig = {
@@ -20,19 +20,19 @@ const DEFAULT_SAMPLING: SamplingConfig = {
   maxTokens: 1024,
   temperature: 0.7,
   modelHint: 'balanced',
-};
+}
 
 const DEFAULT_ELICITATION: ElicitationConfig = {
   enabled: true,
   mode: 'form',
   message: '',
   formFields: [],
-};
+}
 
 const DEFAULT_TASKS: TasksConfig = {
   enabled: true,
   ttl: 300000, // 5 minutes
-};
+}
 
 export function CapabilitiesSection({
   sampling,
@@ -44,33 +44,35 @@ export function CapabilitiesSection({
 }: CapabilitiesSectionProps) {
   const [isExpanded, setIsExpanded] = useState(
     Boolean(sampling?.enabled || elicitation?.enabled || tasks?.enabled)
-  );
+  )
 
   const handleSamplingToggle = (enabled: boolean) => {
     if (enabled) {
-      onSamplingChange(sampling || DEFAULT_SAMPLING);
+      onSamplingChange(sampling || DEFAULT_SAMPLING)
     } else {
-      onSamplingChange(sampling ? { ...sampling, enabled: false } : undefined);
+      onSamplingChange(sampling ? { ...sampling, enabled: false } : undefined)
     }
-  };
+  }
 
   const handleElicitationToggle = (enabled: boolean) => {
     if (enabled) {
-      onElicitationChange(elicitation || DEFAULT_ELICITATION);
+      onElicitationChange(elicitation || DEFAULT_ELICITATION)
     } else {
-      onElicitationChange(elicitation ? { ...elicitation, enabled: false } : undefined);
+      onElicitationChange(elicitation ? { ...elicitation, enabled: false } : undefined)
     }
-  };
+  }
 
   const handleTasksToggle = (enabled: boolean) => {
     if (enabled) {
-      onTasksChange(tasks || DEFAULT_TASKS);
+      onTasksChange(tasks || DEFAULT_TASKS)
     } else {
-      onTasksChange(tasks ? { ...tasks, enabled: false } : undefined);
+      onTasksChange(tasks ? { ...tasks, enabled: false } : undefined)
     }
-  };
+  }
 
-  const enabledCount = [sampling?.enabled, elicitation?.enabled, tasks?.enabled].filter(Boolean).length;
+  const enabledCount = [sampling?.enabled, elicitation?.enabled, tasks?.enabled].filter(
+    Boolean
+  ).length
 
   return (
     <div className="space-y-4">
@@ -120,10 +122,7 @@ export function CapabilitiesSection({
             </p>
             {sampling?.enabled && (
               <div className="pt-3 border-t border-[var(--border-default)]">
-                <SamplingConfigPanel
-                  config={sampling}
-                  onChange={onSamplingChange}
-                />
+                <SamplingConfigPanel config={sampling} onChange={onSamplingChange} />
               </div>
             )}
           </div>
@@ -149,10 +148,7 @@ export function CapabilitiesSection({
             </p>
             {elicitation?.enabled && (
               <div className="pt-3 border-t border-[var(--border-default)]">
-                <ElicitationConfigPanel
-                  config={elicitation}
-                  onChange={onElicitationChange}
-                />
+                <ElicitationConfigPanel config={elicitation} onChange={onElicitationChange} />
               </div>
             )}
           </div>
@@ -191,7 +187,9 @@ export function CapabilitiesSection({
                     min={0}
                     step={1000}
                     value={tasks.ttl ?? 300000}
-                    onChange={(e) => onTasksChange({ ...tasks, ttl: parseInt(e.target.value) || 300000 })}
+                    onChange={(e) =>
+                      onTasksChange({ ...tasks, ttl: parseInt(e.target.value, 10) || 300000 })
+                    }
                     placeholder="300000"
                     className="w-full px-3 py-2 text-sm rounded-md bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--text-primary)]"
                   />
@@ -205,5 +203,5 @@ export function CapabilitiesSection({
         </div>
       )}
     </div>
-  );
+  )
 }

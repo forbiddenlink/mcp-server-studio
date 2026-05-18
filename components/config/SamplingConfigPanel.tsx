@@ -1,26 +1,32 @@
-'use client';
+'use client'
 
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { SamplingConfig } from '@/lib/types';
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import type { SamplingConfig } from '@/lib/types'
 
 interface SamplingConfigPanelProps {
-  config: SamplingConfig;
-  onChange: (config: SamplingConfig) => void;
+  config: SamplingConfig
+  onChange: (config: SamplingConfig) => void
 }
 
 const MODEL_HINTS = [
   { value: 'fastest', label: 'Fastest', description: 'Prioritize speed' },
   { value: 'balanced', label: 'Balanced', description: 'Balance speed and quality' },
   { value: 'smartest', label: 'Smartest', description: 'Prioritize quality' },
-];
+]
 
 export function SamplingConfigPanel({ config, onChange }: SamplingConfigPanelProps) {
   const handleChange = (updates: Partial<SamplingConfig>) => {
-    onChange({ ...config, ...updates });
-  };
+    onChange({ ...config, ...updates })
+  }
 
   return (
     <div className="space-y-4">
@@ -35,7 +41,7 @@ export function SamplingConfigPanel({ config, onChange }: SamplingConfigPanelPro
           min={1}
           max={100000}
           value={config.maxTokens}
-          onChange={(e) => handleChange({ maxTokens: parseInt(e.target.value) || 1024 })}
+          onChange={(e) => handleChange({ maxTokens: parseInt(e.target.value, 10) || 1024 })}
           placeholder="1024"
           className="bg-[var(--bg-surface)] border-[var(--border-default)]"
         />
@@ -76,13 +82,15 @@ export function SamplingConfigPanel({ config, onChange }: SamplingConfigPanelPro
         </Label>
         <Select
           value={config.modelHint || 'balanced'}
-          onValueChange={(value: 'fastest' | 'balanced' | 'smartest') => handleChange({ modelHint: value })}
+          onValueChange={(value: 'fastest' | 'balanced' | 'smartest') =>
+            handleChange({ modelHint: value })
+          }
         >
           <SelectTrigger className="bg-[var(--bg-surface)] border-[var(--border-default)]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="surface-overlay">
-            {MODEL_HINTS.map(hint => (
+            {MODEL_HINTS.map((hint) => (
               <SelectItem key={hint.value} value={hint.value}>
                 <div className="flex flex-col">
                   <span>{hint.label}</span>
@@ -115,5 +123,5 @@ export function SamplingConfigPanel({ config, onChange }: SamplingConfigPanelPro
         </p>
       </div>
     </div>
-  );
+  )
 }

@@ -1,27 +1,44 @@
-'use client';
+'use client'
 
-import { useStore } from '@/lib/store/useStore';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X, Plus, Trash2 } from 'lucide-react';
-import { useState } from 'react';
-import { MCPParameter, ParameterType, StringFormat, SamplingConfig, ElicitationConfig, TasksConfig } from '@/lib/types';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CapabilitiesSection } from './CapabilitiesSection';
+import { AnimatePresence, motion } from 'framer-motion'
+import { Plus, Trash2, X } from 'lucide-react'
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { useStore } from '@/lib/store/useStore'
+import type {
+  ElicitationConfig,
+  MCPParameter,
+  ParameterType,
+  SamplingConfig,
+  StringFormat,
+  TasksConfig,
+} from '@/lib/types'
+import { CapabilitiesSection } from './CapabilitiesSection'
 
 export function ToolConfigPanel() {
-  const { selectedNodeId, tools, updateTool, deleteTool, selectNode } = useStore();
-  const selectedTool = tools.find(tool => tool.id === selectedNodeId);
+  const { selectedNodeId, tools, updateTool, deleteTool, selectNode } = useStore()
+  const selectedTool = tools.find((tool) => tool.id === selectedNodeId)
 
-  const [name, setName] = useState(selectedTool?.name || '');
-  const [description, setDescription] = useState(selectedTool?.description || '');
-  const [parameters, setParameters] = useState<MCPParameter[]>(selectedTool?.parameters ? [...selectedTool.parameters] : []);
-  const [sampling, setSampling] = useState<SamplingConfig | undefined>(selectedTool?.sampling);
-  const [elicitation, setElicitation] = useState<ElicitationConfig | undefined>(selectedTool?.elicitation);
-  const [tasks, setTasks] = useState<TasksConfig | undefined>(selectedTool?.tasks);
+  const [name, setName] = useState(selectedTool?.name || '')
+  const [description, setDescription] = useState(selectedTool?.description || '')
+  const [parameters, setParameters] = useState<MCPParameter[]>(
+    selectedTool?.parameters ? [...selectedTool.parameters] : []
+  )
+  const [sampling, setSampling] = useState<SamplingConfig | undefined>(selectedTool?.sampling)
+  const [elicitation, setElicitation] = useState<ElicitationConfig | undefined>(
+    selectedTool?.elicitation
+  )
+  const [tasks, setTasks] = useState<TasksConfig | undefined>(selectedTool?.tasks)
 
   const handleSave = () => {
     if (selectedNodeId) {
@@ -32,9 +49,9 @@ export function ToolConfigPanel() {
         sampling,
         elicitation,
         tasks,
-      });
+      })
     }
-  };
+  }
 
   const handleAddParameter = () => {
     setParameters([
@@ -45,50 +62,50 @@ export function ToolConfigPanel() {
         description: '',
         required: false,
       },
-    ]);
-  };
+    ])
+  }
 
   const handleUpdateParameter = (index: number, updates: Partial<MCPParameter>) => {
-    const newParams = [...parameters];
-    const updatedParam = { ...newParams[index], ...updates };
+    const newParams = [...parameters]
+    const updatedParam = { ...newParams[index], ...updates }
 
     // Clear irrelevant constraints when type changes
     if (updates.type) {
       if (updates.type !== 'string') {
         // Clear string-specific constraints
-        delete updatedParam.format;
-        delete updatedParam.enum;
-        delete updatedParam.minLength;
-        delete updatedParam.maxLength;
-        delete updatedParam.pattern;
+        delete updatedParam.format
+        delete updatedParam.enum
+        delete updatedParam.minLength
+        delete updatedParam.maxLength
+        delete updatedParam.pattern
       }
       if (updates.type !== 'number') {
         // Clear number-specific constraints
-        delete updatedParam.minimum;
-        delete updatedParam.maximum;
+        delete updatedParam.minimum
+        delete updatedParam.maximum
       }
       if (updates.type !== 'array') {
         // Clear array-specific constraints
-        delete updatedParam.minItems;
-        delete updatedParam.maxItems;
-        delete updatedParam.uniqueItems;
+        delete updatedParam.minItems
+        delete updatedParam.maxItems
+        delete updatedParam.uniqueItems
       }
     }
 
-    newParams[index] = updatedParam;
-    setParameters(newParams);
-  };
+    newParams[index] = updatedParam
+    setParameters(newParams)
+  }
 
   const handleDeleteParameter = (index: number) => {
-    setParameters(parameters.filter((_, i) => i !== index));
-  };
+    setParameters(parameters.filter((_, i) => i !== index))
+  }
 
   const handleDelete = () => {
     if (selectedNodeId && confirm('Delete this tool?')) {
-      deleteTool(selectedNodeId);
-      selectNode(null);
+      deleteTool(selectedNodeId)
+      selectNode(null)
     }
-  };
+  }
 
   return (
     <AnimatePresence>
@@ -118,7 +135,9 @@ export function ToolConfigPanel() {
           <div className="flex-1 overflow-auto p-5 space-y-8">
             {/* Tool Name */}
             <div className="space-y-3">
-              <Label htmlFor="name" className="text-[var(--text-secondary)]">Tool Name</Label>
+              <Label htmlFor="name" className="text-[var(--text-secondary)]">
+                Tool Name
+              </Label>
               <Input
                 id="name"
                 value={name}
@@ -130,7 +149,9 @@ export function ToolConfigPanel() {
 
             {/* Tool Description */}
             <div className="space-y-3">
-              <Label htmlFor="description" className="text-[var(--text-secondary)]">Description</Label>
+              <Label htmlFor="description" className="text-[var(--text-secondary)]">
+                Description
+              </Label>
               <Textarea
                 id="description"
                 value={description}
@@ -159,12 +180,17 @@ export function ToolConfigPanel() {
               {parameters.length === 0 ? (
                 <div className="text-center py-8 border border-dashed border-[var(--border-default)] rounded-lg">
                   <p className="text-sm text-[var(--text-secondary)]">No parameters yet</p>
-                  <p className="text-xs text-[var(--text-tertiary)] mt-1">Click &quot;Add&quot; to add a parameter</p>
+                  <p className="text-xs text-[var(--text-tertiary)] mt-1">
+                    Click &quot;Add&quot; to add a parameter
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-0">
                   {parameters.map((param, index) => (
-                    <div key={index} className="py-5 border-t border-[var(--border-default)] first:border-t-0 first:pt-0 space-y-4">
+                    <div
+                      key={index}
+                      className="py-5 border-t border-[var(--border-default)] first:border-t-0 first:pt-0 space-y-4"
+                    >
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-medium text-[var(--text-tertiary)]">
                           Parameter {index + 1}
@@ -237,12 +263,12 @@ export function ToolConfigPanel() {
                               param.type === 'boolean'
                                 ? 'true or false'
                                 : param.type === 'array'
-                                ? '["item1", "item2"]'
-                                : param.type === 'object'
-                                ? '{"key": "value"}'
-                                : param.type === 'number'
-                                ? 'e.g., 42'
-                                : 'Default value'
+                                  ? '["item1", "item2"]'
+                                  : param.type === 'object'
+                                    ? '{"key": "value"}'
+                                    : param.type === 'number'
+                                      ? 'e.g., 42'
+                                      : 'Default value'
                             }
                             value={
                               param.default !== undefined
@@ -252,28 +278,34 @@ export function ToolConfigPanel() {
                                 : ''
                             }
                             onChange={(e) => {
-                              const value = e.target.value;
+                              const value = e.target.value
                               if (value === '') {
-                                handleUpdateParameter(index, { default: undefined });
+                                handleUpdateParameter(index, { default: undefined })
                               } else {
                                 // Parse based on type
-                                let parsedValue: string | number | boolean | unknown[] | Record<string, unknown> | undefined;
+                                let parsedValue:
+                                  | string
+                                  | number
+                                  | boolean
+                                  | unknown[]
+                                  | Record<string, unknown>
+                                  | undefined
                                 try {
                                   if (param.type === 'boolean') {
-                                    parsedValue = value.toLowerCase() === 'true';
+                                    parsedValue = value.toLowerCase() === 'true'
                                   } else if (param.type === 'number') {
-                                    const num = Number(value);
-                                    parsedValue = isNaN(num) ? value : num;
+                                    const num = Number(value)
+                                    parsedValue = Number.isNaN(num) ? value : num
                                   } else if (param.type === 'array' || param.type === 'object') {
-                                    parsedValue = JSON.parse(value);
+                                    parsedValue = JSON.parse(value)
                                   } else {
-                                    parsedValue = value;
+                                    parsedValue = value
                                   }
                                 } catch {
                                   // If parsing fails, store as string
-                                  parsedValue = value;
+                                  parsedValue = value
                                 }
-                                handleUpdateParameter(index, { default: parsedValue });
+                                handleUpdateParameter(index, { default: parsedValue })
                               }
                             }}
                             className="bg-[var(--bg-base)] border-[var(--border-default)]"
@@ -310,13 +342,17 @@ export function ToolConfigPanel() {
                               placeholder="Enum values (comma-separated)"
                               value={param.enum?.join(', ') || ''}
                               onChange={(e) => {
-                                const value = e.target.value;
+                                const value = e.target.value
                                 const enumValues = value
-                                  ? value.split(',').map((v) => v.trim()).filter(Boolean)
-                                  : undefined;
+                                  ? value
+                                      .split(',')
+                                      .map((v) => v.trim())
+                                      .filter(Boolean)
+                                  : undefined
                                 handleUpdateParameter(index, {
-                                  enum: enumValues && enumValues.length > 0 ? enumValues : undefined,
-                                });
+                                  enum:
+                                    enumValues && enumValues.length > 0 ? enumValues : undefined,
+                                })
                               }}
                               className="bg-[var(--bg-base)] border-[var(--border-default)]"
                             />
@@ -327,7 +363,8 @@ export function ToolConfigPanel() {
                                 value={param.minLength ?? ''}
                                 onChange={(e) =>
                                   handleUpdateParameter(index, {
-                                    minLength: e.target.value === '' ? undefined : Number(e.target.value),
+                                    minLength:
+                                      e.target.value === '' ? undefined : Number(e.target.value),
                                   })
                                 }
                                 className="bg-[var(--bg-base)] border-[var(--border-default)] flex-1"
@@ -338,7 +375,8 @@ export function ToolConfigPanel() {
                                 value={param.maxLength ?? ''}
                                 onChange={(e) =>
                                   handleUpdateParameter(index, {
-                                    maxLength: e.target.value === '' ? undefined : Number(e.target.value),
+                                    maxLength:
+                                      e.target.value === '' ? undefined : Number(e.target.value),
                                   })
                                 }
                                 className="bg-[var(--bg-base)] border-[var(--border-default)] flex-1"
@@ -370,7 +408,8 @@ export function ToolConfigPanel() {
                                 value={param.minimum ?? ''}
                                 onChange={(e) =>
                                   handleUpdateParameter(index, {
-                                    minimum: e.target.value === '' ? undefined : Number(e.target.value),
+                                    minimum:
+                                      e.target.value === '' ? undefined : Number(e.target.value),
                                   })
                                 }
                                 className="bg-[var(--bg-base)] border-[var(--border-default)] flex-1"
@@ -381,7 +420,8 @@ export function ToolConfigPanel() {
                                 value={param.maximum ?? ''}
                                 onChange={(e) =>
                                   handleUpdateParameter(index, {
-                                    maximum: e.target.value === '' ? undefined : Number(e.target.value),
+                                    maximum:
+                                      e.target.value === '' ? undefined : Number(e.target.value),
                                   })
                                 }
                                 className="bg-[var(--bg-base)] border-[var(--border-default)] flex-1"
@@ -403,7 +443,8 @@ export function ToolConfigPanel() {
                                 value={param.minItems ?? ''}
                                 onChange={(e) =>
                                   handleUpdateParameter(index, {
-                                    minItems: e.target.value === '' ? undefined : Number(e.target.value),
+                                    minItems:
+                                      e.target.value === '' ? undefined : Number(e.target.value),
                                   })
                                 }
                                 className="bg-[var(--bg-base)] border-[var(--border-default)] flex-1"
@@ -414,7 +455,8 @@ export function ToolConfigPanel() {
                                 value={param.maxItems ?? ''}
                                 onChange={(e) =>
                                   handleUpdateParameter(index, {
-                                    maxItems: e.target.value === '' ? undefined : Number(e.target.value),
+                                    maxItems:
+                                      e.target.value === '' ? undefined : Number(e.target.value),
                                   })
                                 }
                                 className="bg-[var(--bg-base)] border-[var(--border-default)] flex-1"
@@ -455,7 +497,10 @@ export function ToolConfigPanel() {
 
           {/* Footer Actions */}
           <div className="p-5 border-t border-[var(--border-default)] space-y-3">
-            <Button onClick={handleSave} className="w-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white border-0 transition-colors">
+            <Button
+              onClick={handleSave}
+              className="w-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white border-0 transition-colors"
+            >
               Save Changes
             </Button>
             <Button
@@ -470,5 +515,5 @@ export function ToolConfigPanel() {
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

@@ -1,32 +1,32 @@
-'use client';
+'use client'
 
-import { memo } from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
-import { MCPTool } from '@/lib/types';
-import { useStore } from '@/lib/store/useStore';
-import { cn } from '@/lib/utils';
+import { Handle, type NodeProps, Position } from '@xyflow/react'
 import {
-  Search,
-  FileText,
-  Globe,
-  Database,
-  Mail,
-  FilePlus,
-  Terminal,
-  Cloud,
-  GitBranch,
-  Image,
+  AlertTriangle,
   Calculator,
   Calendar,
-  MessageSquare,
-  Code,
-  Languages,
   Camera,
-  AlertTriangle,
-  Sparkles,
   Clock,
+  Cloud,
+  Code,
+  Database,
+  FilePlus,
+  FileText,
+  GitBranch,
+  Globe,
+  Image,
+  Languages,
   type LucideIcon,
-} from 'lucide-react';
+  Mail,
+  MessageSquare,
+  Search,
+  Sparkles,
+  Terminal,
+} from 'lucide-react'
+import { memo } from 'react'
+import { useStore } from '@/lib/store/useStore'
+import type { MCPTool } from '@/lib/types'
+import { cn } from '@/lib/utils'
 
 // Icon mapping for tool icons
 const iconMap: Record<string, LucideIcon> = {
@@ -46,36 +46,43 @@ const iconMap: Record<string, LucideIcon> = {
   Code,
   Languages,
   Camera,
-};
+}
 
 export interface ToolNodeData {
-  tool: MCPTool;
+  tool: MCPTool
 }
 
 function ToolNodeComponent({ id, data, selected }: NodeProps) {
-  const { selectNode, selectedNodeId } = useStore();
-  const tool = (data as unknown as ToolNodeData).tool;
-  const isSelected = selectedNodeId === id || selected;
+  const { selectNode, selectedNodeId } = useStore()
+  const tool = (data as unknown as ToolNodeData).tool
+  const isSelected = selectedNodeId === id || selected
 
   const handleClick = () => {
-    selectNode(id);
-  };
+    selectNode(id)
+  }
 
   // Get the icon component, fallback to Terminal if not found
-  const IconComponent = iconMap[tool.icon] || Terminal;
-  const hasIncompleteParams = tool.parameters.some(p => !p.name || !p.description);
+  const IconComponent = iconMap[tool.icon] || Terminal
+  const hasIncompleteParams = tool.parameters.some((p) => !p.name || !p.description)
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: React Flow nodes contain nested interactive elements (Handle, buttons) so a real <button> would be invalid HTML
     <div
       onClick={handleClick}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          handleClick()
+        }
+      }}
       role="button"
       tabIndex={0}
       aria-label={`Tool: ${tool.name}`}
       className={cn(
         'surface-base p-4 min-w-[220px] cursor-pointer transition-colors duration-100',
         'hover:border-[var(--border-strong)] hover:bg-[var(--bg-hover)]',
-        isSelected && 'ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-[var(--accent)] border-[var(--border-strong)]'
+        isSelected &&
+          'ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-[var(--accent)] border-[var(--border-strong)]'
       )}
     >
       <Handle
@@ -92,9 +99,7 @@ function ToolNodeComponent({ id, data, selected }: NodeProps) {
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <h3 className="font-medium text-sm text-[var(--text-primary)] truncate">
-            {tool.name}
-          </h3>
+          <h3 className="font-medium text-sm text-[var(--text-primary)] truncate">{tool.name}</h3>
           <p className="text-xs text-[var(--text-secondary)] mt-1 line-clamp-2 leading-relaxed">
             {tool.description}
           </p>
@@ -138,8 +143,8 @@ function ToolNodeComponent({ id, data, selected }: NodeProps) {
         className="w-3 h-3 !bg-[var(--accent)] !border-2 !border-[var(--bg-base)]"
       />
     </div>
-  );
+  )
 }
 
-export const ToolNode = memo(ToolNodeComponent);
-ToolNode.displayName = 'ToolNode';
+export const ToolNode = memo(ToolNodeComponent)
+ToolNode.displayName = 'ToolNode'

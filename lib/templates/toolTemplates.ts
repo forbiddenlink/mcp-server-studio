@@ -1,4 +1,4 @@
-import { ToolTemplate } from '../types';
+import type { ToolTemplate } from '../types'
 
 export const toolTemplates: ToolTemplate[] = [
   {
@@ -305,4 +305,4 @@ export const toolTemplates: ToolTemplate[] = [
       },
     ],
   },
-];
+]

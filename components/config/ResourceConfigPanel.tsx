@@ -1,30 +1,36 @@
-'use client';
+'use client'
 
-import { useStore } from '@/lib/store/useStore';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X, Trash2 } from 'lucide-react';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion'
+import { Trash2, X } from 'lucide-react'
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { useStore } from '@/lib/store/useStore'
 
 const MIME_TYPES = [
   { value: 'text/plain', label: 'Plain Text' },
   { value: 'application/json', label: 'JSON' },
   { value: 'text/markdown', label: 'Markdown' },
   { value: 'text/html', label: 'HTML' },
-];
+]
 
 export function ResourceConfigPanel() {
-  const { selectedNodeId, resources, updateResource, deleteResource, selectNode } = useStore();
-  const selectedResource = resources.find(resource => resource.id === selectedNodeId);
+  const { selectedNodeId, resources, updateResource, deleteResource, selectNode } = useStore()
+  const selectedResource = resources.find((resource) => resource.id === selectedNodeId)
 
-  const [name, setName] = useState(selectedResource?.name || '');
-  const [description, setDescription] = useState(selectedResource?.description || '');
-  const [uri, setUri] = useState(selectedResource?.uri || '');
-  const [mimeType, setMimeType] = useState(selectedResource?.mimeType || 'text/plain');
+  const [name, setName] = useState(selectedResource?.name || '')
+  const [description, setDescription] = useState(selectedResource?.description || '')
+  const [uri, setUri] = useState(selectedResource?.uri || '')
+  const [mimeType, setMimeType] = useState(selectedResource?.mimeType || 'text/plain')
 
   const handleSave = () => {
     if (selectedNodeId) {
@@ -33,16 +39,16 @@ export function ResourceConfigPanel() {
         description,
         uri,
         mimeType,
-      });
+      })
     }
-  };
+  }
 
   const handleDelete = () => {
     if (selectedNodeId && confirm('Delete this resource?')) {
-      deleteResource(selectedNodeId);
-      selectNode(null);
+      deleteResource(selectedNodeId)
+      selectNode(null)
     }
-  };
+  }
 
   return (
     <AnimatePresence>
@@ -71,7 +77,9 @@ export function ResourceConfigPanel() {
           <div className="flex-1 overflow-auto p-5 space-y-8">
             {/* Resource Name */}
             <div className="space-y-3">
-              <Label htmlFor="name" className="text-[var(--text-secondary)]">Resource Name</Label>
+              <Label htmlFor="name" className="text-[var(--text-secondary)]">
+                Resource Name
+              </Label>
               <Input
                 id="name"
                 value={name}
@@ -83,7 +91,9 @@ export function ResourceConfigPanel() {
 
             {/* Resource Description */}
             <div className="space-y-3">
-              <Label htmlFor="description" className="text-[var(--text-secondary)]">Description</Label>
+              <Label htmlFor="description" className="text-[var(--text-secondary)]">
+                Description
+              </Label>
               <Textarea
                 id="description"
                 value={description}
@@ -96,7 +106,9 @@ export function ResourceConfigPanel() {
 
             {/* URI */}
             <div className="space-y-3">
-              <Label htmlFor="uri" className="text-[var(--text-secondary)]">URI</Label>
+              <Label htmlFor="uri" className="text-[var(--text-secondary)]">
+                URI
+              </Label>
               <Input
                 id="uri"
                 value={uri}
@@ -111,16 +123,15 @@ export function ResourceConfigPanel() {
 
             {/* MIME Type */}
             <div className="space-y-3">
-              <Label htmlFor="mimeType" className="text-[var(--text-secondary)]">MIME Type</Label>
-              <Select
-                value={mimeType}
-                onValueChange={setMimeType}
-              >
+              <Label htmlFor="mimeType" className="text-[var(--text-secondary)]">
+                MIME Type
+              </Label>
+              <Select value={mimeType} onValueChange={setMimeType}>
                 <SelectTrigger className="bg-[var(--bg-elevated)] border-[var(--border-default)]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="surface-overlay">
-                  {MIME_TYPES.map(type => (
+                  {MIME_TYPES.map((type) => (
                     <SelectItem key={type.value} value={type.value}>
                       {type.label}
                     </SelectItem>
@@ -132,7 +143,10 @@ export function ResourceConfigPanel() {
 
           {/* Footer Actions */}
           <div className="p-5 border-t border-[var(--border-default)] space-y-3">
-            <Button onClick={handleSave} className="w-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white border-0 transition-colors">
+            <Button
+              onClick={handleSave}
+              className="w-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white border-0 transition-colors"
+            >
               Save Changes
             </Button>
             <Button
@@ -147,5 +161,5 @@ export function ResourceConfigPanel() {
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

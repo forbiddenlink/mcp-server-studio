@@ -1,36 +1,43 @@
-'use client';
+'use client'
 
-import { memo } from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
-import { MCPPrompt } from '@/lib/types';
-import { useStore } from '@/lib/store/useStore';
-import { cn } from '@/lib/utils';
-import { MessageSquare } from 'lucide-react';
+import { Handle, type NodeProps, Position } from '@xyflow/react'
+import { MessageSquare } from 'lucide-react'
+import { memo } from 'react'
+import { useStore } from '@/lib/store/useStore'
+import type { MCPPrompt } from '@/lib/types'
+import { cn } from '@/lib/utils'
 
 export interface PromptNodeData {
-  prompt: MCPPrompt;
+  prompt: MCPPrompt
 }
 
 function PromptNodeComponent({ id, data, selected }: NodeProps) {
-  const { selectNode, selectedNodeId } = useStore();
-  const prompt = (data as unknown as PromptNodeData).prompt;
-  const isSelected = selectedNodeId === id || selected;
+  const { selectNode, selectedNodeId } = useStore()
+  const prompt = (data as unknown as PromptNodeData).prompt
+  const isSelected = selectedNodeId === id || selected
 
   const handleClick = () => {
-    selectNode(id);
-  };
+    selectNode(id)
+  }
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: React Flow nodes contain nested interactive elements (Handle, buttons) so a real <button> would be invalid HTML
     <div
       onClick={handleClick}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          handleClick()
+        }
+      }}
       role="button"
       tabIndex={0}
       aria-label={`Prompt: ${prompt.name}`}
       className={cn(
         'surface-base p-4 min-w-[220px] cursor-pointer transition-colors duration-100',
         'hover:border-violet-500/50 hover:bg-[var(--bg-hover)]',
-        isSelected && 'ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-violet-500 border-violet-500/50'
+        isSelected &&
+          'ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-violet-500 border-violet-500/50'
       )}
     >
       <Handle
@@ -47,9 +54,7 @@ function PromptNodeComponent({ id, data, selected }: NodeProps) {
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <h3 className="font-medium text-sm text-[var(--text-primary)] truncate">
-            {prompt.name}
-          </h3>
+          <h3 className="font-medium text-sm text-[var(--text-primary)] truncate">{prompt.name}</h3>
           <p className="text-xs text-[var(--text-secondary)] mt-1 line-clamp-2 leading-relaxed">
             {prompt.description}
           </p>
@@ -69,8 +74,8 @@ function PromptNodeComponent({ id, data, selected }: NodeProps) {
         className="w-3 h-3 !bg-violet-500 !border-2 !border-[var(--bg-base)]"
       />
     </div>
-  );
+  )
 }
 
-export const PromptNode = memo(PromptNodeComponent);
-PromptNode.displayName = 'PromptNode';
+export const PromptNode = memo(PromptNodeComponent)
+PromptNode.displayName = 'PromptNode'

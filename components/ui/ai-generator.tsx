@@ -1,24 +1,16 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Sparkles,
-  Wand2,
-  X,
-  ChevronRight,
-  Check,
-  AlertCircle,
-  Loader2,
-} from 'lucide-react';
-import { Button } from './button';
-import { parseToolDescription, analyzeDescription } from '@/lib/generators/aiToolGenerator';
-import { MCPTool } from '@/lib/types';
+import { AnimatePresence, motion } from 'framer-motion'
+import { AlertCircle, Check, ChevronRight, Loader2, Sparkles, Wand2, X } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { analyzeDescription, parseToolDescription } from '@/lib/generators/aiToolGenerator'
+import type { MCPTool } from '@/lib/types'
+import { Button } from './button'
 
 interface AIGeneratorProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onGenerate: (tool: MCPTool) => void;
+  isOpen: boolean
+  onClose: () => void
+  onGenerate: (tool: MCPTool) => void
 }
 
 const examplePrompts = [
@@ -28,88 +20,88 @@ const examplePrompts = [
   'Create a new task with title, description, and due date',
   'Convert an image to different formats by URL',
   'Validate an email address and check if it exists',
-];
+]
 
 export function AIGenerator({ isOpen, onClose, onGenerate }: AIGeneratorProps) {
-  const [description, setDescription] = useState('');
-  const [generatedTool, setGeneratedTool] = useState<MCPTool | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [analysis, setAnalysis] = useState<ReturnType<typeof analyzeDescription> | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [description, setDescription] = useState('')
+  const [generatedTool, setGeneratedTool] = useState<MCPTool | null>(null)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [analysis, setAnalysis] = useState<ReturnType<typeof analyzeDescription> | null>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   // Focus textarea when modal opens
   useEffect(() => {
     if (isOpen) {
       const timer = setTimeout(() => {
-        setDescription('');
-        setGeneratedTool(null);
-        setAnalysis(null);
-        textareaRef.current?.focus();
-      }, 50);
-      return () => clearTimeout(timer);
+        setDescription('')
+        setGeneratedTool(null)
+        setAnalysis(null)
+        textareaRef.current?.focus()
+      }, 50)
+      return () => clearTimeout(timer)
     }
-  }, [isOpen]);
+  }, [isOpen])
 
   // Analyze description as user types (debounced)
   useEffect(() => {
     const timer = setTimeout(() => {
       if (description.length >= 5) {
-        setAnalysis(analyzeDescription(description));
+        setAnalysis(analyzeDescription(description))
       } else {
-        setAnalysis(null);
+        setAnalysis(null)
       }
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [description]);
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [description])
 
   const handleGenerate = useCallback(() => {
-    if (!description.trim() || description.length < 5) return;
+    if (!description.trim() || description.length < 5) return
 
-    setIsGenerating(true);
+    setIsGenerating(true)
 
     // Simulate a brief "thinking" delay for that magical feel
     setTimeout(() => {
-      const tool = parseToolDescription(description);
-      setGeneratedTool(tool);
-      setIsGenerating(false);
-    }, 600);
-  }, [description]);
+      const tool = parseToolDescription(description)
+      setGeneratedTool(tool)
+      setIsGenerating(false)
+    }, 600)
+  }, [description])
 
   const handleConfirm = useCallback(() => {
     if (generatedTool) {
-      onGenerate(generatedTool);
-      onClose();
+      onGenerate(generatedTool)
+      onClose()
     }
-  }, [generatedTool, onGenerate, onClose]);
+  }, [generatedTool, onGenerate, onClose])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === 'Escape') {
-        e.preventDefault();
+        e.preventDefault()
         if (generatedTool) {
-          setGeneratedTool(null);
+          setGeneratedTool(null)
         } else {
-          onClose();
+          onClose()
         }
       } else if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
+        e.preventDefault()
         if (generatedTool) {
-          handleConfirm();
+          handleConfirm()
         } else if (description.trim()) {
-          handleGenerate();
+          handleGenerate()
         }
       }
     },
     [generatedTool, description, handleGenerate, handleConfirm, onClose]
-  );
+  )
 
   const setExamplePrompt = (prompt: string) => {
-    setDescription(prompt);
-    setGeneratedTool(null);
-    textareaRef.current?.focus();
-  };
+    setDescription(prompt)
+    setGeneratedTool(null)
+    textareaRef.current?.focus()
+  }
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <AnimatePresence>
@@ -151,6 +143,7 @@ export function AIGenerator({ isOpen, onClose, onGenerate }: AIGeneratorProps) {
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={onClose}
                   className="p-2 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
                 >
@@ -187,8 +180,8 @@ export function AIGenerator({ isOpen, onClose, onGenerate }: AIGeneratorProps) {
                                 analysis.confidence > 0.7
                                   ? 'bg-emerald-500'
                                   : analysis.confidence > 0.4
-                                  ? 'bg-amber-500'
-                                  : 'bg-red-400'
+                                    ? 'bg-amber-500'
+                                    : 'bg-red-400'
                               }`}
                             />
                           </div>
@@ -196,8 +189,8 @@ export function AIGenerator({ isOpen, onClose, onGenerate }: AIGeneratorProps) {
                             {analysis.confidence > 0.7
                               ? 'Great description!'
                               : analysis.confidence > 0.4
-                              ? 'Good start'
-                              : 'Add more detail'}
+                                ? 'Good start'
+                                : 'Add more detail'}
                           </span>
                         </motion.div>
                       )}
@@ -234,6 +227,7 @@ export function AIGenerator({ isOpen, onClose, onGenerate }: AIGeneratorProps) {
                         <div className="flex flex-wrap gap-2">
                           {examplePrompts.slice(0, 3).map((prompt, i) => (
                             <button
+                              type="button"
                               key={i}
                               onClick={() => setExamplePrompt(prompt)}
                               className="px-3 py-1.5 text-xs bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] rounded-lg transition-colors truncate max-w-xs"
@@ -305,10 +299,7 @@ export function AIGenerator({ isOpen, onClose, onGenerate }: AIGeneratorProps) {
                               </p>
                               <div className="space-y-2">
                                 {generatedTool.parameters.map((param, i) => (
-                                  <div
-                                    key={i}
-                                    className="flex items-center gap-3 text-sm"
-                                  >
+                                  <div key={i} className="flex items-center gap-3 text-sm">
                                     <code className="px-2 py-0.5 bg-[var(--bg-elevated)] text-[var(--accent)] rounded font-mono text-xs">
                                       {param.name}
                                     </code>
@@ -332,6 +323,7 @@ export function AIGenerator({ isOpen, onClose, onGenerate }: AIGeneratorProps) {
                     {/* Actions */}
                     <div className="mt-6 flex items-center justify-between">
                       <button
+                        type="button"
                         onClick={() => setGeneratedTool(null)}
                         className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                       >
@@ -367,5 +359,5 @@ export function AIGenerator({ isOpen, onClose, onGenerate }: AIGeneratorProps) {
         </>
       )}
     </AnimatePresence>
-  );
+  )
 }

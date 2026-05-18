@@ -1,48 +1,48 @@
-'use client';
+'use client'
 
-import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion'
 import {
-  Search,
-  X,
-  Plus,
-  ChevronRight,
-  FileText,
-  Globe,
-  Database,
-  Mail,
-  FilePlus,
-  Terminal,
-  Cloud,
-  GitBranch,
-  Image,
+  Braces,
   Calculator,
   Calendar,
-  MessageSquare,
-  Code,
-  Languages,
   Camera,
-  FolderOpen,
-  Send,
-  Sparkles,
-  Wrench,
-  Trash2,
-  FolderInput,
-  MessageCircle,
-  Smartphone,
-  Key,
+  ChevronRight,
   CircleDot,
+  Cloud,
+  Code,
+  Database,
+  FilePlus,
+  FileText,
+  FolderInput,
+  FolderOpen,
+  GitBranch,
   GitPullRequest,
-  Volume2,
-  Mic,
+  Globe,
   Heart,
-  QrCode,
+  Image,
+  Key,
+  Languages,
   Link,
-  Braces,
   type LucideIcon,
-} from 'lucide-react';
-import { templateCategories } from '@/lib/templates/templateCategories';
-import { ToolTemplate } from '@/lib/types';
+  Mail,
+  MessageCircle,
+  MessageSquare,
+  Mic,
+  Plus,
+  QrCode,
+  Search,
+  Send,
+  Smartphone,
+  Sparkles,
+  Terminal,
+  Trash2,
+  Volume2,
+  Wrench,
+  X,
+} from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { templateCategories } from '@/lib/templates/templateCategories'
+import type { ToolTemplate } from '@/lib/types'
 
 // Icon mapping for templates
 const iconMap: Record<string, LucideIcon> = {
@@ -80,50 +80,50 @@ const iconMap: Record<string, LucideIcon> = {
   Link,
   Braces,
   Plus,
-};
+}
 
 const CategoryIcon = ({ iconName }: { iconName: string }) => {
-  const Icon = iconMap[iconName] || Terminal;
-  return <Icon className="w-5 h-5" strokeWidth={1.5} />;
-};
+  const Icon = iconMap[iconName] || Terminal
+  return <Icon className="w-5 h-5" strokeWidth={1.5} />
+}
 
 const TemplateIcon = ({ iconName }: { iconName: string }) => {
-  const Icon = iconMap[iconName] || Terminal;
-  return <Icon className="w-4 h-4" strokeWidth={1.5} />;
-};
+  const Icon = iconMap[iconName] || Terminal
+  return <Icon className="w-4 h-4" strokeWidth={1.5} />
+}
 
 interface TemplateGalleryProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSelectTemplate: (template: ToolTemplate) => void;
+  isOpen: boolean
+  onClose: () => void
+  onSelectTemplate: (template: ToolTemplate) => void
 }
 
 export function TemplateGallery({ isOpen, onClose, onSelectTemplate }: TemplateGalleryProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [previewTemplate, setPreviewTemplate] = useState<ToolTemplate | null>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [previewTemplate, setPreviewTemplate] = useState<ToolTemplate | null>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Focus search input when opening
   useEffect(() => {
     if (isOpen) {
       const timer = setTimeout(() => {
-        setSearchQuery('');
-        setSelectedCategory(null);
-        setPreviewTemplate(null);
-        searchInputRef.current?.focus();
-      }, 50);
-      return () => clearTimeout(timer);
+        setSearchQuery('')
+        setSelectedCategory(null)
+        setPreviewTemplate(null)
+        searchInputRef.current?.focus()
+      }, 50)
+      return () => clearTimeout(timer)
     }
-  }, [isOpen]);
+  }, [isOpen])
 
   // Filter templates based on search
   const filteredCategories = useMemo(() => {
     if (!searchQuery.trim()) {
-      return templateCategories;
+      return templateCategories
     }
 
-    const lowerQuery = searchQuery.toLowerCase();
+    const lowerQuery = searchQuery.toLowerCase()
     return templateCategories
       .map((category) => ({
         ...category,
@@ -133,46 +133,46 @@ export function TemplateGallery({ isOpen, onClose, onSelectTemplate }: TemplateG
             t.description.toLowerCase().includes(lowerQuery)
         ),
       }))
-      .filter((category) => category.templates.length > 0);
-  }, [searchQuery]);
+      .filter((category) => category.templates.length > 0)
+  }, [searchQuery])
 
   // Get current templates to display
   const displayTemplates = useMemo(() => {
     if (selectedCategory) {
-      const category = filteredCategories.find((c) => c.id === selectedCategory);
-      return category?.templates || [];
+      const category = filteredCategories.find((c) => c.id === selectedCategory)
+      return category?.templates || []
     }
     // Show all templates when searching or on initial view
     if (searchQuery.trim()) {
-      return filteredCategories.flatMap((c) => c.templates);
+      return filteredCategories.flatMap((c) => c.templates)
     }
-    return null; // Show categories view
-  }, [selectedCategory, filteredCategories, searchQuery]);
+    return null // Show categories view
+  }, [selectedCategory, filteredCategories, searchQuery])
 
   const handleSelectTemplate = useCallback(
     (template: ToolTemplate) => {
-      onSelectTemplate(template);
-      onClose();
+      onSelectTemplate(template)
+      onClose()
     },
     [onSelectTemplate, onClose]
-  );
+  )
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === 'Escape') {
         if (previewTemplate) {
-          setPreviewTemplate(null);
+          setPreviewTemplate(null)
         } else if (selectedCategory) {
-          setSelectedCategory(null);
+          setSelectedCategory(null)
         } else {
-          onClose();
+          onClose()
         }
       }
     },
     [previewTemplate, selectedCategory, onClose]
-  );
+  )
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <AnimatePresence>
@@ -203,6 +203,7 @@ export function TemplateGallery({ isOpen, onClose, onSelectTemplate }: TemplateG
                 <div className="flex items-center gap-3">
                   {selectedCategory && (
                     <button
+                      type="button"
                       onClick={() => setSelectedCategory(null)}
                       className="p-1.5 rounded-lg hover:bg-[var(--bg-hover)] transition-colors"
                     >
@@ -223,6 +224,7 @@ export function TemplateGallery({ isOpen, onClose, onSelectTemplate }: TemplateG
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={onClose}
                   className="p-2 rounded-lg hover:bg-[var(--bg-hover)] transition-colors"
                 >
@@ -244,6 +246,7 @@ export function TemplateGallery({ isOpen, onClose, onSelectTemplate }: TemplateG
                   />
                   {searchQuery && (
                     <button
+                      type="button"
                       onClick={() => setSearchQuery('')}
                       className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-[var(--bg-hover)]"
                     >
@@ -332,9 +335,7 @@ export function TemplateGallery({ isOpen, onClose, onSelectTemplate }: TemplateG
                                 className="inline-flex items-center px-2 py-0.5 rounded-md bg-[var(--bg-surface)] text-xs text-[var(--text-secondary)] border border-[var(--border-default)]"
                               >
                                 {param.name}
-                                {param.required && (
-                                  <span className="ml-0.5 text-red-400">*</span>
-                                )}
+                                {param.required && <span className="ml-0.5 text-red-400">*</span>}
                               </span>
                             ))}
                             {template.defaultParameters.length > 3 && (
@@ -348,12 +349,14 @@ export function TemplateGallery({ isOpen, onClose, onSelectTemplate }: TemplateG
                         {/* Actions */}
                         <div className="flex items-center gap-2">
                           <button
+                            type="button"
                             onClick={() => setPreviewTemplate(template)}
                             className="flex-1 px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-surface)] hover:bg-[var(--bg-hover)] rounded-lg transition-colors"
                           >
                             Preview
                           </button>
                           <button
+                            type="button"
                             onClick={() => handleSelectTemplate(template)}
                             className="flex-1 px-3 py-2 text-sm text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] rounded-lg transition-colors flex items-center justify-center gap-1.5"
                           >
@@ -417,6 +420,7 @@ export function TemplateGallery({ isOpen, onClose, onSelectTemplate }: TemplateG
                       </div>
                     </div>
                     <button
+                      type="button"
                       onClick={() => setPreviewTemplate(null)}
                       className="p-1.5 rounded-lg hover:bg-[var(--bg-hover)]"
                     >
@@ -457,15 +461,17 @@ export function TemplateGallery({ isOpen, onClose, onSelectTemplate }: TemplateG
 
                   <div className="flex gap-3">
                     <button
+                      type="button"
                       onClick={() => setPreviewTemplate(null)}
                       className="flex-1 px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] rounded-lg border border-[var(--border-default)] transition-colors"
                     >
                       Cancel
                     </button>
                     <button
+                      type="button"
                       onClick={() => {
-                        handleSelectTemplate(previewTemplate);
-                        setPreviewTemplate(null);
+                        handleSelectTemplate(previewTemplate)
+                        setPreviewTemplate(null)
                       }}
                       className="flex-1 px-4 py-2.5 text-sm text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] rounded-lg transition-colors flex items-center justify-center gap-2"
                     >
@@ -480,5 +486,5 @@ export function TemplateGallery({ isOpen, onClose, onSelectTemplate }: TemplateG
         </>
       )}
     </AnimatePresence>
-  );
+  )
 }

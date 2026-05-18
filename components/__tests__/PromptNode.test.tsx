@@ -1,24 +1,24 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { PromptNode } from '../canvas/PromptNode';
-import type { MCPPrompt } from '@/lib/types';
+import { fireEvent, render, screen } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { MCPPrompt } from '@/lib/types'
+import { PromptNode } from '../canvas/PromptNode'
 
 // ---- Mocks ----
 
-const selectNode = vi.fn();
+const selectNode = vi.fn()
 
 vi.mock('@/lib/store/useStore', () => ({
   useStore: () => ({
     selectNode,
     selectedNodeId: null,
   }),
-}));
+}))
 
 // React Flow: stub Handle so it renders nothing
 vi.mock('@xyflow/react', () => ({
   Handle: () => null,
   Position: { Top: 'top', Bottom: 'bottom' },
-}));
+}))
 
 // ---- Helpers ----
 
@@ -32,7 +32,7 @@ function makePrompt(overrides: Partial<MCPPrompt> = {}): MCPPrompt {
       { name: 'code', type: 'string', description: 'The code to review', required: true },
     ],
     ...overrides,
-  };
+  }
 }
 
 function renderPromptNode(prompt: MCPPrompt, overrides: { selected?: boolean } = {}) {
@@ -51,80 +51,88 @@ function renderPromptNode(prompt: MCPPrompt, overrides: { selected?: boolean } =
     sourcePosition: undefined,
     targetPosition: undefined,
     ...overrides,
-  };
+  }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return render(<PromptNode {...(defaultProps as any)} />);
+  return render(<PromptNode {...(defaultProps as any)} />)
 }
 
 // ---- Tests ----
 
 describe('PromptNode', () => {
   beforeEach(() => {
-    selectNode.mockClear();
-  });
+    selectNode.mockClear()
+  })
 
   it('renders prompt name and description', () => {
-    renderPromptNode(makePrompt());
-    expect(screen.getByText('code_review')).toBeTruthy();
-    expect(screen.getByText('Review code for best practices')).toBeTruthy();
-  });
+    renderPromptNode(makePrompt())
+    expect(screen.getByText('code_review')).toBeTruthy()
+    expect(screen.getByText('Review code for best practices')).toBeTruthy()
+  })
 
   it('shows argument count (singular)', () => {
-    renderPromptNode(makePrompt());
-    expect(screen.getByText('1 arg')).toBeTruthy();
-  });
+    renderPromptNode(makePrompt())
+    expect(screen.getByText('1 arg')).toBeTruthy()
+  })
 
   it('shows argument count (plural)', () => {
     renderPromptNode(
       makePrompt({
         arguments: [
           { name: 'code', type: 'string', description: 'The code', required: true },
-          { name: 'language', type: 'string', description: 'Programming language', required: false },
+          {
+            name: 'language',
+            type: 'string',
+            description: 'Programming language',
+            required: false,
+          },
         ],
       })
-    );
-    expect(screen.getByText('2 args')).toBeTruthy();
-  });
+    )
+    expect(screen.getByText('2 args')).toBeTruthy()
+  })
 
   it('shows zero arguments correctly', () => {
-    renderPromptNode(makePrompt({ arguments: [] }));
-    expect(screen.getByText('0 args')).toBeTruthy();
-  });
+    renderPromptNode(makePrompt({ arguments: [] }))
+    expect(screen.getByText('0 args')).toBeTruthy()
+  })
 
   it('calls selectNode on click', () => {
-    renderPromptNode(makePrompt());
-    fireEvent.click(screen.getByRole('button'));
-    expect(selectNode).toHaveBeenCalledWith('prompt-1');
-  });
+    renderPromptNode(makePrompt())
+    fireEvent.click(screen.getByRole('button'))
+    expect(selectNode).toHaveBeenCalledWith('prompt-1')
+  })
 
   it('calls selectNode on Enter key', () => {
-    renderPromptNode(makePrompt());
-    fireEvent.keyDown(screen.getByRole('button'), { key: 'Enter' });
-    expect(selectNode).toHaveBeenCalledWith('prompt-1');
-  });
+    renderPromptNode(makePrompt())
+    fireEvent.keyDown(screen.getByRole('button'), { key: 'Enter' })
+    expect(selectNode).toHaveBeenCalledWith('prompt-1')
+  })
 
   it('calls selectNode on Space key', () => {
-    renderPromptNode(makePrompt());
-    fireEvent.keyDown(screen.getByRole('button'), { key: ' ' });
-    expect(selectNode).toHaveBeenCalledWith('prompt-1');
-  });
+    renderPromptNode(makePrompt())
+    fireEvent.keyDown(screen.getByRole('button'), { key: ' ' })
+    expect(selectNode).toHaveBeenCalledWith('prompt-1')
+  })
 
   it('has an accessible aria-label', () => {
-    renderPromptNode(makePrompt());
-    expect(screen.getByRole('button').getAttribute('aria-label')).toBe('Prompt: code_review');
-  });
+    renderPromptNode(makePrompt())
+    expect(screen.getByRole('button').getAttribute('aria-label')).toBe('Prompt: code_review')
+  })
 
   it('renders with different prompt names', () => {
-    renderPromptNode(makePrompt({ name: 'summarize_text', description: 'Summarize the given text' }));
-    expect(screen.getByText('summarize_text')).toBeTruthy();
-    expect(screen.getByText('Summarize the given text')).toBeTruthy();
-  });
+    renderPromptNode(
+      makePrompt({ name: 'summarize_text', description: 'Summarize the given text' })
+    )
+    expect(screen.getByText('summarize_text')).toBeTruthy()
+    expect(screen.getByText('Summarize the given text')).toBeTruthy()
+  })
 
   it('handles long descriptions gracefully', () => {
-    const longDesc = 'This is a very long description that should be truncated in the UI when it exceeds the available space';
-    renderPromptNode(makePrompt({ description: longDesc }));
-    expect(screen.getByText(longDesc)).toBeTruthy();
-  });
+    const longDesc =
+      'This is a very long description that should be truncated in the UI when it exceeds the available space'
+    renderPromptNode(makePrompt({ description: longDesc }))
+    expect(screen.getByText(longDesc)).toBeTruthy()
+  })
 
   it('renders with multiple arguments', () => {
     renderPromptNode(
@@ -135,7 +143,7 @@ describe('PromptNode', () => {
           { name: 'c', type: 'boolean', description: 'c', required: false },
         ],
       })
-    );
-    expect(screen.getByText('3 args')).toBeTruthy();
-  });
-});
+    )
+    expect(screen.getByText('3 args')).toBeTruthy()
+  })
+})

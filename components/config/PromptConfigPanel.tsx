@@ -1,23 +1,31 @@
-'use client';
+'use client'
 
-import { useStore } from '@/lib/store/useStore';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X, Plus, Trash2 } from 'lucide-react';
-import { useState } from 'react';
-import { MCPParameter, ParameterType } from '@/lib/types';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion'
+import { Plus, Trash2, X } from 'lucide-react'
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { useStore } from '@/lib/store/useStore'
+import type { MCPParameter, ParameterType } from '@/lib/types'
 
 export function PromptConfigPanel() {
-  const { selectedNodeId, prompts, updatePrompt, deletePrompt, selectNode } = useStore();
-  const selectedPrompt = prompts.find(prompt => prompt.id === selectedNodeId);
+  const { selectedNodeId, prompts, updatePrompt, deletePrompt, selectNode } = useStore()
+  const selectedPrompt = prompts.find((prompt) => prompt.id === selectedNodeId)
 
-  const [name, setName] = useState(selectedPrompt?.name || '');
-  const [description, setDescription] = useState(selectedPrompt?.description || '');
-  const [args, setArgs] = useState<MCPParameter[]>(selectedPrompt?.arguments ? [...selectedPrompt.arguments] : []);
+  const [name, setName] = useState(selectedPrompt?.name || '')
+  const [description, setDescription] = useState(selectedPrompt?.description || '')
+  const [args, setArgs] = useState<MCPParameter[]>(
+    selectedPrompt?.arguments ? [...selectedPrompt.arguments] : []
+  )
 
   const handleSave = () => {
     if (selectedNodeId) {
@@ -25,9 +33,9 @@ export function PromptConfigPanel() {
         name,
         description,
         arguments: args,
-      });
+      })
     }
-  };
+  }
 
   const handleAddArgument = () => {
     setArgs([
@@ -38,25 +46,25 @@ export function PromptConfigPanel() {
         description: '',
         required: false,
       },
-    ]);
-  };
+    ])
+  }
 
   const handleUpdateArgument = (index: number, updates: Partial<MCPParameter>) => {
-    const newArgs = [...args];
-    newArgs[index] = { ...newArgs[index], ...updates };
-    setArgs(newArgs);
-  };
+    const newArgs = [...args]
+    newArgs[index] = { ...newArgs[index], ...updates }
+    setArgs(newArgs)
+  }
 
   const handleDeleteArgument = (index: number) => {
-    setArgs(args.filter((_, i) => i !== index));
-  };
+    setArgs(args.filter((_, i) => i !== index))
+  }
 
   const handleDelete = () => {
     if (selectedNodeId && confirm('Delete this prompt?')) {
-      deletePrompt(selectedNodeId);
-      selectNode(null);
+      deletePrompt(selectedNodeId)
+      selectNode(null)
     }
-  };
+  }
 
   return (
     <AnimatePresence>
@@ -85,7 +93,9 @@ export function PromptConfigPanel() {
           <div className="flex-1 overflow-auto p-5 space-y-8">
             {/* Prompt Name */}
             <div className="space-y-3">
-              <Label htmlFor="name" className="text-[var(--text-secondary)]">Prompt Name</Label>
+              <Label htmlFor="name" className="text-[var(--text-secondary)]">
+                Prompt Name
+              </Label>
               <Input
                 id="name"
                 value={name}
@@ -97,7 +107,9 @@ export function PromptConfigPanel() {
 
             {/* Prompt Description */}
             <div className="space-y-3">
-              <Label htmlFor="description" className="text-[var(--text-secondary)]">Description</Label>
+              <Label htmlFor="description" className="text-[var(--text-secondary)]">
+                Description
+              </Label>
               <Textarea
                 id="description"
                 value={description}
@@ -112,12 +124,7 @@ export function PromptConfigPanel() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label className="text-[var(--text-secondary)]">Arguments</Label>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAddArgument}
-                  className="text-xs"
-                >
+                <Button variant="outline" size="sm" onClick={handleAddArgument} className="text-xs">
                   <Plus className="w-3 h-3 mr-1" />
                   Add
                 </Button>
@@ -126,12 +133,17 @@ export function PromptConfigPanel() {
               {args.length === 0 ? (
                 <div className="text-center py-8 border border-dashed border-[var(--border-default)] rounded-lg">
                   <p className="text-sm text-[var(--text-secondary)]">No arguments yet</p>
-                  <p className="text-xs text-[var(--text-tertiary)] mt-1">Click &quot;Add&quot; to add an argument</p>
+                  <p className="text-xs text-[var(--text-tertiary)] mt-1">
+                    Click &quot;Add&quot; to add an argument
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-0">
                   {args.map((arg, index) => (
-                    <div key={index} className="py-5 border-t border-[var(--border-default)] first:border-t-0 first:pt-0 space-y-4">
+                    <div
+                      key={index}
+                      className="py-5 border-t border-[var(--border-default)] first:border-t-0 first:pt-0 space-y-4"
+                    >
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-medium text-[var(--text-tertiary)]">
                           Argument {index + 1}
@@ -203,7 +215,10 @@ export function PromptConfigPanel() {
 
           {/* Footer Actions */}
           <div className="p-5 border-t border-[var(--border-default)] space-y-3">
-            <Button onClick={handleSave} className="w-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white border-0 transition-colors">
+            <Button
+              onClick={handleSave}
+              className="w-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white border-0 transition-colors"
+            >
               Save Changes
             </Button>
             <Button
@@ -218,5 +233,5 @@ export function PromptConfigPanel() {
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

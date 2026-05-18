@@ -1,18 +1,18 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { AlertTriangle, RefreshCw } from 'lucide-react'
+import React from 'react'
+import { Button } from '@/components/ui/button'
 
 interface ErrorBoundaryProps {
-  children: React.ReactNode;
+  children: React.ReactNode
   /** Label shown in the fallback UI (e.g. "Canvas", "Preview") */
-  label?: string;
+  label?: string
 }
 
 interface ErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
+  hasError: boolean
+  error: Error | null
 }
 
 /**
@@ -21,26 +21,33 @@ interface ErrorBoundaryState {
  */
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false, error: null };
+    super(props)
+    this.state = { hasError: false, error: null }
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error };
+    return { hasError: true, error }
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    console.error(`[ErrorBoundary${this.props.label ? `: ${this.props.label}` : ''}]`, error, info.componentStack);
+    console.error(
+      `[ErrorBoundary${this.props.label ? `: ${this.props.label}` : ''}]`,
+      error,
+      info.componentStack
+    )
   }
 
   handleRetry = () => {
-    this.setState({ hasError: false, error: null });
-  };
+    this.setState({ hasError: false, error: null })
+  }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex flex-col items-center justify-center h-full p-8 text-center" role="alert">
+        <div
+          className="flex flex-col items-center justify-center h-full p-8 text-center"
+          role="alert"
+        >
           <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center mb-4">
             <AlertTriangle className="w-6 h-6 text-red-400" strokeWidth={1.5} />
           </div>
@@ -57,19 +64,14 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               {this.state.error.message}
             </p>
           )}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={this.handleRetry}
-            className="gap-2"
-          >
+          <Button variant="outline" size="sm" onClick={this.handleRetry} className="gap-2">
             <RefreshCw className="w-3 h-3" />
             Try Again
           </Button>
         </div>
-      );
+      )
     }
 
-    return this.props.children;
+    return this.props.children
   }
 }

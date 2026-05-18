@@ -1,34 +1,40 @@
-'use client';
+'use client'
 
-import { useStore } from '@/lib/store/useStore';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X, Server } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { TransportType } from '@/lib/types';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion'
+import { Server, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { useStore } from '@/lib/store/useStore'
+import type { TransportType } from '@/lib/types'
 
 interface ServerConfigPanelProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean
+  onClose: () => void
 }
 
 export function ServerConfigPanel({ isOpen, onClose }: ServerConfigPanelProps) {
-  const { serverConfig, updateServerConfig } = useStore();
+  const { serverConfig, updateServerConfig } = useStore()
 
-  const [name, setName] = useState(serverConfig.name);
-  const [version, setVersion] = useState(serverConfig.version);
-  const [transport, setTransport] = useState<TransportType>(serverConfig.transport);
-  const [httpPort, setHttpPort] = useState(serverConfig.httpPort);
+  const [name, setName] = useState(serverConfig.name)
+  const [version, setVersion] = useState(serverConfig.version)
+  const [transport, setTransport] = useState<TransportType>(serverConfig.transport)
+  const [httpPort, setHttpPort] = useState(serverConfig.httpPort)
 
   useEffect(() => {
-    setName(serverConfig.name);
-    setVersion(serverConfig.version);
-    setTransport(serverConfig.transport);
-    setHttpPort(serverConfig.httpPort);
-  }, [serverConfig]);
+    setName(serverConfig.name)
+    setVersion(serverConfig.version)
+    setTransport(serverConfig.transport)
+    setHttpPort(serverConfig.httpPort)
+  }, [serverConfig])
 
   const handleSave = () => {
     updateServerConfig({
@@ -36,9 +42,9 @@ export function ServerConfigPanel({ isOpen, onClose }: ServerConfigPanelProps) {
       version,
       transport,
       httpPort,
-    });
-    onClose();
-  };
+    })
+    onClose()
+  }
 
   return (
     <AnimatePresence>
@@ -85,7 +91,9 @@ export function ServerConfigPanel({ isOpen, onClose }: ServerConfigPanelProps) {
               <div className="p-5 space-y-6">
                 {/* Server Name */}
                 <div className="space-y-2">
-                  <Label htmlFor="server-name" className="text-[var(--text-secondary)]">Server Name</Label>
+                  <Label htmlFor="server-name" className="text-[var(--text-secondary)]">
+                    Server Name
+                  </Label>
                   <Input
                     id="server-name"
                     value={name}
@@ -97,7 +105,9 @@ export function ServerConfigPanel({ isOpen, onClose }: ServerConfigPanelProps) {
 
                 {/* Version */}
                 <div className="space-y-2">
-                  <Label htmlFor="server-version" className="text-[var(--text-secondary)]">Version</Label>
+                  <Label htmlFor="server-version" className="text-[var(--text-secondary)]">
+                    Version
+                  </Label>
                   <Input
                     id="server-version"
                     value={version}
@@ -109,7 +119,9 @@ export function ServerConfigPanel({ isOpen, onClose }: ServerConfigPanelProps) {
 
                 {/* Transport */}
                 <div className="space-y-2">
-                  <Label htmlFor="transport" className="text-[var(--text-secondary)]">Transport</Label>
+                  <Label htmlFor="transport" className="text-[var(--text-secondary)]">
+                    Transport
+                  </Label>
                   <Select
                     value={transport}
                     onValueChange={(value: TransportType) => setTransport(value)}
@@ -137,12 +149,14 @@ export function ServerConfigPanel({ isOpen, onClose }: ServerConfigPanelProps) {
                     exit={{ opacity: 0, height: 0 }}
                     className="space-y-2"
                   >
-                    <Label htmlFor="http-port" className="text-[var(--text-secondary)]">HTTP Port</Label>
+                    <Label htmlFor="http-port" className="text-[var(--text-secondary)]">
+                      HTTP Port
+                    </Label>
                     <Input
                       id="http-port"
                       type="number"
                       value={httpPort}
-                      onChange={(e) => setHttpPort(parseInt(e.target.value) || 3000)}
+                      onChange={(e) => setHttpPort(parseInt(e.target.value, 10) || 3000)}
                       placeholder="3000"
                       min={1}
                       max={65535}
@@ -157,7 +171,10 @@ export function ServerConfigPanel({ isOpen, onClose }: ServerConfigPanelProps) {
                 <Button variant="outline" onClick={onClose}>
                   Cancel
                 </Button>
-                <Button onClick={handleSave} className="hover:shadow-[var(--shadow-glow)] transition-shadow">
+                <Button
+                  onClick={handleSave}
+                  className="hover:shadow-[var(--shadow-glow)] transition-shadow"
+                >
                   Save Settings
                 </Button>
               </div>
@@ -166,5 +183,5 @@ export function ServerConfigPanel({ isOpen, onClose }: ServerConfigPanelProps) {
         </>
       )}
     </AnimatePresence>
-  );
+  )
 }

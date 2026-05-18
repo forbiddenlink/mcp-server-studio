@@ -254,22 +254,22 @@
     transition:
       transform 0.15s ease,
       background-color 0.15s ease;
-    width: 6px !important;
-    height: 6px !important;
-    border: 2px solid var(--border-strong) !important;
-    background: var(--bg-surface) !important;
+    width: 6px;
+    height: 6px;
+    border: 2px solid var(--border-strong);
+    background: var(--bg-surface);
   }
 
   .react-flow__handle:hover {
     transform: scale(1.5);
-    border-color: var(--accent) !important;
-    background: var(--accent-muted) !important;
+    border-color: var(--accent);
+    background: var(--accent-muted);
   }
 
   .react-flow__handle.connecting {
     transform: scale(1.5);
-    border-color: var(--accent) !important;
-    background: var(--accent-muted) !important;
+    border-color: var(--accent);
+    background: var(--accent-muted);
   }
 
   .react-flow__handle.valid {
@@ -280,48 +280,48 @@
 
   /* ─── React Flow Edge Selection ─── */
   .react-flow__edge.selected .react-flow__edge-path {
-    stroke: var(--accent) !important;
+    stroke: var(--accent);
   }
 
   .react-flow__edge:hover .react-flow__edge-path {
-    stroke: var(--accent) !important;
+    stroke: var(--accent);
   }
 
   /* ─── Mobile Responsiveness ─── */
   @media (max-width: 640px) {
     /* Larger touch targets for handles */
     .react-flow__handle {
-      width: 16px !important;
-      height: 16px !important;
+      width: 16px;
+      height: 16px;
     }
 
     /* Larger controls for touch */
     .react-flow__controls {
-      bottom: 80px !important;
-      left: 12px !important;
+      bottom: 80px;
+      left: 12px;
     }
 
     .react-flow__controls-button {
-      width: 36px !important;
-      height: 36px !important;
+      width: 36px;
+      height: 36px;
     }
 
     /* Hide minimap on mobile */
     .react-flow__minimap {
-      display: none !important;
+      display: none;
     }
 
     /* Adjust tool node for mobile */
     .surface-base {
-      min-width: 180px !important;
+      min-width: 180px;
     }
   }
 
   /* Tablet adjustments */
   @media (min-width: 641px) and (max-width: 1024px) {
     .react-flow__minimap {
-      width: 120px !important;
-      height: 80px !important;
+      width: 120px;
+      height: 80px;
     }
   }
 }

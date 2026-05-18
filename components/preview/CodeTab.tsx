@@ -1,11 +1,11 @@
-'use client';
+'use client'
 
-import { useStore } from '@/lib/store/useStore';
-import { generateMCPServer } from '@/lib/generators/mcpServerGenerator';
-import { Button } from '@/components/ui/button';
-import { Copy, Download, Check, Loader2 } from 'lucide-react';
-import { useState } from 'react';
-import dynamic from 'next/dynamic';
+import { Check, Copy, Download, Loader2 } from 'lucide-react'
+import dynamic from 'next/dynamic'
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { generateMCPServer } from '@/lib/generators/mcpServerGenerator'
+import { useStore } from '@/lib/store/useStore'
 
 const Editor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
@@ -14,28 +14,28 @@ const Editor = dynamic(() => import('@monaco-editor/react'), {
       <Loader2 className="w-5 h-5 animate-spin text-[var(--text-tertiary)]" />
     </div>
   ),
-});
+})
 
 export function CodeTab() {
-  const { serverConfig } = useStore();
-  const [copied, setCopied] = useState(false);
-  const code = generateMCPServer(serverConfig);
+  const { serverConfig } = useStore()
+  const [copied, setCopied] = useState(false)
+  const code = generateMCPServer(serverConfig)
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+    navigator.clipboard.writeText(code)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   const handleDownload = () => {
-    const blob = new Blob([code], { type: 'text/typescript' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${serverConfig.name}.ts`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+    const blob = new Blob([code], { type: 'text/typescript' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${serverConfig.name}.ts`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   return (
     <div className="h-full flex flex-col p-4">
@@ -95,5 +95,5 @@ export function CodeTab() {
         </div>
       )}
     </div>
-  );
+  )
 }

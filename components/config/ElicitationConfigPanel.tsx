@@ -1,22 +1,28 @@
-'use client';
+'use client'
 
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ElicitationConfig, ElicitationFormField } from '@/lib/types';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import type { ElicitationConfig, ElicitationFormField } from '@/lib/types'
 
 interface ElicitationConfigPanelProps {
-  config: ElicitationConfig;
-  onChange: (config: ElicitationConfig) => void;
+  config: ElicitationConfig
+  onChange: (config: ElicitationConfig) => void
 }
 
 export function ElicitationConfigPanel({ config, onChange }: ElicitationConfigPanelProps) {
   const handleChange = (updates: Partial<ElicitationConfig>) => {
-    onChange({ ...config, ...updates });
-  };
+    onChange({ ...config, ...updates })
+  }
 
   const handleAddField = () => {
     const newField: ElicitationFormField = {
@@ -24,20 +30,20 @@ export function ElicitationConfigPanel({ config, onChange }: ElicitationConfigPa
       type: 'string',
       description: '',
       required: false,
-    };
-    handleChange({ formFields: [...(config.formFields || []), newField] });
-  };
+    }
+    handleChange({ formFields: [...(config.formFields || []), newField] })
+  }
 
   const handleUpdateField = (index: number, updates: Partial<ElicitationFormField>) => {
-    const newFields = [...(config.formFields || [])];
-    newFields[index] = { ...newFields[index], ...updates };
-    handleChange({ formFields: newFields });
-  };
+    const newFields = [...(config.formFields || [])]
+    newFields[index] = { ...newFields[index], ...updates }
+    handleChange({ formFields: newFields })
+  }
 
   const handleDeleteField = (index: number) => {
-    const newFields = (config.formFields || []).filter((_, i) => i !== index);
-    handleChange({ formFields: newFields });
-  };
+    const newFields = (config.formFields || []).filter((_, i) => i !== index)
+    handleChange({ formFields: newFields })
+  }
 
   return (
     <div className="space-y-4">
@@ -93,12 +99,7 @@ export function ElicitationConfigPanel({ config, onChange }: ElicitationConfigPa
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <Label className="text-[var(--text-secondary)] text-sm">Form Fields</Label>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleAddField}
-              className="text-xs"
-            >
+            <Button variant="outline" size="sm" onClick={handleAddField} className="text-xs">
               <Plus className="w-3 h-3 mr-1" />
               Add Field
             </Button>
@@ -107,7 +108,9 @@ export function ElicitationConfigPanel({ config, onChange }: ElicitationConfigPa
           {(config.formFields || []).length === 0 ? (
             <div className="text-center py-6 border border-dashed border-[var(--border-default)] rounded-lg">
               <p className="text-sm text-[var(--text-secondary)]">No form fields</p>
-              <p className="text-xs text-[var(--text-tertiary)] mt-1">Add fields to collect user input</p>
+              <p className="text-xs text-[var(--text-tertiary)] mt-1">
+                Add fields to collect user input
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -193,5 +196,5 @@ export function ElicitationConfigPanel({ config, onChange }: ElicitationConfigPa
         </div>
       )}
     </div>
-  );
+  )
 }

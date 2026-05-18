@@ -1,131 +1,131 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { useStore } from '@/lib/store/useStore';
 import {
-  executeTool,
-  testResource,
-  testPrompt,
-  runBatchValidation,
-  TestResult,
-  BatchTestResult,
-} from '@/lib/simulators/mcpTestSimulator';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Play,
-  FlaskConical,
-  Wrench,
-  FileText,
-  MessageSquareText,
-  ChevronRight,
-  CheckCircle2,
-  XCircle,
   AlertCircle,
-  PlayCircle,
   ArrowLeft,
-} from 'lucide-react';
-import { MCPTool, MCPResource, MCPPrompt, MCPParameter } from '@/lib/types';
+  CheckCircle2,
+  ChevronRight,
+  FileText,
+  FlaskConical,
+  MessageSquareText,
+  Play,
+  PlayCircle,
+  Wrench,
+  XCircle,
+} from 'lucide-react'
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  type BatchTestResult,
+  executeTool,
+  runBatchValidation,
+  type TestResult,
+  testPrompt,
+  testResource,
+} from '@/lib/simulators/mcpTestSimulator'
+import { useStore } from '@/lib/store/useStore'
+import type { MCPParameter, MCPPrompt, MCPResource, MCPTool } from '@/lib/types'
 
-type ItemType = 'tool' | 'resource' | 'prompt';
+type ItemType = 'tool' | 'resource' | 'prompt'
 
 interface SelectedItem {
-  type: ItemType;
-  item: MCPTool | MCPResource | MCPPrompt;
+  type: ItemType
+  item: MCPTool | MCPResource | MCPPrompt
 }
 
 export function TestTab() {
-  const { tools, resources, prompts } = useStore();
-  const [selectedItem, setSelectedItem] = useState<SelectedItem | null>(null);
-  const [formValues, setFormValues] = useState<Record<string, unknown>>({});
-  const [testResult, setTestResult] = useState<TestResult | null>(null);
-  const [batchResult, setBatchResult] = useState<BatchTestResult | null>(null);
-  const [isRunning, setIsRunning] = useState(false);
+  const { tools, resources, prompts } = useStore()
+  const [selectedItem, setSelectedItem] = useState<SelectedItem | null>(null)
+  const [formValues, setFormValues] = useState<Record<string, unknown>>({})
+  const [testResult, setTestResult] = useState<TestResult | null>(null)
+  const [batchResult, setBatchResult] = useState<BatchTestResult | null>(null)
+  const [isRunning, setIsRunning] = useState(false)
 
-  const hasItems = tools.length > 0 || resources.length > 0 || prompts.length > 0;
+  const hasItems = tools.length > 0 || resources.length > 0 || prompts.length > 0
 
   const handleSelectItem = (type: ItemType, item: MCPTool | MCPResource | MCPPrompt) => {
-    setSelectedItem({ type, item });
-    setFormValues({});
-    setTestResult(null);
-  };
+    setSelectedItem({ type, item })
+    setFormValues({})
+    setTestResult(null)
+  }
 
   const handleBack = () => {
-    setSelectedItem(null);
-    setFormValues({});
-    setTestResult(null);
-  };
+    setSelectedItem(null)
+    setFormValues({})
+    setTestResult(null)
+  }
 
   const handleInputChange = (name: string, value: unknown, type: string) => {
-    let parsedValue: unknown = value;
+    let parsedValue: unknown = value
 
     if (type === 'number') {
-      parsedValue = value === '' ? undefined : Number(value);
+      parsedValue = value === '' ? undefined : Number(value)
     } else if (type === 'boolean') {
-      parsedValue = value === 'true';
+      parsedValue = value === 'true'
     } else if (type === 'array' || type === 'object') {
       try {
-        parsedValue = value ? JSON.parse(value as string) : undefined;
+        parsedValue = value ? JSON.parse(value as string) : undefined
       } catch {
-        parsedValue = value;
+        parsedValue = value
       }
     }
 
-    setFormValues((prev) => ({ ...prev, [name]: parsedValue }));
-  };
+    setFormValues((prev) => ({ ...prev, [name]: parsedValue }))
+  }
 
   const handleTest = async () => {
-    if (!selectedItem) return;
+    if (!selectedItem) return
 
-    setIsRunning(true);
-    setTestResult(null);
+    setIsRunning(true)
+    setTestResult(null)
 
     // Simulate async execution
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 300))
 
-    let result: TestResult;
+    let result: TestResult
 
     switch (selectedItem.type) {
       case 'tool':
-        result = executeTool(selectedItem.item as MCPTool, formValues);
-        break;
+        result = executeTool(selectedItem.item as MCPTool, formValues)
+        break
       case 'resource':
-        result = testResource(selectedItem.item as MCPResource);
-        break;
+        result = testResource(selectedItem.item as MCPResource)
+        break
       case 'prompt':
-        result = testPrompt(selectedItem.item as MCPPrompt, formValues);
-        break;
+        result = testPrompt(selectedItem.item as MCPPrompt, formValues)
+        break
     }
 
-    setTestResult(result);
-    setIsRunning(false);
-  };
+    setTestResult(result)
+    setIsRunning(false)
+  }
 
   const handleTestAll = async () => {
-    setIsRunning(true);
-    setBatchResult(null);
-    setSelectedItem(null);
+    setIsRunning(true)
+    setBatchResult(null)
+    setSelectedItem(null)
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500))
 
-    const result = runBatchValidation(tools, resources, prompts);
-    setBatchResult(result);
-    setIsRunning(false);
-  };
+    const result = runBatchValidation(tools, resources, prompts)
+    setBatchResult(result)
+    setIsRunning(false)
+  }
 
   // Get parameters for the selected item
   const getParameters = (): MCPParameter[] => {
-    if (!selectedItem) return [];
+    if (!selectedItem) return []
 
     if (selectedItem.type === 'tool') {
-      return (selectedItem.item as MCPTool).parameters;
+      return (selectedItem.item as MCPTool).parameters
     }
     if (selectedItem.type === 'prompt') {
-      return (selectedItem.item as MCPPrompt).arguments;
+      return (selectedItem.item as MCPPrompt).arguments
     }
-    return [];
-  };
+    return []
+  }
 
   if (!hasItems) {
     return (
@@ -140,7 +140,7 @@ export function TestTab() {
           </p>
         </div>
       </div>
-    );
+    )
   }
 
   // Batch results view
@@ -210,12 +210,12 @@ export function TestTab() {
           )}
         </div>
       </div>
-    );
+    )
   }
 
   // Item detail / test view
   if (selectedItem) {
-    const params = getParameters();
+    const params = getParameters()
 
     return (
       <div className="h-full flex flex-col p-4">
@@ -230,17 +230,13 @@ export function TestTab() {
           </Button>
           <div className="flex items-center gap-2">
             <ItemIcon type={selectedItem.type} />
-            <h3 className="font-semibold text-[var(--text-primary)]">
-              {selectedItem.item.name}
-            </h3>
+            <h3 className="font-semibold text-[var(--text-primary)]">{selectedItem.item.name}</h3>
           </div>
         </div>
 
         <div className="flex-1 overflow-auto space-y-4">
           {/* Description */}
-          <p className="text-xs text-[var(--text-secondary)]">
-            {selectedItem.item.description}
-          </p>
+          <p className="text-xs text-[var(--text-secondary)]">{selectedItem.item.description}</p>
 
           {/* Resource-specific info */}
           {selectedItem.type === 'resource' && (
@@ -291,11 +287,7 @@ export function TestTab() {
 
         {/* Test button */}
         <div className="mt-4 pt-4 border-t border-[var(--border-default)]">
-          <Button
-            onClick={handleTest}
-            disabled={isRunning}
-            className="w-full"
-          >
+          <Button onClick={handleTest} disabled={isRunning} className="w-full">
             {isRunning ? (
               <>
                 <PlayCircle className="w-4 h-4 mr-2 animate-spin" />
@@ -310,7 +302,7 @@ export function TestTab() {
           </Button>
         </div>
       </div>
-    );
+    )
   }
 
   // Item list view
@@ -398,7 +390,7 @@ export function TestTab() {
         )}
       </div>
     </div>
-  );
+  )
 }
 
 // Helper Components
@@ -406,11 +398,11 @@ export function TestTab() {
 function ItemIcon({ type }: { type: ItemType }) {
   switch (type) {
     case 'tool':
-      return <Wrench className="w-4 h-4 text-[var(--accent)]" />;
+      return <Wrench className="w-4 h-4 text-[var(--accent)]" />
     case 'resource':
-      return <FileText className="w-4 h-4 text-[var(--accent)]" />;
+      return <FileText className="w-4 h-4 text-[var(--accent)]" />
     case 'prompt':
-      return <MessageSquareText className="w-4 h-4 text-[var(--accent)]" />;
+      return <MessageSquareText className="w-4 h-4 text-[var(--accent)]" />
   }
 }
 
@@ -419,27 +411,24 @@ function ItemRow({
   item,
   onClick,
 }: {
-  type: ItemType;
-  item: MCPTool | MCPResource | MCPPrompt;
-  onClick: () => void;
+  type: ItemType
+  item: MCPTool | MCPResource | MCPPrompt
+  onClick: () => void
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
       className="w-full flex items-center gap-3 p-2 rounded-lg bg-[var(--bg-elevated)] hover:bg-[var(--bg-base)] border border-[var(--border-default)] hover:border-[var(--accent)]/30 transition-colors group"
     >
       <ItemIcon type={type} />
       <div className="flex-1 text-left min-w-0">
-        <div className="text-sm font-medium text-[var(--text-primary)] truncate">
-          {item.name}
-        </div>
-        <div className="text-xs text-[var(--text-tertiary)] truncate">
-          {item.description}
-        </div>
+        <div className="text-sm font-medium text-[var(--text-primary)] truncate">{item.name}</div>
+        <div className="text-xs text-[var(--text-tertiary)] truncate">{item.description}</div>
       </div>
       <ChevronRight className="w-4 h-4 text-[var(--text-tertiary)] group-hover:text-[var(--accent)] transition-colors" />
     </button>
-  );
+  )
 }
 
 function ParameterInput({
@@ -448,12 +437,12 @@ function ParameterInput({
   onChange,
   error,
 }: {
-  param: MCPParameter;
-  value: unknown;
-  onChange: (value: unknown) => void;
-  error?: string;
+  param: MCPParameter
+  value: unknown
+  onChange: (value: unknown) => void
+  error?: string
 }) {
-  const inputValue = value !== undefined ? String(value) : '';
+  const inputValue = value !== undefined ? String(value) : ''
 
   return (
     <div className="space-y-1">
@@ -501,7 +490,7 @@ function ParameterInput({
         </p>
       )}
     </div>
-  );
+  )
 }
 
 function TestResultDisplay({ result }: { result: TestResult }) {
@@ -548,11 +537,11 @@ function TestResultDisplay({ result }: { result: TestResult }) {
         </pre>
       )}
     </div>
-  );
+  )
 }
 
 function BatchResultItem({ name, result }: { name: string; result: TestResult }) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false)
 
   return (
     <div
@@ -562,10 +551,7 @@ function BatchResultItem({ name, result }: { name: string; result: TestResult })
           : 'bg-[var(--error)]/5 border-[var(--error)]/30'
       }`}
     >
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-2"
-      >
+      <button type="button" onClick={() => setExpanded(!expanded)} className="w-full flex items-center gap-2">
         {result.success ? (
           <CheckCircle2 className="w-3.5 h-3.5 text-[var(--success)]" />
         ) : (
@@ -589,5 +575,5 @@ function BatchResultItem({ name, result }: { name: string; result: TestResult })
         </div>
       )}
     </div>
-  );
+  )
 }

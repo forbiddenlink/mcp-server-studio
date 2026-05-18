@@ -1,143 +1,143 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion'
 import {
-  Search,
-  Plus,
-  Download,
-  Trash2,
-  Maximize,
-  FileText,
-  Globe,
-  Database,
-  Mail,
-  FilePlus,
-  Terminal,
-  Cloud,
-  GitBranch,
-  Image,
   Calculator,
   Calendar,
-  MessageSquare,
-  Code,
-  Languages,
   Camera,
-  MousePointer,
-  Copy,
   Clipboard,
-  Undo2,
-  Redo2,
+  Cloud,
+  Code,
+  Copy,
+  Database,
+  Download,
+  FilePlus,
+  FileText,
+  GitBranch,
+  Globe,
+  Image,
+  Languages,
   type LucideIcon,
-} from 'lucide-react';
+  Mail,
+  Maximize,
+  MessageSquare,
+  MousePointer,
+  Plus,
+  Redo2,
+  Search,
+  Terminal,
+  Trash2,
+  Undo2,
+} from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 interface Command {
-  id: string;
-  label: string;
-  category: 'add' | 'action' | 'navigate';
-  icon: LucideIcon;
-  keywords?: string[];
-  action: () => void;
+  id: string
+  label: string
+  category: 'add' | 'action' | 'navigate'
+  icon: LucideIcon
+  keywords?: string[]
+  action: () => void
 }
 
 interface CommandPaletteProps {
-  isOpen: boolean;
-  onClose: () => void;
-  commands: Command[];
+  isOpen: boolean
+  onClose: () => void
+  commands: Command[]
 }
 
 const categoryLabels: Record<string, string> = {
   add: 'Add Tool',
   action: 'Actions',
   navigate: 'Navigate to Tool',
-};
+}
 
 export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProps) {
-  const [query, setQuery] = useState('');
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
+  const [query, setQuery] = useState('')
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
 
   // Filter commands based on query
   const filteredCommands = useMemo(() => {
-    if (!query.trim()) return commands;
+    if (!query.trim()) return commands
 
-    const lowerQuery = query.toLowerCase();
+    const lowerQuery = query.toLowerCase()
     return commands.filter((cmd) => {
-      const matchLabel = cmd.label.toLowerCase().includes(lowerQuery);
-      const matchKeywords = cmd.keywords?.some((k) => k.toLowerCase().includes(lowerQuery));
-      return matchLabel || matchKeywords;
-    });
-  }, [commands, query]);
+      const matchLabel = cmd.label.toLowerCase().includes(lowerQuery)
+      const matchKeywords = cmd.keywords?.some((k) => k.toLowerCase().includes(lowerQuery))
+      return matchLabel || matchKeywords
+    })
+  }, [commands, query])
 
   // Group commands by category
   const groupedCommands = useMemo(() => {
-    const groups: Record<string, Command[]> = {};
+    const groups: Record<string, Command[]> = {}
     filteredCommands.forEach((cmd) => {
-      if (!groups[cmd.category]) groups[cmd.category] = [];
-      groups[cmd.category].push(cmd);
-    });
-    return groups;
-  }, [filteredCommands]);
+      if (!groups[cmd.category]) groups[cmd.category] = []
+      groups[cmd.category].push(cmd)
+    })
+    return groups
+  }, [filteredCommands])
 
   // Flat list for keyboard navigation
   const flatList = useMemo(() => {
-    return Object.values(groupedCommands).flat();
-  }, [groupedCommands]);
+    return Object.values(groupedCommands).flat()
+  }, [groupedCommands])
 
   // Reset state when opening
   useEffect(() => {
     if (isOpen) {
-      setQuery('');
-      setSelectedIndex(0);
-      setTimeout(() => inputRef.current?.focus(), 50);
+      setQuery('')
+      setSelectedIndex(0)
+      setTimeout(() => inputRef.current?.focus(), 50)
     }
-  }, [isOpen]);
+  }, [isOpen])
 
   // Keep selected item in view
   useEffect(() => {
     if (listRef.current && flatList.length > 0) {
-      const selectedEl = listRef.current.querySelector(`[data-index="${selectedIndex}"]`);
-      selectedEl?.scrollIntoView({ block: 'nearest' });
+      const selectedEl = listRef.current.querySelector(`[data-index="${selectedIndex}"]`)
+      selectedEl?.scrollIntoView({ block: 'nearest' })
     }
-  }, [selectedIndex, flatList.length]);
+  }, [selectedIndex, flatList.length])
 
   // Keyboard navigation
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       switch (e.key) {
         case 'ArrowDown':
-          e.preventDefault();
-          setSelectedIndex((i) => Math.min(i + 1, flatList.length - 1));
-          break;
+          e.preventDefault()
+          setSelectedIndex((i) => Math.min(i + 1, flatList.length - 1))
+          break
         case 'ArrowUp':
-          e.preventDefault();
-          setSelectedIndex((i) => Math.max(i - 1, 0));
-          break;
+          e.preventDefault()
+          setSelectedIndex((i) => Math.max(i - 1, 0))
+          break
         case 'Enter':
-          e.preventDefault();
+          e.preventDefault()
           if (flatList[selectedIndex]) {
-            flatList[selectedIndex].action();
-            onClose();
+            flatList[selectedIndex].action()
+            onClose()
           }
-          break;
+          break
         case 'Escape':
-          e.preventDefault();
-          onClose();
-          break;
+          e.preventDefault()
+          onClose()
+          break
       }
     },
     [flatList, selectedIndex, onClose]
-  );
+  )
 
   // Reset selection when filtered results change
   useEffect(() => {
-    setSelectedIndex(0);
-  }, [query]);
+    setSelectedIndex(0)
+  }, [])
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
-  let currentIndex = 0;
+  let currentIndex = 0
 
   return (
     <AnimatePresence>
@@ -192,29 +192,31 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
                         {categoryLabels[category] || category}
                       </div>
                       {cmds.map((cmd) => {
-                        const index = currentIndex++;
-                        const Icon = cmd.icon;
+                        const index = currentIndex++
+                        const Icon = cmd.icon
                         return (
                           <button
+                            type="button"
                             key={cmd.id}
                             data-index={index}
                             onClick={() => {
-                              cmd.action();
-                              onClose();
+                              cmd.action()
+                              onClose()
                             }}
                             onMouseEnter={() => setSelectedIndex(index)}
                             className={`
                               w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors
-                              ${index === selectedIndex
-                                ? 'bg-[var(--accent)] text-white'
-                                : 'text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
+                              ${
+                                index === selectedIndex
+                                  ? 'bg-[var(--accent)] text-white'
+                                  : 'text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
                               }
                             `}
                           >
                             <Icon className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} />
                             <span className="text-sm">{cmd.label}</span>
                           </button>
-                        );
+                        )
                       })}
                     </div>
                   ))
@@ -224,11 +226,15 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
               {/* Footer hint */}
               <div className="px-4 py-2 border-t border-[var(--border-default)] flex items-center gap-4 text-xs text-[var(--text-tertiary)]">
                 <span className="flex items-center gap-1">
-                  <kbd className="px-1.5 py-0.5 bg-[var(--bg-elevated)] rounded border border-[var(--border-default)]">↑↓</kbd>
+                  <kbd className="px-1.5 py-0.5 bg-[var(--bg-elevated)] rounded border border-[var(--border-default)]">
+                    ↑↓
+                  </kbd>
                   navigate
                 </span>
                 <span className="flex items-center gap-1">
-                  <kbd className="px-1.5 py-0.5 bg-[var(--bg-elevated)] rounded border border-[var(--border-default)]">↵</kbd>
+                  <kbd className="px-1.5 py-0.5 bg-[var(--bg-elevated)] rounded border border-[var(--border-default)]">
+                    ↵
+                  </kbd>
                   select
                 </span>
               </div>
@@ -237,7 +243,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
         </>
       )}
     </AnimatePresence>
-  );
+  )
 }
 
 // Icon mapping for creating commands
@@ -267,4 +273,4 @@ export const commandIcons: Record<string, LucideIcon> = {
   Clipboard,
   Undo2,
   Redo2,
-};
+}

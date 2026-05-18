@@ -1,12 +1,7 @@
-'use client';
+'use client'
 
-import { memo } from 'react';
-import {
-  BaseEdge,
-  EdgeProps,
-  getBezierPath,
-  EdgeLabelRenderer,
-} from '@xyflow/react';
+import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getBezierPath } from '@xyflow/react'
+import { memo } from 'react'
 
 function DataFlowEdgeComponent({
   id,
@@ -26,7 +21,7 @@ function DataFlowEdgeComponent({
     targetX,
     targetY,
     targetPosition,
-  });
+  })
 
   return (
     <>
@@ -58,11 +53,7 @@ function DataFlowEdgeComponent({
 
       {/* Animated flow particle */}
       <circle r="3" fill="var(--accent)">
-        <animateMotion
-          dur="2s"
-          repeatCount="indefinite"
-          path={edgePath}
-        />
+        <animateMotion dur="2s" repeatCount="indefinite" path={edgePath} />
       </circle>
 
       {/* Data flow label */}
@@ -78,9 +69,10 @@ function DataFlowEdgeComponent({
             className={`
               px-2 py-0.5 rounded-full text-[10px] font-medium
               transition-all duration-150
-              ${selected
-                ? 'bg-[var(--accent)] text-white'
-                : 'bg-[var(--bg-elevated)] text-[var(--text-tertiary)] border border-[var(--border-default)]'
+              ${
+                selected
+                  ? 'bg-[var(--accent)] text-white'
+                  : 'bg-[var(--bg-elevated)] text-[var(--text-tertiary)] border border-[var(--border-default)]'
               }
             `}
           >
@@ -89,8 +81,8 @@ function DataFlowEdgeComponent({
         </div>
       </EdgeLabelRenderer>
     </>
-  );
+  )
 }
 
-export const DataFlowEdge = memo(DataFlowEdgeComponent);
-DataFlowEdge.displayName = 'DataFlowEdge';
+export const DataFlowEdge = memo(DataFlowEdgeComponent)
+DataFlowEdge.displayName = 'DataFlowEdge'

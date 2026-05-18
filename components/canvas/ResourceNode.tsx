@@ -1,39 +1,46 @@
-'use client';
+'use client'
 
-import { memo } from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
-import { MCPResource } from '@/lib/types';
-import { useStore } from '@/lib/store/useStore';
-import { cn } from '@/lib/utils';
-import { Database, FileText } from 'lucide-react';
+import { Handle, type NodeProps, Position } from '@xyflow/react'
+import { Database, FileText } from 'lucide-react'
+import { memo } from 'react'
+import { useStore } from '@/lib/store/useStore'
+import type { MCPResource } from '@/lib/types'
+import { cn } from '@/lib/utils'
 
 export interface ResourceNodeData {
-  resource: MCPResource;
+  resource: MCPResource
 }
 
 function ResourceNodeComponent({ id, data, selected }: NodeProps) {
-  const { selectNode, selectedNodeId } = useStore();
-  const resource = (data as unknown as ResourceNodeData).resource;
-  const isSelected = selectedNodeId === id || selected;
+  const { selectNode, selectedNodeId } = useStore()
+  const resource = (data as unknown as ResourceNodeData).resource
+  const isSelected = selectedNodeId === id || selected
 
   const handleClick = () => {
-    selectNode(id);
-  };
+    selectNode(id)
+  }
 
   // Choose icon based on mimeType
-  const IconComponent = resource.mimeType.includes('text') ? FileText : Database;
+  const IconComponent = resource.mimeType.includes('text') ? FileText : Database
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: React Flow nodes contain nested interactive elements (Handle, buttons) so a real <button> would be invalid HTML
     <div
       onClick={handleClick}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          handleClick()
+        }
+      }}
       role="button"
       tabIndex={0}
       aria-label={`Resource: ${resource.name}`}
       className={cn(
         'surface-base p-4 min-w-[220px] cursor-pointer transition-colors duration-100',
         'hover:border-emerald-500/50 hover:bg-[var(--bg-hover)]',
-        isSelected && 'ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-emerald-500 border-emerald-500/50'
+        isSelected &&
+          'ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-emerald-500 border-emerald-500/50'
       )}
     >
       <Handle
@@ -72,8 +79,8 @@ function ResourceNodeComponent({ id, data, selected }: NodeProps) {
         className="w-3 h-3 !bg-emerald-500 !border-2 !border-[var(--bg-base)]"
       />
     </div>
-  );
+  )
 }
 
-export const ResourceNode = memo(ResourceNodeComponent);
-ResourceNode.displayName = 'ResourceNode';
+export const ResourceNode = memo(ResourceNodeComponent)
+ResourceNode.displayName = 'ResourceNode'

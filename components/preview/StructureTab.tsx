@@ -1,21 +1,21 @@
-'use client';
+'use client'
 
-import { useStore } from '@/lib/store/useStore';
-import { generateManifest } from '@/lib/generators/manifestGenerator';
-import { Button } from '@/components/ui/button';
-import { Copy, Check, ClipboardList } from 'lucide-react';
-import { useState } from 'react';
+import { Check, ClipboardList, Copy } from 'lucide-react'
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { generateManifest } from '@/lib/generators/manifestGenerator'
+import { useStore } from '@/lib/store/useStore'
 
 export function StructureTab() {
-  const { serverConfig } = useStore();
-  const [copied, setCopied] = useState(false);
-  const manifest = generateManifest(serverConfig);
+  const { serverConfig } = useStore()
+  const [copied, setCopied] = useState(false)
+  const manifest = generateManifest(serverConfig)
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(JSON.stringify(manifest, null, 2));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+    navigator.clipboard.writeText(JSON.stringify(manifest, null, 2))
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   return (
     <div className="h-full flex flex-col p-4">
@@ -39,7 +39,9 @@ export function StructureTab() {
               <ClipboardList className="w-6 h-6 text-[var(--accent)]" strokeWidth={1.5} />
             </div>
             <p className="text-sm font-medium text-[var(--text-primary)]">No tools yet</p>
-            <p className="text-xs text-[var(--text-tertiary)] mt-1">Add tools to see the server manifest</p>
+            <p className="text-xs text-[var(--text-tertiary)] mt-1">
+              Add tools to see the server manifest
+            </p>
           </div>
         </div>
       ) : (
@@ -50,5 +52,5 @@ export function StructureTab() {
         </div>
       )}
     </div>
-  );
+  )
 }

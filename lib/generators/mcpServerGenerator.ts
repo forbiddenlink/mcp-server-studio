@@ -1,11 +1,20 @@
-import { MCPServerConfig, MCPTool, MCPParameter, MCPResource, MCPPrompt, TransportType, SamplingConfig, ElicitationConfig } from '../types';
-import { escapeTemplateLiteral, escapeDoubleQuoted, sanitizeIdentifier } from '../utils/sanitize';
+import type {
+  ElicitationConfig,
+  MCPParameter,
+  MCPPrompt,
+  MCPResource,
+  MCPServerConfig,
+  MCPTool,
+  SamplingConfig,
+  TransportType,
+} from '../types'
+import { escapeDoubleQuoted, escapeTemplateLiteral, sanitizeIdentifier } from '../utils/sanitize'
 
 /**
  * Converts a name to snake_case for MCP tool identifiers
  */
 function toSnakeCase(name: string): string {
-  return sanitizeIdentifier(name);
+  return sanitizeIdentifier(name)
 }
 
 /**
@@ -15,42 +24,45 @@ function typeToZodSchema(param: MCPParameter): string {
   const baseSchema = (() => {
     switch (param.type) {
       case 'string':
-        return buildStringSchema(param);
+        return buildStringSchema(param)
       case 'number':
-        return buildNumberSchema(param);
+        return buildNumberSchema(param)
       case 'boolean':
-        return 'z.boolean()';
+        return 'z.boolean()'
       case 'array':
-        return buildArraySchema(param);
+        return buildArraySchema(param)
       case 'object':
-        return 'z.record(z.unknown())';
+        return 'z.record(z.unknown())'
       default:
-        return 'z.unknown()';
+        return 'z.unknown()'
     }
-  })();
+  })()
 
-  const withDescription = `${baseSchema}.describe("${escapeDoubleQuoted(param.description)}")`;
+  const withDescription = `${baseSchema}.describe("${escapeDoubleQuoted(param.description)}")`
 
   // Add default value if specified
-  const withDefault = param.default !== undefined
-    ? `${withDescription}.default(${formatDefaultValue(param.default)})`
-    : withDescription;
+  const withDefault =
+    param.default !== undefined
+      ? `${withDescription}.default(${formatDefaultValue(param.default)})`
+      : withDescription
 
-  return param.required ? withDefault : `${withDefault}.optional()`;
+  return param.required ? withDefault : `${withDefault}.optional()`
 }
 
 /**
  * Formats a default value for Zod schema generation
  */
-function formatDefaultValue(value: string | number | boolean | unknown[] | Record<string, unknown>): string {
+function formatDefaultValue(
+  value: string | number | boolean | unknown[] | Record<string, unknown>
+): string {
   if (typeof value === 'string') {
-    return `"${escapeDoubleQuoted(value)}"`;
+    return `"${escapeDoubleQuoted(value)}"`
   }
   if (typeof value === 'number' || typeof value === 'boolean') {
-    return String(value);
+    return String(value)
   }
   // Arrays and objects
-  return JSON.stringify(value);
+  return JSON.stringify(value)
 }
 
 /**
@@ -60,128 +72,126 @@ function buildStringSchema(param: MCPParameter): string {
   // Handle enum constraint - use z.enum() for multiple values, z.literal() for single
   if (param.enum && param.enum.length > 0) {
     if (param.enum.length === 1) {
-      return `z.literal("${escapeDoubleQuoted(param.enum[0])}")`;
+      return `z.literal("${escapeDoubleQuoted(param.enum[0])}")`
     }
-    const enumValues = param.enum.map(v => `"${escapeDoubleQuoted(v)}"`).join(', ');
-    return `z.enum([${enumValues}])`;
+    const enumValues = param.enum.map((v) => `"${escapeDoubleQuoted(v)}"`).join(', ')
+    return `z.enum([${enumValues}])`
   }
 
-  const constraints: string[] = [];
+  const constraints: string[] = []
 
   // Handle format constraint
   if (param.format) {
     switch (param.format) {
       case 'email':
-        constraints.push('.email()');
-        break;
+        constraints.push('.email()')
+        break
       case 'uri':
-        constraints.push('.url()');
-        break;
+        constraints.push('.url()')
+        break
       case 'uuid':
-        constraints.push('.uuid()');
-        break;
+        constraints.push('.uuid()')
+        break
       case 'date-time':
-        constraints.push('.datetime()');
-        break;
+        constraints.push('.datetime()')
+        break
       case 'date':
-        constraints.push('.regex(/^\\d{4}-\\d{2}-\\d{2}$/)');
-        break;
+        constraints.push('.regex(/^\\d{4}-\\d{2}-\\d{2}$/)')
+        break
     }
   }
 
   // Handle length constraints
   if (param.minLength !== undefined) {
-    constraints.push(`.min(${param.minLength})`);
+    constraints.push(`.min(${param.minLength})`)
   }
 
   if (param.maxLength !== undefined) {
-    constraints.push(`.max(${param.maxLength})`);
+    constraints.push(`.max(${param.maxLength})`)
   }
 
   // Handle pattern constraint
   if (param.pattern) {
     // Escape backslashes for the regex string
-    const escapedPattern = param.pattern.replace(/\\/g, '\\\\');
-    constraints.push(`.regex(new RegExp("${escapedPattern}"))`);
+    const escapedPattern = param.pattern.replace(/\\/g, '\\\\')
+    constraints.push(`.regex(new RegExp("${escapedPattern}"))`)
   }
 
-  return `z.string()${constraints.join('')}`;
+  return `z.string()${constraints.join('')}`
 }
 
 /**
  * Builds a Zod number schema with min/max constraints
  */
 function buildNumberSchema(param: MCPParameter): string {
-  const constraints: string[] = [];
+  const constraints: string[] = []
 
   if (param.minimum !== undefined) {
-    constraints.push(`.min(${param.minimum})`);
+    constraints.push(`.min(${param.minimum})`)
   }
 
   if (param.maximum !== undefined) {
-    constraints.push(`.max(${param.maximum})`);
+    constraints.push(`.max(${param.maximum})`)
   }
 
-  return `z.number()${constraints.join('')}`;
+  return `z.number()${constraints.join('')}`
 }
 
 /**
  * Builds a Zod array schema with minItems, maxItems, and uniqueItems constraints
  */
 function buildArraySchema(param: MCPParameter): string {
-  const constraints: string[] = [];
+  const constraints: string[] = []
 
   if (param.minItems !== undefined) {
-    constraints.push(`.min(${param.minItems})`);
+    constraints.push(`.min(${param.minItems})`)
   }
 
   if (param.maxItems !== undefined) {
-    constraints.push(`.max(${param.maxItems})`);
+    constraints.push(`.max(${param.maxItems})`)
   }
 
   if (param.uniqueItems) {
-    constraints.push(`.refine((arr) => new Set(arr).size === arr.length, { message: 'Items must be unique' })`);
+    constraints.push(
+      `.refine((arr) => new Set(arr).size === arr.length, { message: 'Items must be unique' })`
+    )
   }
 
-  return `z.array(z.unknown())${constraints.join('')}`;
+  return `z.array(z.unknown())${constraints.join('')}`
 }
 
 /**
  * Generates Zod schema definition for a tool's parameters
  */
 function generateZodSchema(tool: MCPTool): string {
-  const toolId = toSnakeCase(tool.name);
-  const schemaName = `${toolId.charAt(0).toUpperCase() + toolId.slice(1).replace(/_([a-z])/g, (_, c) => c.toUpperCase())}Schema`;
+  const toolId = toSnakeCase(tool.name)
+  const schemaName = `${toolId.charAt(0).toUpperCase() + toolId.slice(1).replace(/_([a-z])/g, (_, c) => c.toUpperCase())}Schema`
 
   if (tool.parameters.length === 0) {
-    return `const ${schemaName} = z.object({});`;
+    return `const ${schemaName} = z.object({});`
   }
 
-  const properties = tool.parameters
-    .map(p => `  ${p.name}: ${typeToZodSchema(p)}`)
-    .join(',\n');
+  const properties = tool.parameters.map((p) => `  ${p.name}: ${typeToZodSchema(p)}`).join(',\n')
 
-  return `const ${schemaName} = z.object({\n${properties}\n});`;
+  return `const ${schemaName} = z.object({\n${properties}\n});`
 }
 
 /**
  * Generates sampling code for a tool
  */
 function generateSamplingCode(config: SamplingConfig): string {
-  const options: string[] = [
-    `maxTokens: ${config.maxTokens}`,
-  ];
+  const options: string[] = [`maxTokens: ${config.maxTokens}`]
 
   if (config.temperature !== undefined) {
-    options.push(`temperature: ${config.temperature}`);
+    options.push(`temperature: ${config.temperature}`)
   }
 
   if (config.modelHint) {
-    options.push(`modelHint: "${config.modelHint}"`);
+    options.push(`modelHint: "${config.modelHint}"`)
   }
 
   if (config.systemPrompt) {
-    options.push(`systemPrompt: "${escapeDoubleQuoted(config.systemPrompt)}"`);
+    options.push(`systemPrompt: "${escapeDoubleQuoted(config.systemPrompt)}"`)
   }
 
   return `
@@ -201,7 +211,7 @@ function generateSamplingCode(config: SamplingConfig): string {
 
       // Handle sampling result
       const sampledContent = samplingResult.content;
-`;
+`
 }
 
 /**
@@ -224,21 +234,21 @@ function generateElicitationCode(config: ElicitationConfig): string {
           isError: true,
         };
       }
-`;
+`
   }
 
   // Form mode
-  const schemaProperties: string[] = (config.formFields || []).map(field => {
-    const prop: string[] = [`type: "${field.type}"`];
+  const schemaProperties: string[] = (config.formFields || []).map((field) => {
+    const prop: string[] = [`type: "${field.type}"`]
     if (field.description) {
-      prop.push(`description: "${escapeDoubleQuoted(field.description)}"`);
+      prop.push(`description: "${escapeDoubleQuoted(field.description)}"`)
     }
-    return `${field.name}: { ${prop.join(', ')} }`;
-  });
+    return `${field.name}: { ${prop.join(', ')} }`
+  })
 
   const requiredFields = (config.formFields || [])
-    .filter(f => f.required)
-    .map(f => `"${f.name}"`);
+    .filter((f) => f.required)
+    .map((f) => `"${f.name}"`)
 
   return `
       // Request user input via form
@@ -263,32 +273,31 @@ function generateElicitationCode(config: ElicitationConfig): string {
       }
 
       const userInput = elicitResult.content;
-`;
+`
 }
 
 /**
  * Generates the tool registration code using server.tool()
  */
 function generateToolRegistration(tool: MCPTool): string {
-  const toolId = toSnakeCase(tool.name);
-  const schemaName = `${toolId.charAt(0).toUpperCase() + toolId.slice(1).replace(/_([a-z])/g, (_, c) => c.toUpperCase())}Schema`;
+  const toolId = toSnakeCase(tool.name)
+  const schemaName = `${toolId.charAt(0).toUpperCase() + toolId.slice(1).replace(/_([a-z])/g, (_, c) => c.toUpperCase())}Schema`
 
   // Build the parameter destructuring
-  const paramNames = tool.parameters.map(p => p.name).join(', ');
-  const handlerParams = tool.parameters.length > 0 ? `{ ${paramNames} }` : '_args';
+  const paramNames = tool.parameters.map((p) => p.name).join(', ')
+  const handlerParams = tool.parameters.length > 0 ? `{ ${paramNames} }` : '_args'
 
   // Generate capability code blocks
-  const samplingCode = tool.sampling?.enabled ? generateSamplingCode(tool.sampling) : '';
-  const elicitationCode = tool.elicitation?.enabled ? generateElicitationCode(tool.elicitation) : '';
+  const samplingCode = tool.sampling?.enabled ? generateSamplingCode(tool.sampling) : ''
+  const elicitationCode = tool.elicitation?.enabled ? generateElicitationCode(tool.elicitation) : ''
 
   // Build capability comments
-  const capabilities: string[] = [];
-  if (tool.sampling?.enabled) capabilities.push('Sampling');
-  if (tool.elicitation?.enabled) capabilities.push('Elicitation');
-  if (tool.tasks?.enabled) capabilities.push('Tasks (async)');
-  const capabilitiesComment = capabilities.length > 0
-    ? `\n * Capabilities: ${capabilities.join(', ')}`
-    : '';
+  const capabilities: string[] = []
+  if (tool.sampling?.enabled) capabilities.push('Sampling')
+  if (tool.elicitation?.enabled) capabilities.push('Elicitation')
+  if (tool.tasks?.enabled) capabilities.push('Tasks (async)')
+  const capabilitiesComment =
+    capabilities.length > 0 ? `\n * Capabilities: ${capabilities.join(', ')}` : ''
 
   return `/**
  * ${tool.icon} ${tool.name}
@@ -325,14 +334,14 @@ ${elicitationCode}${samplingCode}
       };
     }
   }
-);`;
+);`
 }
 
 /**
  * Generates resource registration code
  */
 function generateResourceRegistration(resource: MCPResource): string {
-  const resourceId = toSnakeCase(resource.name);
+  const resourceId = toSnakeCase(resource.name)
 
   return `/**
  * Resource: ${resource.name}
@@ -363,36 +372,34 @@ server.resource(
       throw new Error(\`Failed to fetch resource: \${errorMessage}\`);
     }
   }
-);`;
+);`
 }
 
 /**
  * Generates Zod schema for a prompt's arguments
  */
 function generatePromptSchema(prompt: MCPPrompt): string {
-  const promptId = toSnakeCase(prompt.name);
-  const schemaName = `${promptId.charAt(0).toUpperCase() + promptId.slice(1).replace(/_([a-z])/g, (_, c) => c.toUpperCase())}PromptSchema`;
+  const promptId = toSnakeCase(prompt.name)
+  const schemaName = `${promptId.charAt(0).toUpperCase() + promptId.slice(1).replace(/_([a-z])/g, (_, c) => c.toUpperCase())}PromptSchema`
 
   if (prompt.arguments.length === 0) {
-    return `const ${schemaName} = z.object({});`;
+    return `const ${schemaName} = z.object({});`
   }
 
-  const properties = prompt.arguments
-    .map(p => `  ${p.name}: ${typeToZodSchema(p)}`)
-    .join(',\n');
+  const properties = prompt.arguments.map((p) => `  ${p.name}: ${typeToZodSchema(p)}`).join(',\n')
 
-  return `const ${schemaName} = z.object({\n${properties}\n});`;
+  return `const ${schemaName} = z.object({\n${properties}\n});`
 }
 
 /**
  * Generates prompt registration code
  */
 function generatePromptRegistration(prompt: MCPPrompt): string {
-  const promptId = toSnakeCase(prompt.name);
-  const schemaName = `${promptId.charAt(0).toUpperCase() + promptId.slice(1).replace(/_([a-z])/g, (_, c) => c.toUpperCase())}PromptSchema`;
+  const promptId = toSnakeCase(prompt.name)
+  const schemaName = `${promptId.charAt(0).toUpperCase() + promptId.slice(1).replace(/_([a-z])/g, (_, c) => c.toUpperCase())}PromptSchema`
 
-  const paramNames = prompt.arguments.map(p => p.name).join(', ');
-  const handlerParams = prompt.arguments.length > 0 ? `{ ${paramNames} }` : '_args';
+  const paramNames = prompt.arguments.map((p) => p.name).join(', ')
+  const handlerParams = prompt.arguments.length > 0 ? `{ ${paramNames} }` : '_args'
 
   return `/**
  * Prompt: ${prompt.name}
@@ -424,7 +431,7 @@ server.prompt(
       throw new Error(\`Failed to generate prompt: \${errorMessage}\`);
     }
   }
-);`;
+);`
 }
 
 /**
@@ -436,22 +443,22 @@ function generateImports(transport: TransportType): string {
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import express, { Request, Response } from "express";
 import cors from "cors";
-import { z } from "zod";`;
+import { z } from "zod";`
   }
 
   return `import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { z } from "zod";`;
+import { z } from "zod";`
 }
 
 /**
  * Generates server startup code based on transport type
  */
 function generateServerStartup(config: MCPServerConfig): string {
-  const port = config.httpPort || 3000;
-  const safeName = escapeTemplateLiteral(config.name);
-  const safeNameDQ = escapeDoubleQuoted(config.name);
-  const safeVersionDQ = escapeDoubleQuoted(config.version);
+  const port = config.httpPort || 3000
+  const safeName = escapeTemplateLiteral(config.name)
+  const safeNameDQ = escapeDoubleQuoted(config.name)
+  const safeVersionDQ = escapeDoubleQuoted(config.version)
 
   if (config.transport === 'http') {
     return `// ============================================================================
@@ -514,7 +521,7 @@ async function main(): Promise<void> {
 main().catch((error) => {
   console.error("[${safeNameDQ}] Fatal error:", error);
   process.exit(1);
-});`;
+});`
   }
 
   return `// ============================================================================
@@ -533,32 +540,34 @@ async function main(): Promise<void> {
 main().catch((error) => {
   console.error("[${safeNameDQ}] Fatal error:", error);
   process.exit(1);
-});`;
+});`
 }
 
 /**
  * Generates a complete MCP server from the configuration
  */
 export function generateMCPServer(config: MCPServerConfig): string {
-  const transport = config.transport || 'stdio';
+  const transport = config.transport || 'stdio'
 
   // Generate Zod schemas
-  const toolSchemas = config.tools.map(generateZodSchema).join('\n\n');
-  const promptSchemas = (config.prompts || []).map(generatePromptSchema).join('\n\n');
+  const toolSchemas = config.tools.map(generateZodSchema).join('\n\n')
+  const promptSchemas = (config.prompts || []).map(generatePromptSchema).join('\n\n')
 
   // Generate registrations
-  const toolRegistrations = config.tools.map(generateToolRegistration).join('\n\n');
-  const resourceRegistrations = (config.resources || []).map(generateResourceRegistration).join('\n\n');
-  const promptRegistrations = (config.prompts || []).map(generatePromptRegistration).join('\n\n');
+  const toolRegistrations = config.tools.map(generateToolRegistration).join('\n\n')
+  const resourceRegistrations = (config.resources || [])
+    .map(generateResourceRegistration)
+    .join('\n\n')
+  const promptRegistrations = (config.prompts || []).map(generatePromptRegistration).join('\n\n')
 
   // Determine capabilities based on what's configured
-  const capabilities: string[] = [];
-  if (config.tools.length > 0) capabilities.push('tools: {}');
-  if (config.tools.some(t => t.sampling?.enabled)) capabilities.push('sampling: {}');
-  if (config.tools.some(t => t.elicitation?.enabled)) capabilities.push('elicitation: {}');
-  if ((config.resources || []).length > 0) capabilities.push('resources: {}');
-  if ((config.prompts || []).length > 0) capabilities.push('prompts: {}');
-  const capabilitiesStr = capabilities.join(',\n      ');
+  const capabilities: string[] = []
+  if (config.tools.length > 0) capabilities.push('tools: {}')
+  if (config.tools.some((t) => t.sampling?.enabled)) capabilities.push('sampling: {}')
+  if (config.tools.some((t) => t.elicitation?.enabled)) capabilities.push('elicitation: {}')
+  if ((config.resources || []).length > 0) capabilities.push('resources: {}')
+  if ((config.prompts || []).length > 0) capabilities.push('prompts: {}')
+  const capabilitiesStr = capabilities.join(',\n      ')
 
   return `${generateImports(transport)}
 
@@ -586,11 +595,15 @@ const server = new McpServer({
 
 ${toolSchemas || '// No tools defined'}
 
-${promptSchemas ? `// ============================================================================
+${
+  promptSchemas
+    ? `// ============================================================================
 // Prompt Schemas
 // ============================================================================
 
-${promptSchemas}` : ''}
+${promptSchemas}`
+    : ''
+}
 
 // ============================================================================
 // Tool Registrations
@@ -598,18 +611,26 @@ ${promptSchemas}` : ''}
 
 ${toolRegistrations || '// No tools registered'}
 
-${resourceRegistrations ? `// ============================================================================
+${
+  resourceRegistrations
+    ? `// ============================================================================
 // Resource Registrations
 // ============================================================================
 
-${resourceRegistrations}` : ''}
+${resourceRegistrations}`
+    : ''
+}
 
-${promptRegistrations ? `// ============================================================================
+${
+  promptRegistrations
+    ? `// ============================================================================
 // Prompt Registrations
 // ============================================================================
 
-${promptRegistrations}` : ''}
+${promptRegistrations}`
+    : ''
+}
 
 ${generateServerStartup(config)}
-`;
+`
 }

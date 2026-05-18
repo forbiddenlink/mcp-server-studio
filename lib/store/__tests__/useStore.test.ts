@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { useStore } from '../useStore';
-import { MCPTool, MCPResource, MCPPrompt } from '../../types';
+import { beforeEach, describe, expect, it } from 'vitest'
+import type { MCPPrompt, MCPResource, MCPTool } from '../../types'
+import { useStore } from '../useStore'
 
 describe('useStore', () => {
   // Reset store state before each test
@@ -25,8 +25,8 @@ describe('useStore', () => {
       clipboard: null,
       history: [],
       historyIndex: -1,
-    });
-  });
+    })
+  })
 
   describe('Tool actions', () => {
     const mockTool: MCPTool = {
@@ -42,154 +42,154 @@ describe('useStore', () => {
           required: true,
         },
       ],
-    };
+    }
 
     describe('addTool', () => {
       it('adds a tool to the tools array', () => {
-        useStore.getState().addTool(mockTool);
+        useStore.getState().addTool(mockTool)
 
-        const state = useStore.getState();
-        expect(state.tools).toHaveLength(1);
-        expect(state.tools[0].id).toBe('tool-123');
-      });
+        const state = useStore.getState()
+        expect(state.tools).toHaveLength(1)
+        expect(state.tools[0].id).toBe('tool-123')
+      })
 
       it('creates a corresponding node', () => {
-        useStore.getState().addTool(mockTool);
+        useStore.getState().addTool(mockTool)
 
-        const state = useStore.getState();
-        expect(state.nodes).toHaveLength(1);
-        expect(state.nodes[0].id).toBe('tool-123');
-        expect(state.nodes[0].type).toBe('toolNode');
-      });
+        const state = useStore.getState()
+        expect(state.nodes).toHaveLength(1)
+        expect(state.nodes[0].id).toBe('tool-123')
+        expect(state.nodes[0].type).toBe('toolNode')
+      })
 
       it('updates serverConfig with new tool', () => {
-        useStore.getState().addTool(mockTool);
+        useStore.getState().addTool(mockTool)
 
-        const state = useStore.getState();
-        expect(state.serverConfig.tools).toHaveLength(1);
-        expect(state.serverConfig.tools[0].id).toBe('tool-123');
-      });
+        const state = useStore.getState()
+        expect(state.serverConfig.tools).toHaveLength(1)
+        expect(state.serverConfig.tools[0].id).toBe('tool-123')
+      })
 
       it('pushes to history for undo', () => {
-        useStore.getState().addTool(mockTool);
+        useStore.getState().addTool(mockTool)
 
-        const state = useStore.getState();
-        expect(state.history.length).toBeGreaterThan(0);
-        expect(state.historyIndex).toBeGreaterThanOrEqual(0);
-      });
-    });
+        const state = useStore.getState()
+        expect(state.history.length).toBeGreaterThan(0)
+        expect(state.historyIndex).toBeGreaterThanOrEqual(0)
+      })
+    })
 
     describe('updateTool', () => {
       beforeEach(() => {
-        useStore.getState().addTool(mockTool);
-      });
+        useStore.getState().addTool(mockTool)
+      })
 
       it('updates tool properties', () => {
-        useStore.getState().updateTool('tool-123', { name: 'Updated Tool' });
+        useStore.getState().updateTool('tool-123', { name: 'Updated Tool' })
 
-        const state = useStore.getState();
-        expect(state.tools[0].name).toBe('Updated Tool');
-      });
+        const state = useStore.getState()
+        expect(state.tools[0].name).toBe('Updated Tool')
+      })
 
       it('preserves other tool properties', () => {
-        useStore.getState().updateTool('tool-123', { name: 'Updated Tool' });
+        useStore.getState().updateTool('tool-123', { name: 'Updated Tool' })
 
-        const state = useStore.getState();
-        expect(state.tools[0].description).toBe('A test tool');
-        expect(state.tools[0].icon).toBe('Wrench');
-      });
+        const state = useStore.getState()
+        expect(state.tools[0].description).toBe('A test tool')
+        expect(state.tools[0].icon).toBe('Wrench')
+      })
 
       it('updates node data', () => {
-        useStore.getState().updateTool('tool-123', { name: 'Updated Tool' });
+        useStore.getState().updateTool('tool-123', { name: 'Updated Tool' })
 
-        const state = useStore.getState();
-        const nodeData = state.nodes[0].data as { tool: MCPTool };
-        expect(nodeData.tool.name).toBe('Updated Tool');
-      });
+        const state = useStore.getState()
+        const nodeData = state.nodes[0].data as { tool: MCPTool }
+        expect(nodeData.tool.name).toBe('Updated Tool')
+      })
 
       it('updates serverConfig', () => {
-        useStore.getState().updateTool('tool-123', { description: 'New description' });
+        useStore.getState().updateTool('tool-123', { description: 'New description' })
 
-        const state = useStore.getState();
-        expect(state.serverConfig.tools[0].description).toBe('New description');
-      });
-    });
+        const state = useStore.getState()
+        expect(state.serverConfig.tools[0].description).toBe('New description')
+      })
+    })
 
     describe('deleteTool', () => {
       beforeEach(() => {
-        useStore.getState().addTool(mockTool);
-      });
+        useStore.getState().addTool(mockTool)
+      })
 
       it('removes tool from tools array', () => {
-        useStore.getState().deleteTool('tool-123');
+        useStore.getState().deleteTool('tool-123')
 
-        const state = useStore.getState();
-        expect(state.tools).toHaveLength(0);
-      });
+        const state = useStore.getState()
+        expect(state.tools).toHaveLength(0)
+      })
 
       it('removes corresponding node', () => {
-        useStore.getState().deleteTool('tool-123');
+        useStore.getState().deleteTool('tool-123')
 
-        const state = useStore.getState();
-        expect(state.nodes).toHaveLength(0);
-      });
+        const state = useStore.getState()
+        expect(state.nodes).toHaveLength(0)
+      })
 
       it('clears selectedNodeId if deleted tool was selected', () => {
-        useStore.setState({ selectedNodeId: 'tool-123' });
-        useStore.getState().deleteTool('tool-123');
+        useStore.setState({ selectedNodeId: 'tool-123' })
+        useStore.getState().deleteTool('tool-123')
 
-        const state = useStore.getState();
-        expect(state.selectedNodeId).toBeNull();
-      });
+        const state = useStore.getState()
+        expect(state.selectedNodeId).toBeNull()
+      })
 
       it('preserves selectedNodeId if different tool was deleted', () => {
-        const anotherTool = { ...mockTool, id: 'tool-456', name: 'Another Tool' };
-        useStore.getState().addTool(anotherTool);
-        useStore.setState({ selectedNodeId: 'tool-456' });
+        const anotherTool = { ...mockTool, id: 'tool-456', name: 'Another Tool' }
+        useStore.getState().addTool(anotherTool)
+        useStore.setState({ selectedNodeId: 'tool-456' })
 
-        useStore.getState().deleteTool('tool-123');
+        useStore.getState().deleteTool('tool-123')
 
-        const state = useStore.getState();
-        expect(state.selectedNodeId).toBe('tool-456');
-      });
-    });
+        const state = useStore.getState()
+        expect(state.selectedNodeId).toBe('tool-456')
+      })
+    })
 
     describe('duplicateTool', () => {
       beforeEach(() => {
-        useStore.getState().addTool(mockTool);
-      });
+        useStore.getState().addTool(mockTool)
+      })
 
       it('creates a copy with new id', () => {
-        useStore.getState().duplicateTool('tool-123');
+        useStore.getState().duplicateTool('tool-123')
 
-        const state = useStore.getState();
-        expect(state.tools).toHaveLength(2);
-        expect(state.tools[1].id).not.toBe('tool-123');
-      });
+        const state = useStore.getState()
+        expect(state.tools).toHaveLength(2)
+        expect(state.tools[1].id).not.toBe('tool-123')
+      })
 
       it('appends (copy) to name', () => {
-        useStore.getState().duplicateTool('tool-123');
+        useStore.getState().duplicateTool('tool-123')
 
-        const state = useStore.getState();
-        expect(state.tools[1].name).toBe('Test Tool (copy)');
-      });
+        const state = useStore.getState()
+        expect(state.tools[1].name).toBe('Test Tool (copy)')
+      })
 
       it('copies parameters', () => {
-        useStore.getState().duplicateTool('tool-123');
+        useStore.getState().duplicateTool('tool-123')
 
-        const state = useStore.getState();
-        expect(state.tools[1].parameters).toHaveLength(1);
-        expect(state.tools[1].parameters[0].name).toBe('query');
-      });
+        const state = useStore.getState()
+        expect(state.tools[1].parameters).toHaveLength(1)
+        expect(state.tools[1].parameters[0].name).toBe('query')
+      })
 
       it('does nothing for non-existent tool', () => {
-        useStore.getState().duplicateTool('non-existent');
+        useStore.getState().duplicateTool('non-existent')
 
-        const state = useStore.getState();
-        expect(state.tools).toHaveLength(1);
-      });
-    });
-  });
+        const state = useStore.getState()
+        expect(state.tools).toHaveLength(1)
+      })
+    })
+  })
 
   describe('Resource actions', () => {
     const mockResource: MCPResource = {
@@ -198,74 +198,74 @@ describe('useStore', () => {
       description: 'A test resource',
       uri: 'file://test.txt',
       mimeType: 'text/plain',
-    };
+    }
 
     describe('addResource', () => {
       it('adds a resource to the resources array', () => {
-        useStore.getState().addResource(mockResource);
+        useStore.getState().addResource(mockResource)
 
-        const state = useStore.getState();
-        expect(state.resources).toHaveLength(1);
-        expect(state.resources[0].id).toBe('resource-123');
-      });
+        const state = useStore.getState()
+        expect(state.resources).toHaveLength(1)
+        expect(state.resources[0].id).toBe('resource-123')
+      })
 
       it('creates a corresponding node', () => {
-        useStore.getState().addResource(mockResource);
+        useStore.getState().addResource(mockResource)
 
-        const state = useStore.getState();
-        expect(state.nodes).toHaveLength(1);
-        expect(state.nodes[0].type).toBe('resourceNode');
-      });
+        const state = useStore.getState()
+        expect(state.nodes).toHaveLength(1)
+        expect(state.nodes[0].type).toBe('resourceNode')
+      })
 
       it('updates serverConfig', () => {
-        useStore.getState().addResource(mockResource);
+        useStore.getState().addResource(mockResource)
 
-        const state = useStore.getState();
-        expect(state.serverConfig.resources).toHaveLength(1);
-      });
-    });
+        const state = useStore.getState()
+        expect(state.serverConfig.resources).toHaveLength(1)
+      })
+    })
 
     describe('updateResource', () => {
       beforeEach(() => {
-        useStore.getState().addResource(mockResource);
-      });
+        useStore.getState().addResource(mockResource)
+      })
 
       it('updates resource properties', () => {
-        useStore.getState().updateResource('resource-123', { name: 'Updated Resource' });
+        useStore.getState().updateResource('resource-123', { name: 'Updated Resource' })
 
-        const state = useStore.getState();
-        expect(state.resources[0].name).toBe('Updated Resource');
-      });
+        const state = useStore.getState()
+        expect(state.resources[0].name).toBe('Updated Resource')
+      })
 
       it('updates node data', () => {
-        useStore.getState().updateResource('resource-123', { uri: 'file://new.txt' });
+        useStore.getState().updateResource('resource-123', { uri: 'file://new.txt' })
 
-        const state = useStore.getState();
-        const nodeData = state.nodes[0].data as { resource: MCPResource };
-        expect(nodeData.resource.uri).toBe('file://new.txt');
-      });
-    });
+        const state = useStore.getState()
+        const nodeData = state.nodes[0].data as { resource: MCPResource }
+        expect(nodeData.resource.uri).toBe('file://new.txt')
+      })
+    })
 
     describe('deleteResource', () => {
       beforeEach(() => {
-        useStore.getState().addResource(mockResource);
-      });
+        useStore.getState().addResource(mockResource)
+      })
 
       it('removes resource from resources array', () => {
-        useStore.getState().deleteResource('resource-123');
+        useStore.getState().deleteResource('resource-123')
 
-        const state = useStore.getState();
-        expect(state.resources).toHaveLength(0);
-      });
+        const state = useStore.getState()
+        expect(state.resources).toHaveLength(0)
+      })
 
       it('removes corresponding node', () => {
-        useStore.getState().deleteResource('resource-123');
+        useStore.getState().deleteResource('resource-123')
 
-        const state = useStore.getState();
-        expect(state.nodes).toHaveLength(0);
-      });
-    });
-  });
+        const state = useStore.getState()
+        expect(state.nodes).toHaveLength(0)
+      })
+    })
+  })
 
   describe('Prompt actions', () => {
     const mockPrompt: MCPPrompt = {
@@ -280,67 +280,67 @@ describe('useStore', () => {
           required: true,
         },
       ],
-    };
+    }
 
     describe('addPrompt', () => {
       it('adds a prompt to the prompts array', () => {
-        useStore.getState().addPrompt(mockPrompt);
+        useStore.getState().addPrompt(mockPrompt)
 
-        const state = useStore.getState();
-        expect(state.prompts).toHaveLength(1);
-        expect(state.prompts[0].id).toBe('prompt-123');
-      });
+        const state = useStore.getState()
+        expect(state.prompts).toHaveLength(1)
+        expect(state.prompts[0].id).toBe('prompt-123')
+      })
 
       it('creates a corresponding node', () => {
-        useStore.getState().addPrompt(mockPrompt);
+        useStore.getState().addPrompt(mockPrompt)
 
-        const state = useStore.getState();
-        expect(state.nodes).toHaveLength(1);
-        expect(state.nodes[0].type).toBe('promptNode');
-      });
-    });
+        const state = useStore.getState()
+        expect(state.nodes).toHaveLength(1)
+        expect(state.nodes[0].type).toBe('promptNode')
+      })
+    })
 
     describe('updatePrompt', () => {
       beforeEach(() => {
-        useStore.getState().addPrompt(mockPrompt);
-      });
+        useStore.getState().addPrompt(mockPrompt)
+      })
 
       it('updates prompt properties', () => {
-        useStore.getState().updatePrompt('prompt-123', { name: 'Updated Prompt' });
+        useStore.getState().updatePrompt('prompt-123', { name: 'Updated Prompt' })
 
-        const state = useStore.getState();
-        expect(state.prompts[0].name).toBe('Updated Prompt');
-      });
+        const state = useStore.getState()
+        expect(state.prompts[0].name).toBe('Updated Prompt')
+      })
 
       it('updates node data', () => {
-        useStore.getState().updatePrompt('prompt-123', { description: 'New description' });
+        useStore.getState().updatePrompt('prompt-123', { description: 'New description' })
 
-        const state = useStore.getState();
-        const nodeData = state.nodes[0].data as { prompt: MCPPrompt };
-        expect(nodeData.prompt.description).toBe('New description');
-      });
-    });
+        const state = useStore.getState()
+        const nodeData = state.nodes[0].data as { prompt: MCPPrompt }
+        expect(nodeData.prompt.description).toBe('New description')
+      })
+    })
 
     describe('deletePrompt', () => {
       beforeEach(() => {
-        useStore.getState().addPrompt(mockPrompt);
-      });
+        useStore.getState().addPrompt(mockPrompt)
+      })
 
       it('removes prompt from prompts array', () => {
-        useStore.getState().deletePrompt('prompt-123');
+        useStore.getState().deletePrompt('prompt-123')
 
-        const state = useStore.getState();
-        expect(state.prompts).toHaveLength(0);
-      });
+        const state = useStore.getState()
+        expect(state.prompts).toHaveLength(0)
+      })
 
       it('removes corresponding node', () => {
-        useStore.getState().deletePrompt('prompt-123');
+        useStore.getState().deletePrompt('prompt-123')
 
-        const state = useStore.getState();
-        expect(state.nodes).toHaveLength(0);
-      });
-    });
-  });
+        const state = useStore.getState()
+        expect(state.nodes).toHaveLength(0)
+      })
+    })
+  })
 
   describe('Clipboard actions', () => {
     const mockTool: MCPTool = {
@@ -349,80 +349,80 @@ describe('useStore', () => {
       description: 'Tool for clipboard test',
       icon: 'Copy',
       parameters: [],
-    };
+    }
 
     describe('copyTool', () => {
       beforeEach(() => {
-        useStore.getState().addTool(mockTool);
-      });
+        useStore.getState().addTool(mockTool)
+      })
 
       it('copies tool to clipboard', () => {
-        useStore.getState().copyTool('tool-123');
+        useStore.getState().copyTool('tool-123')
 
-        const state = useStore.getState();
-        expect(state.clipboard).not.toBeNull();
-        expect(state.clipboard?.name).toBe('Clipboard Tool');
-      });
+        const state = useStore.getState()
+        expect(state.clipboard).not.toBeNull()
+        expect(state.clipboard?.name).toBe('Clipboard Tool')
+      })
 
       it('creates deep copy of parameters', () => {
         const toolWithParams: MCPTool = {
           ...mockTool,
           parameters: [{ name: 'test', type: 'string', description: 'Test', required: true }],
-        };
-        useStore.setState({ tools: [toolWithParams] });
+        }
+        useStore.setState({ tools: [toolWithParams] })
 
-        useStore.getState().copyTool('tool-123');
+        useStore.getState().copyTool('tool-123')
 
-        const state = useStore.getState();
-        expect(state.clipboard?.parameters).toHaveLength(1);
+        const state = useStore.getState()
+        expect(state.clipboard?.parameters).toHaveLength(1)
         // Verify it's a copy, not reference
-        expect(state.clipboard?.parameters).not.toBe(toolWithParams.parameters);
-      });
+        expect(state.clipboard?.parameters).not.toBe(toolWithParams.parameters)
+      })
 
       it('does nothing for non-existent tool', () => {
-        useStore.getState().copyTool('non-existent');
+        useStore.getState().copyTool('non-existent')
 
-        const state = useStore.getState();
-        expect(state.clipboard).toBeNull();
-      });
-    });
+        const state = useStore.getState()
+        expect(state.clipboard).toBeNull()
+      })
+    })
 
     describe('pasteTool', () => {
       beforeEach(() => {
-        useStore.getState().addTool(mockTool);
-        useStore.getState().copyTool('tool-123');
-      });
+        useStore.getState().addTool(mockTool)
+        useStore.getState().copyTool('tool-123')
+      })
 
       it('creates new tool from clipboard', () => {
-        useStore.getState().pasteTool();
+        useStore.getState().pasteTool()
 
-        const state = useStore.getState();
-        expect(state.tools).toHaveLength(2);
-      });
+        const state = useStore.getState()
+        expect(state.tools).toHaveLength(2)
+      })
 
       it('assigns new id to pasted tool', () => {
-        useStore.getState().pasteTool();
+        useStore.getState().pasteTool()
 
-        const state = useStore.getState();
-        expect(state.tools[1].id).not.toBe('tool-123');
-      });
+        const state = useStore.getState()
+        expect(state.tools[1].id).not.toBe('tool-123')
+      })
 
       it('appends (copy) to name', () => {
-        useStore.getState().pasteTool();
+        useStore.getState().pasteTool()
 
-        const state = useStore.getState();
-        expect(state.tools[1].name).toBe('Clipboard Tool (copy)');
-      });
+        const state = useStore.getState()
+        expect(state.tools[1].name).toBe('Clipboard Tool (copy)')
+      })
 
       it('does nothing if clipboard is empty', () => {
-        useStore.setState({ clipboard: null });
-        useStore.getState().pasteTool();
+        useStore.setState({ clipboard: null })
+        useStore.getState().pasteTool()
 
-        const state = useStore.getState();
-        expect(state.tools).toHaveLength(1);
-      });
-    });
-  });
+        const state = useStore.getState()
+        expect(state.tools).toHaveLength(1)
+      })
+    })
+  })
 
   describe('History (undo/redo)', () => {
     const mockTool: MCPTool = {
@@ -431,113 +431,113 @@ describe('useStore', () => {
       description: 'Tool for history test',
       icon: 'History',
       parameters: [],
-    };
+    }
 
     describe('undo', () => {
       it('restores previous state', () => {
-        useStore.getState().addTool(mockTool);
-        expect(useStore.getState().tools).toHaveLength(1);
+        useStore.getState().addTool(mockTool)
+        expect(useStore.getState().tools).toHaveLength(1)
 
-        useStore.getState().undo();
+        useStore.getState().undo()
 
-        expect(useStore.getState().tools).toHaveLength(0);
-      });
+        expect(useStore.getState().tools).toHaveLength(0)
+      })
 
       it('decrements history index', () => {
-        useStore.getState().addTool(mockTool);
-        const indexAfterAdd = useStore.getState().historyIndex;
+        useStore.getState().addTool(mockTool)
+        const indexAfterAdd = useStore.getState().historyIndex
 
-        useStore.getState().undo();
+        useStore.getState().undo()
 
-        expect(useStore.getState().historyIndex).toBe(indexAfterAdd - 1);
-      });
+        expect(useStore.getState().historyIndex).toBe(indexAfterAdd - 1)
+      })
 
       it('does nothing when at beginning of history', () => {
-        useStore.getState().addTool(mockTool);
-        useStore.getState().undo();
-        const indexAfterFirstUndo = useStore.getState().historyIndex;
+        useStore.getState().addTool(mockTool)
+        useStore.getState().undo()
+        const indexAfterFirstUndo = useStore.getState().historyIndex
 
-        useStore.getState().undo();
+        useStore.getState().undo()
 
-        expect(useStore.getState().historyIndex).toBe(indexAfterFirstUndo);
-      });
-    });
+        expect(useStore.getState().historyIndex).toBe(indexAfterFirstUndo)
+      })
+    })
 
     describe('redo', () => {
       beforeEach(() => {
-        useStore.getState().addTool(mockTool);
-        useStore.getState().undo();
-      });
+        useStore.getState().addTool(mockTool)
+        useStore.getState().undo()
+      })
 
       it('restores next state', () => {
-        expect(useStore.getState().tools).toHaveLength(0);
+        expect(useStore.getState().tools).toHaveLength(0)
 
-        useStore.getState().redo();
+        useStore.getState().redo()
 
-        expect(useStore.getState().tools).toHaveLength(1);
-      });
+        expect(useStore.getState().tools).toHaveLength(1)
+      })
 
       it('increments history index', () => {
-        const indexAfterUndo = useStore.getState().historyIndex;
+        const indexAfterUndo = useStore.getState().historyIndex
 
-        useStore.getState().redo();
+        useStore.getState().redo()
 
-        expect(useStore.getState().historyIndex).toBe(indexAfterUndo + 1);
-      });
+        expect(useStore.getState().historyIndex).toBe(indexAfterUndo + 1)
+      })
 
       it('does nothing when at end of history', () => {
-        useStore.getState().redo();
-        const indexAfterRedo = useStore.getState().historyIndex;
+        useStore.getState().redo()
+        const indexAfterRedo = useStore.getState().historyIndex
 
-        useStore.getState().redo();
+        useStore.getState().redo()
 
-        expect(useStore.getState().historyIndex).toBe(indexAfterRedo);
-      });
-    });
+        expect(useStore.getState().historyIndex).toBe(indexAfterRedo)
+      })
+    })
 
     describe('canUndo / canRedo', () => {
       it('canUndo returns false initially', () => {
-        expect(useStore.getState().canUndo()).toBe(false);
-      });
+        expect(useStore.getState().canUndo()).toBe(false)
+      })
 
       it('canUndo returns true after action', () => {
-        useStore.getState().addTool(mockTool);
-        expect(useStore.getState().canUndo()).toBe(true);
-      });
+        useStore.getState().addTool(mockTool)
+        expect(useStore.getState().canUndo()).toBe(true)
+      })
 
       it('canRedo returns false initially', () => {
-        expect(useStore.getState().canRedo()).toBe(false);
-      });
+        expect(useStore.getState().canRedo()).toBe(false)
+      })
 
       it('canRedo returns true after undo', () => {
-        useStore.getState().addTool(mockTool);
-        useStore.getState().undo();
-        expect(useStore.getState().canRedo()).toBe(true);
-      });
+        useStore.getState().addTool(mockTool)
+        useStore.getState().undo()
+        expect(useStore.getState().canRedo()).toBe(true)
+      })
 
       it('canRedo returns false after new action', () => {
-        useStore.getState().addTool(mockTool);
-        useStore.getState().undo();
-        useStore.getState().addTool({ ...mockTool, id: 'tool-456' });
-        expect(useStore.getState().canRedo()).toBe(false);
-      });
-    });
-  });
+        useStore.getState().addTool(mockTool)
+        useStore.getState().undo()
+        useStore.getState().addTool({ ...mockTool, id: 'tool-456' })
+        expect(useStore.getState().canRedo()).toBe(false)
+      })
+    })
+  })
 
   describe('Selection', () => {
     it('selectNode sets selectedNodeId', () => {
-      useStore.getState().selectNode('tool-123');
+      useStore.getState().selectNode('tool-123')
 
-      expect(useStore.getState().selectedNodeId).toBe('tool-123');
-    });
+      expect(useStore.getState().selectedNodeId).toBe('tool-123')
+    })
 
     it('selectNode can clear selection with null', () => {
-      useStore.setState({ selectedNodeId: 'tool-123' });
-      useStore.getState().selectNode(null);
+      useStore.setState({ selectedNodeId: 'tool-123' })
+      useStore.getState().selectNode(null)
 
-      expect(useStore.getState().selectedNodeId).toBeNull();
-    });
-  });
+      expect(useStore.getState().selectedNodeId).toBeNull()
+    })
+  })
 
   describe('Chat messages', () => {
     it('addMessage adds message to array', () => {
@@ -546,10 +546,10 @@ describe('useStore', () => {
         role: 'user',
         content: 'Hello',
         timestamp: Date.now(),
-      });
+      })
 
-      expect(useStore.getState().messages).toHaveLength(1);
-    });
+      expect(useStore.getState().messages).toHaveLength(1)
+    })
 
     it('clearMessages empties messages array', () => {
       useStore.getState().addMessage({
@@ -557,50 +557,50 @@ describe('useStore', () => {
         role: 'user',
         content: 'Hello',
         timestamp: Date.now(),
-      });
-      useStore.getState().clearMessages();
+      })
+      useStore.getState().clearMessages()
 
-      expect(useStore.getState().messages).toHaveLength(0);
-    });
-  });
+      expect(useStore.getState().messages).toHaveLength(0)
+    })
+  })
 
   describe('Server config', () => {
     it('updateServerConfig updates config fields', () => {
-      useStore.getState().updateServerConfig({ name: 'new-server-name' });
+      useStore.getState().updateServerConfig({ name: 'new-server-name' })
 
-      expect(useStore.getState().serverConfig.name).toBe('new-server-name');
-    });
+      expect(useStore.getState().serverConfig.name).toBe('new-server-name')
+    })
 
     it('updateServerConfig preserves other fields', () => {
-      useStore.getState().updateServerConfig({ name: 'new-server-name' });
+      useStore.getState().updateServerConfig({ name: 'new-server-name' })
 
-      expect(useStore.getState().serverConfig.version).toBe('1.0.0');
-      expect(useStore.getState().serverConfig.transport).toBe('stdio');
-    });
+      expect(useStore.getState().serverConfig.version).toBe('1.0.0')
+      expect(useStore.getState().serverConfig.transport).toBe('stdio')
+    })
 
     it('updateServerConfig can change transport', () => {
-      useStore.getState().updateServerConfig({ transport: 'http', httpPort: 8080 });
+      useStore.getState().updateServerConfig({ transport: 'http', httpPort: 8080 })
 
-      expect(useStore.getState().serverConfig.transport).toBe('http');
-      expect(useStore.getState().serverConfig.httpPort).toBe(8080);
-    });
-  });
+      expect(useStore.getState().serverConfig.transport).toBe('http')
+      expect(useStore.getState().serverConfig.httpPort).toBe(8080)
+    })
+  })
 
   describe('React Flow actions', () => {
     it('setNodes updates nodes array', () => {
-      const nodes = [{ id: 'node-1', type: 'toolNode', position: { x: 0, y: 0 }, data: {} }];
-      useStore.getState().setNodes(nodes);
+      const nodes = [{ id: 'node-1', type: 'toolNode', position: { x: 0, y: 0 }, data: {} }]
+      useStore.getState().setNodes(nodes)
 
-      expect(useStore.getState().nodes).toEqual(nodes);
-    });
+      expect(useStore.getState().nodes).toEqual(nodes)
+    })
 
     it('setEdges updates edges array', () => {
-      const edges = [{ id: 'edge-1', source: 'a', target: 'b' }];
-      useStore.getState().setEdges(edges);
+      const edges = [{ id: 'edge-1', source: 'a', target: 'b' }]
+      useStore.getState().setEdges(edges)
 
-      expect(useStore.getState().edges).toEqual(edges);
-    });
-  });
+      expect(useStore.getState().edges).toEqual(edges)
+    })
+  })
 
   describe('Tool with capabilities', () => {
     it('duplicates tool with sampling config', () => {
@@ -615,16 +615,16 @@ describe('useStore', () => {
           maxTokens: 1000,
           temperature: 0.7,
         },
-      };
+      }
 
-      useStore.getState().addTool(toolWithSampling);
-      useStore.getState().duplicateTool('tool-sampling');
+      useStore.getState().addTool(toolWithSampling)
+      useStore.getState().duplicateTool('tool-sampling')
 
-      const state = useStore.getState();
-      expect(state.tools[1].sampling).toBeDefined();
-      expect(state.tools[1].sampling?.enabled).toBe(true);
-      expect(state.tools[1].sampling?.maxTokens).toBe(1000);
-    });
+      const state = useStore.getState()
+      expect(state.tools[1].sampling).toBeDefined()
+      expect(state.tools[1].sampling?.enabled).toBe(true)
+      expect(state.tools[1].sampling?.maxTokens).toBe(1000)
+    })
 
     it('duplicates tool with elicitation config', () => {
       const toolWithElicitation: MCPTool = {
@@ -637,19 +637,17 @@ describe('useStore', () => {
           enabled: true,
           mode: 'form',
           message: 'Please provide input',
-          formFields: [
-            { name: 'field1', type: 'string', description: 'Field 1', required: true },
-          ],
+          formFields: [{ name: 'field1', type: 'string', description: 'Field 1', required: true }],
         },
-      };
+      }
 
-      useStore.getState().addTool(toolWithElicitation);
-      useStore.getState().duplicateTool('tool-elicitation');
+      useStore.getState().addTool(toolWithElicitation)
+      useStore.getState().duplicateTool('tool-elicitation')
 
-      const state = useStore.getState();
-      expect(state.tools[1].elicitation).toBeDefined();
-      expect(state.tools[1].elicitation?.formFields).toHaveLength(1);
-    });
+      const state = useStore.getState()
+      expect(state.tools[1].elicitation).toBeDefined()
+      expect(state.tools[1].elicitation?.formFields).toHaveLength(1)
+    })
 
     it('duplicates tool with tasks config', () => {
       const toolWithTasks: MCPTool = {
@@ -662,15 +660,15 @@ describe('useStore', () => {
           enabled: true,
           ttl: 60000,
         },
-      };
+      }
 
-      useStore.getState().addTool(toolWithTasks);
-      useStore.getState().duplicateTool('tool-tasks');
+      useStore.getState().addTool(toolWithTasks)
+      useStore.getState().duplicateTool('tool-tasks')
 
-      const state = useStore.getState();
-      expect(state.tools[1].tasks).toBeDefined();
-      expect(state.tools[1].tasks?.enabled).toBe(true);
-      expect(state.tools[1].tasks?.ttl).toBe(60000);
-    });
-  });
-});
+      const state = useStore.getState()
+      expect(state.tools[1].tasks).toBeDefined()
+      expect(state.tools[1].tasks?.enabled).toBe(true)
+      expect(state.tools[1].tasks?.ttl).toBe(60000)
+    })
+  })
+})

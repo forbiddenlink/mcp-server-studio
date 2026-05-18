@@ -1,46 +1,43 @@
-"use client";
+'use client'
 
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { CanvasPanel } from "@/components/canvas/CanvasPanel";
-import { PreviewPanel } from "@/components/preview/PreviewPanel";
-import { ToolConfigPanel } from "@/components/config/ToolConfigPanel";
-import { ResourceConfigPanel } from "@/components/config/ResourceConfigPanel";
-import { PromptConfigPanel } from "@/components/config/PromptConfigPanel";
-import { ServerConfigPanel } from "@/components/config/ServerConfigPanel";
-import { CommandPalette, commandIcons } from "@/components/ui/command-palette";
-import { Button } from "@/components/ui/button";
+import confetti from 'canvas-confetti'
 import {
-  Download,
-  Github,
-  Zap,
-  Code2,
-  X,
-  Command,
-  Settings,
   ChevronDown,
-  FileCode,
+  Code2,
+  Command,
   Container,
-  Train,
+  Download,
+  FileCode,
+  Github,
   Rocket,
-} from "lucide-react";
-import { useStore } from "@/lib/store/useStore";
-import { toolTemplates } from "@/lib/templates/toolTemplates";
-import { MCPTool } from "@/lib/types";
-import {
-  createExportBundle,
-  ExportFormat,
-} from "@/lib/generators/exportBundler";
-import { createZipBlob } from "@/lib/generators/zipCreator";
+  Settings,
+  Train,
+  X,
+  Zap,
+} from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { CanvasPanel } from '@/components/canvas/CanvasPanel'
+import { PromptConfigPanel } from '@/components/config/PromptConfigPanel'
+import { ResourceConfigPanel } from '@/components/config/ResourceConfigPanel'
+import { ServerConfigPanel } from '@/components/config/ServerConfigPanel'
+import { ToolConfigPanel } from '@/components/config/ToolConfigPanel'
+import { PreviewPanel } from '@/components/preview/PreviewPanel'
+import { Button } from '@/components/ui/button'
+import { CommandPalette, commandIcons } from '@/components/ui/command-palette'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
   DropdownMenuLabel,
-} from "@/components/ui/dropdown-menu";
-import confetti from "canvas-confetti";
-import { ErrorBoundary } from "@/components/ui/error-boundary";
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { ErrorBoundary } from '@/components/ui/error-boundary'
+import { createExportBundle, type ExportFormat } from '@/lib/generators/exportBundler'
+import { createZipBlob } from '@/lib/generators/zipCreator'
+import { useStore } from '@/lib/store/useStore'
+import { toolTemplates } from '@/lib/templates/toolTemplates'
+import type { MCPTool } from '@/lib/types'
 
 export default function Home() {
   const {
@@ -58,223 +55,220 @@ export default function Home() {
     redo,
     canUndo,
     canRedo,
-  } = useStore();
+  } = useStore()
 
   // Detect selected node type
   const selectedNodeType = useMemo(() => {
-    if (!selectedNodeId) return null;
-    if (tools.some((t) => t.id === selectedNodeId)) return "tool";
-    if (resources.some((r) => r.id === selectedNodeId)) return "resource";
-    if (prompts.some((p) => p.id === selectedNodeId)) return "prompt";
-    return null;
-  }, [selectedNodeId, tools, resources, prompts]);
-  const [showMobilePreview, setShowMobilePreview] = useState(false);
-  const [showCommandPalette, setShowCommandPalette] = useState(false);
-  const [showServerSettings, setShowServerSettings] = useState(false);
+    if (!selectedNodeId) return null
+    if (tools.some((t) => t.id === selectedNodeId)) return 'tool'
+    if (resources.some((r) => r.id === selectedNodeId)) return 'resource'
+    if (prompts.some((p) => p.id === selectedNodeId)) return 'prompt'
+    return null
+  }, [selectedNodeId, tools, resources, prompts])
+  const [showMobilePreview, setShowMobilePreview] = useState(false)
+  const [showCommandPalette, setShowCommandPalette] = useState(false)
+  const [showServerSettings, setShowServerSettings] = useState(false)
 
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Don't trigger shortcuts when typing in inputs
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement
-      ) {
-        return;
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return
       }
 
-      const isMod = e.metaKey || e.ctrlKey;
+      const isMod = e.metaKey || e.ctrlKey
 
       // Cmd+K - Command palette
-      if (isMod && e.key === "k") {
-        e.preventDefault();
-        setShowCommandPalette((prev) => !prev);
+      if (isMod && e.key === 'k') {
+        e.preventDefault()
+        setShowCommandPalette((prev) => !prev)
       }
 
       // Cmd+C - Copy selected tool
-      if (isMod && e.key === "c" && selectedNodeId) {
-        e.preventDefault();
-        copyTool(selectedNodeId);
+      if (isMod && e.key === 'c' && selectedNodeId) {
+        e.preventDefault()
+        copyTool(selectedNodeId)
       }
 
       // Cmd+V - Paste tool
-      if (isMod && e.key === "v") {
-        e.preventDefault();
-        pasteTool();
+      if (isMod && e.key === 'v') {
+        e.preventDefault()
+        pasteTool()
       }
 
       // Cmd+D - Duplicate selected tool
-      if (isMod && e.key === "d" && selectedNodeId) {
-        e.preventDefault();
-        duplicateTool(selectedNodeId);
+      if (isMod && e.key === 'd' && selectedNodeId) {
+        e.preventDefault()
+        duplicateTool(selectedNodeId)
       }
 
       // Cmd+Z - Undo
-      if (isMod && e.key === "z" && !e.shiftKey) {
-        e.preventDefault();
-        undo();
+      if (isMod && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        undo()
       }
 
       // Cmd+Shift+Z - Redo
-      if (isMod && e.key === "z" && e.shiftKey) {
-        e.preventDefault();
-        redo();
+      if (isMod && e.key === 'z' && e.shiftKey) {
+        e.preventDefault()
+        redo()
       }
-    };
+    }
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedNodeId, copyTool, pasteTool, duplicateTool, undo, redo]);
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [selectedNodeId, copyTool, pasteTool, duplicateTool, undo, redo])
 
   // Add tool helper
   const handleAddTool = useCallback(
     (templateIndex: number) => {
-      const template = toolTemplates[templateIndex];
+      const template = toolTemplates[templateIndex]
       const newTool: MCPTool = {
         id: `tool-${Date.now()}`,
         name: template.name,
         description: template.description,
         icon: template.icon,
         parameters: [...template.defaultParameters],
-      };
-      addTool(newTool);
+      }
+      addTool(newTool)
     },
-    [addTool],
-  );
+    [addTool]
+  )
 
   const handleAddCustomTool = useCallback(() => {
     const newTool: MCPTool = {
       id: `tool-${Date.now()}`,
-      name: "custom_tool",
-      description: "A custom tool",
-      icon: "Terminal",
+      name: 'custom_tool',
+      description: 'A custom tool',
+      icon: 'Terminal',
       parameters: [],
-    };
-    addTool(newTool);
-    selectNode(newTool.id);
-  }, [addTool, selectNode]);
+    }
+    addTool(newTool)
+    selectNode(newTool.id)
+  }, [addTool, selectNode])
 
   const handleExport = useCallback(
-    async (format: ExportFormat = "typescript") => {
-      const bundle = createExportBundle(serverConfig, format);
+    async (format: ExportFormat = 'typescript') => {
+      const bundle = createExportBundle(serverConfig, format)
 
-      let blob: Blob;
-      if (format === "typescript") {
-        blob = new Blob([bundle.files[0].content], { type: "text/typescript" });
+      let blob: Blob
+      if (format === 'typescript') {
+        blob = new Blob([bundle.files[0].content], { type: 'text/typescript' })
       } else {
-        blob = await createZipBlob(bundle.files);
+        blob = await createZipBlob(bundle.files)
       }
 
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = bundle.filename;
-      a.click();
-      URL.revokeObjectURL(url);
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = bundle.filename
+      a.click()
+      URL.revokeObjectURL(url)
 
       // Celebration confetti!
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ["#6366f1", "#8b5cf6", "#10b981"],
-      });
+        colors: ['#6366f1', '#8b5cf6', '#10b981'],
+      })
     },
-    [serverConfig],
-  );
+    [serverConfig]
+  )
 
   // Build commands for palette
   const commands = useMemo(() => {
     const cmds: Array<{
-      id: string;
-      label: string;
-      category: "add" | "action" | "navigate";
-      icon: typeof Download;
-      keywords?: string[];
-      action: () => void;
-    }> = [];
+      id: string
+      label: string
+      category: 'add' | 'action' | 'navigate'
+      icon: typeof Download
+      keywords?: string[]
+      action: () => void
+    }> = []
 
     // Add tool commands
     toolTemplates.forEach((template, index) => {
       cmds.push({
         id: `add-${template.name}`,
         label: `Add ${template.name}`,
-        category: "add",
+        category: 'add',
         icon: commandIcons[template.icon] || commandIcons.Terminal,
-        keywords: [template.description, "create", "new"],
+        keywords: [template.description, 'create', 'new'],
         action: () => handleAddTool(index),
-      });
-    });
+      })
+    })
 
     // Custom tool
     cmds.push({
-      id: "add-custom",
-      label: "Add Custom Tool",
-      category: "add",
+      id: 'add-custom',
+      label: 'Add Custom Tool',
+      category: 'add',
       icon: commandIcons.Plus,
-      keywords: ["create", "new", "blank", "scratch"],
+      keywords: ['create', 'new', 'blank', 'scratch'],
       action: handleAddCustomTool,
-    });
+    })
 
     // Action commands
     cmds.push({
-      id: "export",
-      label: "Export Server",
-      category: "action",
+      id: 'export',
+      label: 'Export Server',
+      category: 'action',
       icon: commandIcons.Download,
-      keywords: ["download", "save", "generate"],
-      action: () => handleExport("typescript"),
-    });
+      keywords: ['download', 'save', 'generate'],
+      action: () => handleExport('typescript'),
+    })
 
     if (selectedNodeId) {
       cmds.push({
-        id: "copy",
-        label: "Copy Tool",
-        category: "action",
+        id: 'copy',
+        label: 'Copy Tool',
+        category: 'action',
         icon: commandIcons.Copy,
-        keywords: ["clipboard"],
+        keywords: ['clipboard'],
         action: () => copyTool(selectedNodeId),
-      });
+      })
 
       cmds.push({
-        id: "duplicate",
-        label: "Duplicate Tool",
-        category: "action",
+        id: 'duplicate',
+        label: 'Duplicate Tool',
+        category: 'action',
         icon: commandIcons.Copy,
-        keywords: ["clone", "copy"],
+        keywords: ['clone', 'copy'],
         action: () => duplicateTool(selectedNodeId),
-      });
+      })
     }
 
     cmds.push({
-      id: "paste",
-      label: "Paste Tool",
-      category: "action",
+      id: 'paste',
+      label: 'Paste Tool',
+      category: 'action',
       icon: commandIcons.Clipboard,
-      keywords: ["clipboard"],
+      keywords: ['clipboard'],
       action: pasteTool,
-    });
+    })
 
     if (canUndo()) {
       cmds.push({
-        id: "undo",
-        label: "Undo",
-        category: "action",
+        id: 'undo',
+        label: 'Undo',
+        category: 'action',
         icon: commandIcons.Undo2,
-        keywords: ["back", "revert"],
+        keywords: ['back', 'revert'],
         action: undo,
-      });
+      })
     }
 
     if (canRedo()) {
       cmds.push({
-        id: "redo",
-        label: "Redo",
-        category: "action",
+        id: 'redo',
+        label: 'Redo',
+        category: 'action',
         icon: commandIcons.Redo2,
-        keywords: ["forward"],
+        keywords: ['forward'],
         action: redo,
-      });
+      })
     }
 
     // Navigate to existing tools
@@ -282,14 +276,14 @@ export default function Home() {
       cmds.push({
         id: `nav-${tool.id}`,
         label: tool.name,
-        category: "navigate",
+        category: 'navigate',
         icon: commandIcons[tool.icon] || commandIcons.Terminal,
         keywords: [tool.description],
         action: () => selectNode(tool.id),
-      });
-    });
+      })
+    })
 
-    return cmds;
+    return cmds
   }, [
     tools,
     selectedNodeId,
@@ -304,7 +298,7 @@ export default function Home() {
     redo,
     canUndo,
     canRedo,
-  ]);
+  ])
 
   return (
     <div className="h-screen w-screen flex bg-[var(--bg-base)] text-foreground overflow-hidden">
@@ -316,15 +310,10 @@ export default function Home() {
           <header className="absolute top-4 left-4 right-4 z-50 h-14 surface-overlay flex items-center justify-between px-4 rounded-xl shadow-lg border border-[var(--border-strong)]">
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[var(--accent)] flex items-center justify-center flex-shrink-0">
-                <Zap
-                  className="w-4 h-4 sm:w-5 sm:h-5 text-white"
-                  strokeWidth={2}
-                />
+                <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={2} />
               </div>
               <div className="hidden sm:block ml-1">
-                <h1 className="text-sm font-semibold text-[var(--text-primary)]">
-                  MCP Studio
-                </h1>
+                <h1 className="text-sm font-semibold text-[var(--text-primary)]">MCP Studio</h1>
               </div>
             </div>
 
@@ -364,10 +353,7 @@ export default function Home() {
                 variant="outline"
                 size="sm"
                 onClick={() =>
-                  window.open(
-                    "https://github.com/modelcontextprotocol/specification",
-                    "_blank",
-                  )
+                  window.open('https://github.com/modelcontextprotocol/specification', '_blank')
                 }
                 className="hidden md:flex"
               >
@@ -389,20 +375,20 @@ export default function Home() {
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>Export Format</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => handleExport("typescript")}>
+                  <DropdownMenuItem onClick={() => handleExport('typescript')}>
                     <FileCode className="w-4 h-4 mr-2" />
                     TypeScript (.ts)
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleExport("docker")}>
+                  <DropdownMenuItem onClick={() => handleExport('docker')}>
                     <Container className="w-4 h-4 mr-2" />
                     Docker Bundle (.zip)
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleExport("railway")}>
+                  <DropdownMenuItem onClick={() => handleExport('railway')}>
                     <Train className="w-4 h-4 mr-2" />
                     Railway Bundle (.zip)
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => handleExport("v0")}>
+                  <DropdownMenuItem onClick={() => handleExport('v0')}>
                     <Rocket className="w-4 h-4 mr-2" />
                     <div className="flex flex-col">
                       <span>v0 Bundle (.zip)</span>
@@ -430,14 +416,8 @@ export default function Home() {
         {showMobilePreview && (
           <div className="lg:hidden fixed inset-0 top-14 z-40 bg-[var(--bg-base)] flex flex-col">
             <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-surface)]">
-              <h2 className="font-semibold text-[var(--text-primary)]">
-                Preview
-              </h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowMobilePreview(false)}
-              >
+              <h2 className="font-semibold text-[var(--text-primary)]">Preview</h2>
+              <Button variant="ghost" size="sm" onClick={() => setShowMobilePreview(false)}>
                 <X className="w-4 h-4" />
               </Button>
             </div>
@@ -450,9 +430,9 @@ export default function Home() {
 
       {/* Config Panels (slides in when node selected) */}
       <ErrorBoundary label="Configuration">
-        {selectedNodeType === "tool" && <ToolConfigPanel key={selectedNodeId} />}
-        {selectedNodeType === "resource" && <ResourceConfigPanel key={selectedNodeId} />}
-        {selectedNodeType === "prompt" && <PromptConfigPanel key={selectedNodeId} />}
+        {selectedNodeType === 'tool' && <ToolConfigPanel key={selectedNodeId} />}
+        {selectedNodeType === 'resource' && <ResourceConfigPanel key={selectedNodeId} />}
+        {selectedNodeType === 'prompt' && <PromptConfigPanel key={selectedNodeId} />}
       </ErrorBoundary>
 
       {/* Command Palette */}
@@ -463,10 +443,7 @@ export default function Home() {
       />
 
       {/* Server Settings Panel */}
-      <ServerConfigPanel
-        isOpen={showServerSettings}
-        onClose={() => setShowServerSettings(false)}
-      />
+      <ServerConfigPanel isOpen={showServerSettings} onClose={() => setShowServerSettings(false)} />
     </div>
-  );
+  )
 }

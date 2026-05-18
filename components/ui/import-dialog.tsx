@@ -1,96 +1,101 @@
-'use client';
+'use client'
 
-import * as React from 'react';
-import { useState, useCallback } from 'react';
-import { X, Upload, Link, AlertCircle, CheckCircle, Plus, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { cn } from '@/lib/utils';
-import { parseOpenApiSpec, fetchAndParseOpenApiSpec, ParseResult } from '@/lib/importers/openApiImporter';
-import { MCPTool } from '@/lib/types';
+import { AlertCircle, CheckCircle, Link, Loader2, Plus, Upload, X } from 'lucide-react'
+import { useCallback, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Textarea } from '@/components/ui/textarea'
+import {
+  fetchAndParseOpenApiSpec,
+  type ParseResult,
+  parseOpenApiSpec,
+} from '@/lib/importers/openApiImporter'
+import type { MCPTool } from '@/lib/types'
+import { cn } from '@/lib/utils'
 
 interface ImportDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onImport: (tools: MCPTool[]) => void;
+  isOpen: boolean
+  onClose: () => void
+  onImport: (tools: MCPTool[]) => void
 }
 
-type DialogState = 'input' | 'preview' | 'loading';
+type DialogState = 'input' | 'preview' | 'loading'
 
 export function ImportDialog({ isOpen, onClose, onImport }: ImportDialogProps) {
-  const [state, setState] = useState<DialogState>('input');
-  const [pasteValue, setPasteValue] = useState('');
-  const [urlValue, setUrlValue] = useState('');
-  const [parseResult, setParseResult] = useState<ParseResult | null>(null);
-  const [selectedTools, setSelectedTools] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState('paste');
+  const [state, setState] = useState<DialogState>('input')
+  const [pasteValue, setPasteValue] = useState('')
+  const [urlValue, setUrlValue] = useState('')
+  const [parseResult, setParseResult] = useState<ParseResult | null>(null)
+  const [selectedTools, setSelectedTools] = useState<Set<string>>(new Set())
+  const [activeTab, setActiveTab] = useState('paste')
 
   const handleClose = useCallback(() => {
-    setState('input');
-    setPasteValue('');
-    setUrlValue('');
-    setParseResult(null);
-    setSelectedTools(new Set());
-    onClose();
-  }, [onClose]);
+    setState('input')
+    setPasteValue('')
+    setUrlValue('')
+    setParseResult(null)
+    setSelectedTools(new Set())
+    onClose()
+  }, [onClose])
 
   const handleParse = useCallback(async () => {
-    setState('loading');
+    setState('loading')
 
-    let result: ParseResult;
+    let result: ParseResult
 
     if (activeTab === 'paste') {
-      result = parseOpenApiSpec(pasteValue);
+      result = parseOpenApiSpec(pasteValue)
     } else {
-      result = await fetchAndParseOpenApiSpec(urlValue);
+      result = await fetchAndParseOpenApiSpec(urlValue)
     }
 
-    setParseResult(result);
+    setParseResult(result)
     if (result.success) {
-      setSelectedTools(new Set(result.tools.map(t => t.id)));
+      setSelectedTools(new Set(result.tools.map((t) => t.id)))
     }
-    setState('preview');
-  }, [activeTab, pasteValue, urlValue]);
+    setState('preview')
+  }, [activeTab, pasteValue, urlValue])
 
   const handleImportSelected = useCallback(() => {
-    if (!parseResult) return;
+    if (!parseResult) return
 
-    const toolsToImport = parseResult.tools.filter(t => selectedTools.has(t.id));
-    onImport(toolsToImport);
-    handleClose();
-  }, [parseResult, selectedTools, onImport, handleClose]);
+    const toolsToImport = parseResult.tools.filter((t) => selectedTools.has(t.id))
+    onImport(toolsToImport)
+    handleClose()
+  }, [parseResult, selectedTools, onImport, handleClose])
 
   const toggleTool = useCallback((id: string) => {
-    setSelectedTools(prev => {
-      const next = new Set(prev);
+    setSelectedTools((prev) => {
+      const next = new Set(prev)
       if (next.has(id)) {
-        next.delete(id);
+        next.delete(id)
       } else {
-        next.add(id);
+        next.add(id)
       }
-      return next;
-    });
-  }, []);
+      return next
+    })
+  }, [])
 
   const selectAll = useCallback(() => {
     if (parseResult) {
-      setSelectedTools(new Set(parseResult.tools.map(t => t.id)));
+      setSelectedTools(new Set(parseResult.tools.map((t) => t.id)))
     }
-  }, [parseResult]);
+  }, [parseResult])
 
   const deselectAll = useCallback(() => {
-    setSelectedTools(new Set());
-  }, []);
+    setSelectedTools(new Set())
+  }, [])
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+      <button
+        type="button"
+        aria-label="Close dialog"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm cursor-default"
         onClick={handleClose}
       />
 
@@ -224,7 +229,8 @@ Example:
                   <div className="flex items-center gap-3">
                     <CheckCircle className="w-5 h-5 text-emerald-500" />
                     <p className="text-emerald-500">
-                      Found {parseResult.tools.length} tool{parseResult.tools.length !== 1 ? 's' : ''}
+                      Found {parseResult.tools.length} tool
+                      {parseResult.tools.length !== 1 ? 's' : ''}
                     </p>
                   </div>
                 </div>
@@ -238,18 +244,10 @@ Example:
                       {selectedTools.size} of {parseResult.tools.length} selected
                     </p>
                     <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={selectAll}
-                      >
+                      <Button variant="ghost" size="sm" onClick={selectAll}>
                         Select All
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={deselectAll}
-                      >
+                      <Button variant="ghost" size="sm" onClick={deselectAll}>
                         Deselect All
                       </Button>
                     </div>
@@ -258,37 +256,43 @@ Example:
                   <div className="border border-[var(--border-default)] rounded-lg overflow-hidden">
                     <div className="max-h-[300px] overflow-y-auto">
                       {parseResult.tools.map((tool) => (
-                        <div
+                        <label
                           key={tool.id}
-                          onClick={() => toggleTool(tool.id)}
                           className={cn(
                             'flex items-start gap-3 p-3 cursor-pointer border-b border-[var(--border-default)] last:border-b-0',
                             'hover:bg-[var(--bg-hover)] transition-colors',
                             selectedTools.has(tool.id) && 'bg-[var(--accent-muted)]'
                           )}
                         >
-                          <div className={cn(
-                            'w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 mt-0.5',
-                            selectedTools.has(tool.id)
-                              ? 'bg-[var(--accent)] border-[var(--accent)]'
-                              : 'border-[var(--border-strong)]'
-                          )}>
+                          <input
+                            type="checkbox"
+                            className="sr-only"
+                            checked={selectedTools.has(tool.id)}
+                            onChange={() => toggleTool(tool.id)}
+                          />
+                          <div
+                            className={cn(
+                              'w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 mt-0.5',
+                              selectedTools.has(tool.id)
+                                ? 'bg-[var(--accent)] border-[var(--accent)]'
+                                : 'border-[var(--border-strong)]'
+                            )}
+                          >
                             {selectedTools.has(tool.id) && (
                               <CheckCircle className="w-3 h-3 text-white" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-[var(--text-primary)]">
-                              {tool.name}
-                            </p>
+                            <p className="font-medium text-[var(--text-primary)]">{tool.name}</p>
                             <p className="text-sm text-[var(--text-secondary)] truncate">
                               {tool.description}
                             </p>
                             <p className="text-xs text-[var(--text-tertiary)] mt-1">
-                              {tool.parameters.length} parameter{tool.parameters.length !== 1 ? 's' : ''}
+                              {tool.parameters.length} parameter
+                              {tool.parameters.length !== 1 ? 's' : ''}
                             </p>
                           </div>
-                        </div>
+                        </label>
                       ))}
                     </div>
                   </div>
@@ -319,16 +323,10 @@ Example:
 
           {state === 'preview' && (
             <>
-              <Button
-                variant="outline"
-                onClick={() => setState('input')}
-              >
+              <Button variant="outline" onClick={() => setState('input')}>
                 Back
               </Button>
-              <Button
-                onClick={handleImportSelected}
-                disabled={selectedTools.size === 0}
-              >
+              <Button onClick={handleImportSelected} disabled={selectedTools.size === 0}>
                 <Plus className="w-4 h-4 mr-2" />
                 Add {selectedTools.size} Tool{selectedTools.size !== 1 ? 's' : ''}
               </Button>
@@ -337,5 +335,5 @@ Example:
         </div>
       </div>
     </div>
-  );
+  )
 }

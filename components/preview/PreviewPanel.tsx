@@ -1,13 +1,13 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { StructureTab } from './StructureTab';
-import { TestTab } from './TestTab';
-import { CodeTab } from './CodeTab';
+import { useState } from 'react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { CodeTab } from './CodeTab'
+import { StructureTab } from './StructureTab'
+import { TestTab } from './TestTab'
 
 export function PreviewPanel() {
-  const [activeTab, setActiveTab] = useState('structure');
+  const [activeTab, setActiveTab] = useState('structure')
 
   return (
     <div className="h-full flex flex-col bg-[var(--bg-surface)]">
@@ -50,5 +50,5 @@ export function PreviewPanel() {
         </div>
       </Tabs>
     </div>
-  );
+  )
 }

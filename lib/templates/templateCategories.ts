@@ -1,11 +1,11 @@
-import { ToolTemplate } from '../types';
+import type { ToolTemplate } from '../types'
 
 export interface TemplateCategory {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  templates: ToolTemplate[];
+  id: string
+  name: string
+  description: string
+  icon: string
+  templates: ToolTemplate[]
 }
 
 // Data & APIs Category
@@ -86,7 +86,7 @@ const dataApiTemplates: ToolTemplate[] = [
       },
     ],
   },
-];
+]
 
 // File Operations Category
 const fileTemplates: ToolTemplate[] = [
@@ -160,7 +160,7 @@ const fileTemplates: ToolTemplate[] = [
       },
     ],
   },
-];
+]
 
 // Communication Category
 const communicationTemplates: ToolTemplate[] = [
@@ -252,7 +252,7 @@ const communicationTemplates: ToolTemplate[] = [
       },
     ],
   },
-];
+]
 
 // System Category
 const systemTemplates: ToolTemplate[] = [
@@ -313,7 +313,7 @@ const systemTemplates: ToolTemplate[] = [
       },
     ],
   },
-];
+]
 
 // Developer Tools Category
 const developerTemplates: ToolTemplate[] = [
@@ -410,7 +410,7 @@ const developerTemplates: ToolTemplate[] = [
       },
     ],
   },
-];
+]
 
 // AI & ML Category
 const aiTemplates: ToolTemplate[] = [
@@ -521,7 +521,7 @@ const aiTemplates: ToolTemplate[] = [
       },
     ],
   },
-];
+]
 
 // Utilities Category
 const utilityTemplates: ToolTemplate[] = [
@@ -633,7 +633,7 @@ const utilityTemplates: ToolTemplate[] = [
       },
     ],
   },
-];
+]
 
 // Export all categories
 export const templateCategories: TemplateCategory[] = [
@@ -686,20 +686,20 @@ export const templateCategories: TemplateCategory[] = [
     icon: 'Wrench',
     templates: utilityTemplates,
   },
-];
+]
 
 // Export all templates flat for backwards compatibility
 export const allTemplates: ToolTemplate[] = templateCategories.flatMap(
   (category) => category.templates
-);
+)
 
 // Helper function to find a template by name
 export function findTemplateByName(name: string): ToolTemplate | undefined {
-  return allTemplates.find((t) => t.name === name);
+  return allTemplates.find((t) => t.name === name)
 }
 
 // Helper function to get templates by category ID
 export function getTemplatesByCategory(categoryId: string): ToolTemplate[] {
-  const category = templateCategories.find((c) => c.id === categoryId);
-  return category?.templates || [];
+  const category = templateCategories.find((c) => c.id === categoryId)
+  return category?.templates || []
 }
