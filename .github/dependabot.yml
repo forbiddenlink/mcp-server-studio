@@ -18,14 +18,27 @@ updates:
           - "react"
           - "react-dom"
           - "typescript"
+          - "@types/react"
+          - "@types/react-dom"
       major-frameworks:
         patterns:
           - "next"
           - "react"
           - "react-dom"
           - "typescript"
+          - "@types/react"
+          - "@types/react-dom"
         update-types:
           - "major"
+      react-ecosystem:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+        update-types:
+          - "patch"
+          - "minor"
     labels:
       - "dependencies"
   - package-ecosystem: "github-actions"
