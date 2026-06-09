@@ -94,7 +94,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
     "husky": "^9.1.7",
-    "jsdom": "^28.1.0",
+    "jsdom": "^29.1.1",
     "lint-staged": "^16.3.2",
     "msw": "^2.14.6",
     "next-sitemap": "^4.2.3",
