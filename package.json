@@ -39,8 +39,8 @@
     "postbuild": "next-sitemap"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix"
+    "*.{ts,tsx,js,jsx,json,css}": [
+      "biome check --write --no-errors-on-unmatched"
     ]
   },
   "dependencies": {
@@ -91,6 +91,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.2",
+    "vite": "^8.0.0",
     "eslint": "^10",
     "eslint-config-next": "16.2.9",
     "husky": "^9.1.7",
@@ -120,7 +121,7 @@
       "postcss": ">=8.5.3",
       "rollup": ">=4.59.0",
       "semver": ">=7.7.2",
-      "vite": ">=6.4.2",
+      "vite": ">=8.0.0",
       "ws": ">=8.18.2",
       "fast-uri": ">=3.1.2",
       "lodash": ">=4.18.1",

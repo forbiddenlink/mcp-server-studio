@@ -8,7 +8,7 @@ import {
   Container,
   Download,
   FileCode,
-  Github,
+  GitBranch,
   Rocket,
   Settings,
   Train,
@@ -357,7 +357,7 @@ export default function Home() {
                 }
                 className="hidden md:flex"
               >
-                <Github className="w-4 h-4 mr-2" />
+                <GitBranch className="w-4 h-4 mr-2" />
                 MCP Docs
               </Button>
               <DropdownMenu>
