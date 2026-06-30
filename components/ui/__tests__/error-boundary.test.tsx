@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type React from 'react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ErrorBoundary } from '../error-boundary'
 
 // Suppress console.error for expected error outputs
@@ -133,7 +134,7 @@ describe('ErrorBoundary', () => {
   })
 
   it('handles errors without message', () => {
-    function ThrowNoMessage() {
+    function ThrowNoMessage(): React.ReactElement {
       throw new Error()
     }
 

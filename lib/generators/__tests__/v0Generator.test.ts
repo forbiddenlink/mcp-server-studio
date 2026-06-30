@@ -11,13 +11,14 @@ describe('v0Generator', () => {
   const mockConfig: MCPServerConfig = {
     name: 'Test Server',
     version: '1.0.0',
-    description: 'A test MCP server',
     transport: 'http',
+    httpPort: 3000,
     tools: [
       {
         id: 'tool-1',
         name: 'get_weather',
         description: 'Get current weather',
+        icon: 'Cloud',
         parameters: [
           {
             name: 'location',

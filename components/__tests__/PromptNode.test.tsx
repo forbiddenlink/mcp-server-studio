@@ -27,7 +27,6 @@ function makePrompt(overrides: Partial<MCPPrompt> = {}): MCPPrompt {
     id: 'prompt-1',
     name: 'code_review',
     description: 'Review code for best practices',
-    template: 'Review the following code: {{code}}',
     arguments: [
       { name: 'code', type: 'string', description: 'The code to review', required: true },
     ],
