@@ -1,7 +1,22 @@
 'use client'
 
 import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getBezierPath } from '@xyflow/react'
-import { memo } from 'react'
+import { memo, useEffect, useState } from 'react'
+
+// Track the OS reduced-motion preference. SVG SMIL (<animateMotion>) ignores
+// CSS `prefers-reduced-motion`, so the packet must be gated in JS; the dashed
+// "current" is CSS-driven and gated in globals.css.
+function usePrefersReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const update = () => setReduced(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+  return reduced
+}
 
 function DataFlowEdgeComponent({
   id,
@@ -14,6 +29,7 @@ function DataFlowEdgeComponent({
   selected,
   markerEnd,
 }: EdgeProps) {
+  const reducedMotion = usePrefersReducedMotion()
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -39,7 +55,7 @@ function DataFlowEdgeComponent({
         />
       )}
 
-      {/* Main edge */}
+      {/* Main edge (the physical wire) */}
       <BaseEdge
         id={id}
         path={edgePath}
@@ -51,10 +67,25 @@ function DataFlowEdgeComponent({
         }}
       />
 
-      {/* Animated flow particle */}
-      <circle r="3" fill="var(--accent)">
-        <animateMotion dur="2s" repeatCount="indefinite" path={edgePath} />
-      </circle>
+      {/* Flowing "current" — a dashed overlay that streams toward the target,
+          giving every wire a clear direction. Animation gated in globals.css. */}
+      <path
+        d={edgePath}
+        fill="none"
+        stroke="var(--accent)"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeDasharray="5 11"
+        className="edge-flow"
+        style={{ opacity: selected ? 0.95 : 0.4 }}
+      />
+
+      {/* Animated data packet (SMIL — JS-gated for reduced motion) */}
+      {!reducedMotion && (
+        <circle r="3" fill="var(--accent)">
+          <animateMotion dur="2s" repeatCount="indefinite" path={edgePath} />
+        </circle>
+      )}
 
       {/* Data flow label */}
       <EdgeLabelRenderer>

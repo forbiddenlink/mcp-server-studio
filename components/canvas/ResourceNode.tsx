@@ -37,17 +37,13 @@ function ResourceNodeComponent({ id, data, selected }: NodeProps) {
       tabIndex={0}
       aria-label={`Resource: ${resource.name}`}
       className={cn(
-        'surface-base p-4 min-w-[220px] cursor-pointer transition-colors duration-100',
+        'node-card node-card--resource surface-base p-4 min-w-[220px] cursor-pointer',
         'hover:border-emerald-500/50 hover:bg-[var(--bg-hover)]',
         isSelected &&
-          'ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-emerald-500 border-emerald-500/50'
+          'is-selected ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-emerald-500 border-emerald-500/50'
       )}
     >
-      <Handle
-        type="target"
-        position={Position.Top}
-        className="w-3 h-3 !bg-emerald-500 !border-2 !border-[var(--bg-base)]"
-      />
+      <Handle type="target" position={Position.Top} className="port port--resource" />
 
       <div className="flex items-start gap-3">
         {/* Icon Container */}
@@ -73,11 +69,7 @@ function ResourceNodeComponent({ id, data, selected }: NodeProps) {
         </div>
       </div>
 
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        className="w-3 h-3 !bg-emerald-500 !border-2 !border-[var(--bg-base)]"
-      />
+      <Handle type="source" position={Position.Bottom} className="port port--resource port--out" />
     </div>
   )
 }
