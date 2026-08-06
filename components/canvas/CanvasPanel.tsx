@@ -286,9 +286,19 @@ export function CanvasPanel() {
         fitView
         className="bg-transparent"
       >
-        <Background color="rgba(99, 102, 241, 0.05)" gap={20} />
+        <Background color="rgba(99, 102, 241, 0.05)" gap={24} />
         <Controls className="glass-panel" />
-        <MiniMap className="glass-panel" />
+        <MiniMap
+          className="glass-panel"
+          maskColor="rgba(9, 9, 11, 0.6)"
+          nodeColor={(node) => {
+            if (node.type === 'resourceNode') return '#10b981'
+            if (node.type === 'promptNode') return '#8b5cf6'
+            return '#6366f1'
+          }}
+          nodeStrokeWidth={0}
+          nodeBorderRadius={4}
+        />
       </ReactFlow>
 
       {/* Add Tool Button */}
@@ -449,18 +459,56 @@ export function CanvasPanel() {
         onSelectTemplate={handleSelectTemplate}
       />
 
-      {/* Empty State - Clean & Professional */}
+      {/* Empty State - ghost wiring schematic */}
       {nodes.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="text-center max-w-md px-8">
-            <div className="w-16 h-16 rounded-2xl bg-[var(--accent-muted)] flex items-center justify-center mx-auto mb-6">
+          <div className="relative text-center max-w-md px-8">
+            {/* Faint blueprint of ported nodes wired together — previews the
+                node-graph the user is about to build. Decorative only. */}
+            <svg
+              aria-hidden="true"
+              className="empty-schematic pointer-events-none absolute left-1/2 -top-24 -translate-x-1/2 opacity-[0.16]"
+              width="320"
+              height="180"
+              viewBox="0 0 320 180"
+              fill="none"
+            >
+              <title>Wiring schematic</title>
+              {/* wires */}
+              <path
+                d="M80 54 C80 96, 160 84, 160 118"
+                stroke="#6366f1"
+                strokeWidth="2"
+                strokeDasharray="5 9"
+                strokeLinecap="round"
+                className="empty-wire"
+              />
+              <path
+                d="M240 54 C240 96, 160 84, 160 118"
+                stroke="#8b5cf6"
+                strokeWidth="2"
+                strokeDasharray="5 9"
+                strokeLinecap="round"
+                className="empty-wire"
+              />
+              {/* node blocks */}
+              <rect x="34" y="26" width="92" height="30" rx="6" fill="#18181b" stroke="#3f3f46" />
+              <rect x="194" y="26" width="92" height="30" rx="6" fill="#18181b" stroke="#3f3f46" />
+              <rect x="114" y="118" width="92" height="30" rx="6" fill="#18181b" stroke="#3f3f46" />
+              {/* ports */}
+              <circle cx="80" cy="56" r="4" fill="#09090b" stroke="#6366f1" strokeWidth="1.5" />
+              <circle cx="240" cy="56" r="4" fill="#09090b" stroke="#8b5cf6" strokeWidth="1.5" />
+              <circle cx="160" cy="118" r="4" fill="#09090b" stroke="#6366f1" strokeWidth="1.5" />
+            </svg>
+
+            <div className="relative w-16 h-16 rounded-2xl bg-[var(--accent-muted)] border border-[var(--border-accent)] flex items-center justify-center mx-auto mb-6">
               <Zap className="w-8 h-8 text-[var(--accent)]" strokeWidth={1.5} />
             </div>
-            <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
-              Start Building
+            <h3 className="relative text-xl font-semibold text-[var(--text-primary)] mb-2">
+              Start Wiring
             </h3>
-            <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-              Add your first tool to begin creating your MCP server
+            <p className="relative text-sm text-[var(--text-secondary)] leading-relaxed">
+              Drop your first node, then drag from a port to wire it up
               <br />
               <span className="text-xs mt-1 opacity-60">
                 Right-click or press Space to add tools

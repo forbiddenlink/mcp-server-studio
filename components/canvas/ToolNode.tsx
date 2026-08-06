@@ -79,17 +79,13 @@ function ToolNodeComponent({ id, data, selected }: NodeProps) {
       tabIndex={0}
       aria-label={`Tool: ${tool.name}`}
       className={cn(
-        'surface-base p-4 min-w-[220px] cursor-pointer transition-colors duration-100',
+        'node-card node-card--tool surface-base p-4 min-w-[220px] cursor-pointer',
         'hover:border-[var(--border-strong)] hover:bg-[var(--bg-hover)]',
         isSelected &&
-          'ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-[var(--accent)] border-[var(--border-strong)]'
+          'is-selected ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-[var(--accent)] border-[var(--border-strong)]'
       )}
     >
-      <Handle
-        type="target"
-        position={Position.Top}
-        className="w-3 h-3 !bg-[var(--accent)] !border-2 !border-[var(--bg-base)]"
-      />
+      <Handle type="target" position={Position.Top} className="port port--tool" />
 
       <div className="flex items-start gap-3">
         {/* Icon Container */}
@@ -137,11 +133,7 @@ function ToolNodeComponent({ id, data, selected }: NodeProps) {
         </div>
       </div>
 
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        className="w-3 h-3 !bg-[var(--accent)] !border-2 !border-[var(--bg-base)]"
-      />
+      <Handle type="source" position={Position.Bottom} className="port port--tool port--out" />
     </div>
   )
 }

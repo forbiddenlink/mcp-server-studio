@@ -34,17 +34,13 @@ function PromptNodeComponent({ id, data, selected }: NodeProps) {
       tabIndex={0}
       aria-label={`Prompt: ${prompt.name}`}
       className={cn(
-        'surface-base p-4 min-w-[220px] cursor-pointer transition-colors duration-100',
+        'node-card node-card--prompt surface-base p-4 min-w-[220px] cursor-pointer',
         'hover:border-violet-500/50 hover:bg-[var(--bg-hover)]',
         isSelected &&
-          'ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-violet-500 border-violet-500/50'
+          'is-selected ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-violet-500 border-violet-500/50'
       )}
     >
-      <Handle
-        type="target"
-        position={Position.Top}
-        className="w-3 h-3 !bg-violet-500 !border-2 !border-[var(--bg-base)]"
-      />
+      <Handle type="target" position={Position.Top} className="port port--prompt" />
 
       <div className="flex items-start gap-3">
         {/* Icon Container */}
@@ -68,11 +64,7 @@ function PromptNodeComponent({ id, data, selected }: NodeProps) {
         </div>
       </div>
 
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        className="w-3 h-3 !bg-violet-500 !border-2 !border-[var(--bg-base)]"
-      />
+      <Handle type="source" position={Position.Bottom} className="port port--prompt port--out" />
     </div>
   )
 }
