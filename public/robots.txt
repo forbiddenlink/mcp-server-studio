@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://mcp-server-studio.vercel.app
+
+# Sitemaps
+Sitemap: https://mcp-server-studio.vercel.app/sitemap.xml
