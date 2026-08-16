@@ -106,5 +106,20 @@
     "typedoc-plugin-markdown": "^4.12.0",
     "typescript": "^6",
     "vitest": "^4.1.10"
+  },
+  "pnpm": {
+    "overrides": {
+      "@hono/node-server": ">=2.0.5 <3",
+      "body-parser": ">=1.20.6 <2",
+      "brace-expansion": ">=5.0.8 <6",
+      "esbuild": ">=0.28.1 <1",
+      "fast-uri": ">=4.0.1 <5",
+      "hono": ">=4.12.34 <5",
+      "ip-address": ">=10.3.1 <11",
+      "postcss": ">=8.5.23 <9",
+      "qs": ">=6.15.2 <7",
+      "sharp": ">=0.35.0 <1",
+      "undici": ">=7.29.0 <8"
+    }
   }
 }
