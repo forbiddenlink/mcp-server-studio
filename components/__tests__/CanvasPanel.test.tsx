@@ -111,8 +111,8 @@ describe('CanvasPanel', () => {
     it('shows empty state when no nodes exist', () => {
       mockNodes = []
       render(<CanvasPanel />)
-      expect(screen.getByText('Start Building')).toBeTruthy()
-      expect(screen.getByText('Add your first tool to begin creating your MCP server')).toBeTruthy()
+      expect(screen.getByText('Start Wiring')).toBeTruthy()
+      expect(screen.getByText(/Drop your first node, then drag from a port to wire it up/)).toBeTruthy()
     })
 
     it('hides empty state when nodes exist', () => {
@@ -124,7 +124,7 @@ describe('CanvasPanel', () => {
         },
       ]
       render(<CanvasPanel />)
-      expect(screen.queryByText('Start Building')).toBeNull()
+      expect(screen.queryByText('Start Wiring')).toBeNull()
     })
 
     it('hides empty state with multiple nodes', () => {
@@ -143,7 +143,7 @@ describe('CanvasPanel', () => {
         },
       ]
       render(<CanvasPanel />)
-      expect(screen.queryByText('Start Building')).toBeNull()
+      expect(screen.queryByText('Start Wiring')).toBeNull()
     })
   })
 
@@ -192,7 +192,7 @@ describe('CanvasPanel', () => {
       ]
       render(<CanvasPanel />)
       // The component renders, meaning it received nodes correctly
-      expect(screen.queryByText('Start Building')).toBeNull()
+      expect(screen.queryByText('Start Wiring')).toBeNull()
     })
 
     it('receives edges from store', () => {
