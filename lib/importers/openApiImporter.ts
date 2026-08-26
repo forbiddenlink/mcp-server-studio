@@ -1,4 +1,4 @@
-import yaml from 'js-yaml'
+import { load as loadYaml } from 'js-yaml'
 import { logger } from '../logger'
 import type { MCPParameter, MCPTool, ParameterType } from '../types'
 
@@ -281,7 +281,7 @@ export function parseOpenApiSpec(spec: string): ParseResult {
     parsedSpec = JSON.parse(spec)
   } catch {
     try {
-      parsedSpec = yaml.load(spec) as OpenAPISpec
+      parsedSpec = loadYaml(spec) as OpenAPISpec
     } catch (yamlError) {
       return {
         success: false,
