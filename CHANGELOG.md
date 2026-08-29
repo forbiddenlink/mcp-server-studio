@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.0...v1.0.1) (2026-08-29)
+
+
+### Bug Fixes
+
+* **deps:** move resolution overrides to package.json and add missing patches ([#72](https://github.com/forbiddenlink/mcp-server-studio/issues/72)) ([7e5e0cd](https://github.com/forbiddenlink/mcp-server-studio/commit/7e5e0cdf02334a971c5f73ca8b4853516d359940))
+
 ## 1.0.0 (2026-08-17)
 
 

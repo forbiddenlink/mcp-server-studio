@@ -1,6 +1,6 @@
 {
   "name": "mcp-server-studio",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Visual builder for Model Context Protocol servers - design, test, and export MCP servers with drag-and-drop",
   "author": "Liz Stein",
   "license": "MIT",
