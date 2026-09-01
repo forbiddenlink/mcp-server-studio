@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.1...v1.0.2) (2026-09-01)
+
+
+### Bug Fixes
+
+* **build:** drop the dead upstash client that broke type checking ([e6429ec](https://github.com/forbiddenlink/mcp-server-studio/commit/e6429ecadf3cd0b72fbc9ada8b4eec72951bb7e9))
+
 ## [1.0.1](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.0...v1.0.1) (2026-08-29)
 
 
