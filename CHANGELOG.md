@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.3](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.2...v1.0.3) (2026-09-02)
+
+
+### Bug Fixes
+
+* **ci:** let pnpm/action-setup read the version from packageManager ([526948b](https://github.com/forbiddenlink/mcp-server-studio/commit/526948b126769a712647eb43333e34b244af67de))
+* **deps:** give every resolution override an upper bound ([2c7fab6](https://github.com/forbiddenlink/mcp-server-studio/commit/2c7fab666aea2626e52f6743bf47789b85d82bd8))
+
 ## [1.0.2](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.1...v1.0.2) (2026-09-01)
 
 
