@@ -30,7 +30,7 @@ jobs:
 
       # Secret scanning with TruffleHog
       - name: TruffleHog
-        uses: trufflesecurity/trufflehog@main
+        uses: trufflesecurity/trufflehog@363923b901c911a9164f50b6c423f47c15372b1c # main as of 2026-09-04
         with:
           extra_args: --only-verified
         continue-on-error: true
