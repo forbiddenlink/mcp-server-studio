@@ -42,3 +42,6 @@ next-env.d.ts
 
 package.json.bak
 .pnpm-store/
+
+# Generated agent scratch output. Churns on every run and is not source.
+.claude/cache/
