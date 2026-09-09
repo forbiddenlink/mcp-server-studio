@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.4](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.3...v1.0.4) (2026-09-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency framer-motion to v13 ([#91](https://github.com/forbiddenlink/mcp-server-studio/issues/91)) ([5794893](https://github.com/forbiddenlink/mcp-server-studio/commit/57948939765f1d37c7336a76d9750d27760f81d6))
+* **deps:** update dependency json-schema-to-typescript to v16 ([#92](https://github.com/forbiddenlink/mcp-server-studio/issues/92)) ([6b85f02](https://github.com/forbiddenlink/mcp-server-studio/commit/6b85f02824238bdbf32afe48e6a48b7d1673c8c5))
+
 ## [1.0.3](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.2...v1.0.3) (2026-09-02)
 
 
