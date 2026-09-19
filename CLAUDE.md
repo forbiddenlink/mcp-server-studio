@@ -94,9 +94,9 @@ root). Do not hard-code a test count; use `pnpm test:run` or CI as the source of
 
 ## Env vars
 
-`.env.example` only documents `NEXT_PUBLIC_AXIOM_DATASET` and `AXIOM_TOKEN` (optional, for
-next-axiom logging). See Gotchas: `src/env.ts` declares more vars than that. Cannot verify
-`.env.local` contents (not readable); do not assume it matches either file.
+No `.env.example` exists in this repo. The only declared env vars are in `src/env.ts` (see
+Gotchas - unused dead code). Cannot verify `.env.local` contents (not readable); do not assume
+it matches `src/env.ts`.
 
 ## Gotchas
 
