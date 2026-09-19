@@ -6,7 +6,7 @@ Design MCP tools, resources, and prompts on a drag-and-drop canvas, test them in
 
 ![CI](https://github.com/forbiddenlink/mcp-server-studio/actions/workflows/ci.yml/badge.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-6-blue?logo=typescript)
+![TypeScript](https://img.shields.io/badge/TypeScript-7-blue?logo=typescript)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
 ## What is this?
@@ -23,19 +23,19 @@ It is useful for:
 
 ## Features
 
-**Visual Canvas** — Drag-and-drop tool, resource, and prompt creation with reusable templates and real-time manifest generation.
+**Visual Canvas**: Drag-and-drop tool, resource, and prompt creation with reusable templates and real-time manifest generation.
 
-**Test Simulator** — Parameter validation, schema checks, and structured test results for tools, resources, and prompts.
+**Test Simulator**: Parameter validation, schema checks, and structured test results for tools, resources, and prompts.
 
-**Code Generation** — TypeScript generation with Zod schemas, MCP SDK integration, validation, and `stdio` or HTTP server configurations.
+**Code Generation**: TypeScript generation with Zod schemas, MCP SDK integration, validation, and `stdio` or HTTP server configurations.
 
-**Export & Deploy** — TypeScript, Docker, and Railway-oriented export bundles with supporting project configuration.
+**Export & Deploy**: TypeScript, Docker, and Railway-oriented export bundles with supporting project configuration.
 
-**AI Tool Generator** — Describe a tool in natural language and generate a draft tool definition with parameters and types.
+**AI Tool Generator**: Describe a tool in natural language and generate a draft tool definition with parameters and types.
 
-**OpenAPI Import** — Convert operations from OpenAPI/Swagger JSON or YAML into MCP tool definitions.
+**OpenAPI Import**: Convert operations from OpenAPI/Swagger JSON or YAML into MCP tool definitions.
 
-**Advanced Capabilities** — Model sampling, elicitation, and experimental task configuration on a per-tool basis.
+**Advanced Capabilities**: Model sampling, elicitation, and experimental task configuration on a per-tool basis.
 
 ## Quick Start
 
@@ -87,7 +87,7 @@ The UI owns the editable project model. Importers and assisted drafting populate
 ## Tech Stack
 
 - **Next.js 16** and **React 19**
-- **TypeScript 6**
+- **TypeScript 7**
 - **React Flow** (`@xyflow/react`) for the canvas
 - **Zustand** for editor state
 - **Monaco Editor** for code preview

@@ -45,3 +45,8 @@ package.json.bak
 
 # Generated agent scratch output. Churns on every run and is not source.
 .claude/cache/
+.claude/tsc-cache/
+.playwright-mcp/
+
+# Local symlink to CLAUDE.md for agents that look for AGENTS.md
+/AGENTS.md
