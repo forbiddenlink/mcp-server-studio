@@ -64,7 +64,7 @@ production-ready TypeScript MCP server code. It is a single-page Next.js app wit
   `mcp-validator.ts` (separate Ajv/Zod MCP spec validator, distinct from the simulator above)
 - `src/mocks/` - MSW handlers/server/browser setup (example CRUD/auth handlers, not wired to
   any real API since the app has no backend)
-- `docs/` - `CASE_STUDY.md`, `GETTING_STARTED.md`
+- `docs/` - `GETTING_STARTED.md`
 
 ## Conventions
 
@@ -104,7 +104,8 @@ next-axiom logging). See Gotchas: `src/env.ts` declares more vars than that. Can
   `NEXT_PUBLIC_POSTHOG_KEY` (non-optional client var), but nothing in `app/`, `components/`,
   or `lib/` imports `src/env.ts`, and the Arcjet package is not a dependency in `package.json`
   (it was removed - see `package.json.bak`). This schema looks like leftover scaffolding from
-  a template and is currently dead code; see CODE ISSUES in the audit report.
+  a template and is currently dead code (orphaned scaffolding, left over after Arcjet's
+  removal).
 - `eslint.config.mjs` exists (Next.js flat config) but is not run by any `package.json` script
   or by CI (`.github/workflows/ci.yml` runs `pnpm lint`, which is Biome). Do not assume ESLint
   is the enforced linter.

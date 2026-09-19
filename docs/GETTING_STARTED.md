@@ -140,7 +140,6 @@ Parameters:
 
 - [MCP Specification](https://modelcontextprotocol.io)
 - [MCP SDK Docs](https://github.com/modelcontextprotocol/typescript-sdk)
-- [Design Document](/docs/plans/2026-02-21-mcp-server-studio-design.md)
 
 ---
 
