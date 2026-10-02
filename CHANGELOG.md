@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.4...v1.0.5) (2026-10-02)
+
+
+### Bug Fixes
+
+* **deps:** raise stale override floors ([#111](https://github.com/forbiddenlink/mcp-server-studio/issues/111)) ([a5a100d](https://github.com/forbiddenlink/mcp-server-studio/commit/a5a100d273821b9b8a9fc869d469593435efab94))
+
 ## [1.0.4](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.3...v1.0.4) (2026-09-09)
 
 
