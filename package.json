@@ -133,5 +133,5 @@
       "ws": ">=8.18.2 <9"
     }
   },
-  "packageManager": "pnpm@10.34.5"
+  "packageManager": "pnpm@10.34.6"
 }
