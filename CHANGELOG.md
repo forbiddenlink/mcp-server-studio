@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.6](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.5...v1.0.6) (2026-10-17)
+
+
+### Bug Fixes
+
+* **deps:** clear transitive CVEs with bounded overrides ([#121](https://github.com/forbiddenlink/mcp-server-studio/issues/121)) ([89d5012](https://github.com/forbiddenlink/mcp-server-studio/commit/89d5012775a07d62a40a2996453a1cc39710e60a))
+
 ## [1.0.5](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.4...v1.0.5) (2026-10-09)
 
 
