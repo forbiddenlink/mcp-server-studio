@@ -134,5 +134,5 @@
       "source-map-js@1": ">=1.2.2 <2.0.0"
     }
   },
-  "packageManager": "pnpm@10.34.6"
+  "packageManager": "pnpm@10.34.7"
 }
