@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.7](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.6...v1.0.7) (2026-10-21)
+
+
+### Bug Fixes
+
+* **deps:** pin vite &gt;=8.2.4 and markdown-it &gt;=14.3.3 via overrides ([#128](https://github.com/forbiddenlink/mcp-server-studio/issues/128)) ([7912fd0](https://github.com/forbiddenlink/mcp-server-studio/commit/7912fd0667838f0a48233489af93b2e1b1fdb7a5))
+
 ## [1.0.6](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.5...v1.0.6) (2026-10-19)
 
 
