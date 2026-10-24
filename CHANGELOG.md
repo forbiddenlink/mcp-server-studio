@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.8](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.7...v1.0.8) (2026-10-24)
+
+
+### Bug Fixes
+
+* **deps:** bump vitest to 4.1.12 so @vitest/mocker resolves to the patched release ([#132](https://github.com/forbiddenlink/mcp-server-studio/issues/132)) ([33bc345](https://github.com/forbiddenlink/mcp-server-studio/commit/33bc345139ccdf6a3be8ae5bbdcdcefbfc1f2fbb))
+
 ## [1.0.7](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.6...v1.0.7) (2026-10-21)
 
 
