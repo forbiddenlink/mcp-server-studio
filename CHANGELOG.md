@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.9](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.8...v1.0.9) (2026-10-27)
+
+
+### Bug Fixes
+
+* **deps:** bump undici, body-parser, fast-uri via bounded overrides ([#135](https://github.com/forbiddenlink/mcp-server-studio/issues/135)) ([fae1839](https://github.com/forbiddenlink/mcp-server-studio/commit/fae1839bc82c8ea97c2aadfd511b6bbfb68b9181))
+
 ## [1.0.8](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.7...v1.0.8) (2026-10-24)
 
 
