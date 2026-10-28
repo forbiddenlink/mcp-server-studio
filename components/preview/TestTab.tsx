@@ -551,7 +551,11 @@ function BatchResultItem({ name, result }: { name: string; result: TestResult })
           : 'bg-[var(--error)]/5 border-[var(--error)]/30'
       }`}
     >
-      <button type="button" onClick={() => setExpanded(!expanded)} className="w-full flex items-center gap-2">
+      <button
+        type="button"
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center gap-2"
+      >
         {result.success ? (
           <CheckCircle2 className="w-3.5 h-3.5 text-[var(--success)]" />
         ) : (
