@@ -97,6 +97,7 @@ describe('ErrorBoundary', () => {
   it('recovers from error on retry', () => {
     let shouldThrow = true
 
+    // biome-ignore lint/correctness/noComponentHookFactories: test double rendered inside an error boundary test, not a real component factory
     function ConditionalThrower() {
       if (shouldThrow) {
         throw new Error('Conditional error')
@@ -134,6 +135,7 @@ describe('ErrorBoundary', () => {
   })
 
   it('handles errors without message', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: test double rendered inside an error boundary test, not a real component factory
     function ThrowNoMessage(): React.ReactElement {
       throw new Error()
     }

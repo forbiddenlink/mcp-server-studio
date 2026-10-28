@@ -112,7 +112,9 @@ describe('CanvasPanel', () => {
       mockNodes = []
       render(<CanvasPanel />)
       expect(screen.getByText('Start Wiring')).toBeTruthy()
-      expect(screen.getByText(/Drop your first node, then drag from a port to wire it up/)).toBeTruthy()
+      expect(
+        screen.getByText(/Drop your first node, then drag from a port to wire it up/)
+      ).toBeTruthy()
     })
 
     it('hides empty state when nodes exist', () => {
