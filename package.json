@@ -132,7 +132,8 @@
       "uuid": ">=11.1.1 <12",
       "vite": ">=8.2.4 <9",
       "ws": ">=8.18.2 <9",
-      "source-map-js@1": ">=1.2.2 <2.0.0"
+      "source-map-js@1": ">=1.2.2 <2.0.0",
+      "systeminformation": ">=5.33.16 <6"
     }
   },
   "packageManager": "pnpm@10.34.7"
