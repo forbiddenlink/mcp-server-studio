@@ -136,6 +136,8 @@ The automated test suite covers areas including:
 
 Do not rely on a hard-coded README test count. Use `pnpm test:run` or CI as the source of truth.
 
+See [Generated code guarantees](docs/GENERATED_CODE_GUARANTEES.md) for what exported servers do and do not guarantee.
+
 ## Roadmap
 
 ### Shipped
