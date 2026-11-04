@@ -130,7 +130,7 @@ export function AIGenerator({ isOpen, onClose, onGenerate }: AIGeneratorProps) {
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-default)]">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-[var(--accent)] flex items-center justify-center">
                     <Sparkles className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -211,7 +211,7 @@ export function AIGenerator({ isOpen, onClose, onGenerate }: AIGeneratorProps) {
                             key={i}
                             className="flex items-start gap-2 text-sm text-[var(--text-secondary)]"
                           >
-                            <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                            <AlertCircle className="w-4 h-4 text-amber-700 mt-0.5 flex-shrink-0" />
                             <span>{suggestion}</span>
                           </div>
                         ))}
@@ -271,8 +271,8 @@ export function AIGenerator({ isOpen, onClose, onGenerate }: AIGeneratorProps) {
                     transition={{ duration: 0.3 }}
                   >
                     <div className="flex items-center gap-2 mb-4">
-                      <Check className="w-5 h-5 text-emerald-500" />
-                      <span className="text-sm font-medium text-emerald-500">
+                      <Check className="w-5 h-5 text-emerald-700" />
+                      <span className="text-sm font-medium text-emerald-700">
                         Tool generated successfully!
                       </span>
                     </div>
@@ -307,7 +307,7 @@ export function AIGenerator({ isOpen, onClose, onGenerate }: AIGeneratorProps) {
                                       {param.type}
                                     </span>
                                     {param.required && (
-                                      <span className="px-1.5 py-0.5 text-xs bg-red-500/10 text-red-400 rounded">
+                                      <span className="px-1.5 py-0.5 text-xs bg-red-500/10 text-red-700 rounded">
                                         required
                                       </span>
                                     )}

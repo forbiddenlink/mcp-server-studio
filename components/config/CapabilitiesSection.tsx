@@ -105,7 +105,7 @@ export function CapabilitiesSection({
           <div className="surface-elevated p-4 space-y-3">
             <label className="flex items-center justify-between cursor-pointer">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-violet-400" />
+                <Sparkles className="w-4 h-4 text-slate-600" />
                 <span className="text-sm font-medium text-[var(--text-primary)]">
                   Uses Sampling
                 </span>
@@ -131,7 +131,7 @@ export function CapabilitiesSection({
           <div className="surface-elevated p-4 space-y-3">
             <label className="flex items-center justify-between cursor-pointer">
               <div className="flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-cyan-400" />
+                <MessageSquare className="w-4 h-4 text-sky-700" />
                 <span className="text-sm font-medium text-[var(--text-primary)]">
                   Uses Elicitation
                 </span>
@@ -157,11 +157,11 @@ export function CapabilitiesSection({
           <div className="surface-elevated p-4 space-y-3">
             <label className="flex items-center justify-between cursor-pointer">
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-amber-400" />
+                <Clock className="w-4 h-4 text-amber-700" />
                 <span className="text-sm font-medium text-[var(--text-primary)]">
                   Long-running (Tasks)
                 </span>
-                <span className="px-1.5 py-0.5 text-[10px] rounded bg-amber-500/10 text-amber-400 uppercase">
+                <span className="px-1.5 py-0.5 text-[10px] rounded bg-amber-500/10 text-amber-700 uppercase">
                   Experimental
                 </span>
               </div>

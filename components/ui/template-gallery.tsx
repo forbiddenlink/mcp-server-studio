@@ -335,7 +335,7 @@ export function TemplateGallery({ isOpen, onClose, onSelectTemplate }: TemplateG
                                 className="inline-flex items-center px-2 py-0.5 rounded-md bg-[var(--bg-surface)] text-xs text-[var(--text-secondary)] border border-[var(--border-default)]"
                               >
                                 {param.name}
-                                {param.required && <span className="ml-0.5 text-red-400">*</span>}
+                                {param.required && <span className="ml-0.5 text-red-700">*</span>}
                               </span>
                             ))}
                             {template.defaultParameters.length > 3 && (
@@ -447,7 +447,7 @@ export function TemplateGallery({ isOpen, onClose, onSelectTemplate }: TemplateG
                                 {param.type}
                               </span>
                               {param.required && (
-                                <span className="text-xs text-red-400">required</span>
+                                <span className="text-xs text-red-700">required</span>
                               )}
                             </div>
                             <p className="text-sm text-[var(--text-secondary)]">

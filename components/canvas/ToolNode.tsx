@@ -106,19 +106,19 @@ function ToolNodeComponent({ id, data, selected }: NodeProps) {
               {tool.parameters.length} {tool.parameters.length === 1 ? 'param' : 'params'}
             </span>
             {tool.sampling?.enabled && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded-full bg-violet-500/10 text-violet-400">
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded-full bg-slate-500/10 text-slate-600">
                 <Sparkles className="w-2.5 h-2.5" />
                 Sampling
               </span>
             )}
             {tool.elicitation?.enabled && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded-full bg-cyan-500/10 text-cyan-400">
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded-full bg-sky-500/10 text-sky-700">
                 <MessageSquare className="w-2.5 h-2.5" />
                 Elicitation
               </span>
             )}
             {tool.tasks?.enabled && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded-full bg-amber-500/10 text-amber-400">
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded-full bg-amber-500/10 text-amber-700">
                 <Clock className="w-2.5 h-2.5" />
                 Tasks
               </span>

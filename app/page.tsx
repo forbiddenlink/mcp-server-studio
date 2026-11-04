@@ -171,7 +171,7 @@ export default function Home() {
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#6366f1', '#8b5cf6', '#10b981'],
+        colors: ['#1a2ba8', '#c32f16', '#0b6b43'],
       })
     },
     [serverConfig]

@@ -49,7 +49,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
           role="alert"
         >
           <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center mb-4">
-            <AlertTriangle className="w-6 h-6 text-red-400" strokeWidth={1.5} />
+            <AlertTriangle className="w-6 h-6 text-red-700" strokeWidth={1.5} />
           </div>
           <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-1">
             Something went wrong
@@ -60,7 +60,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               : 'An unexpected error occurred.'}
           </p>
           {this.state.error && (
-            <p className="text-xs text-red-400/80 mb-4 font-mono max-w-xs truncate">
+            <p className="text-xs text-red-700/80 mb-4 font-mono max-w-xs truncate">
               {this.state.error.message}
             </p>
           )}

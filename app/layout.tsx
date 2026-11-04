@@ -1,10 +1,20 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, JetBrains_Mono, Red_Hat_Display } from 'next/font/google'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import './globals.css'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const inter = Inter({ subsets: ['latin'] })
+const display = Red_Hat_Display({
+  subsets: ['latin'],
+  weight: ['700', '800'],
+  variable: '--font-display',
+})
+const inkMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '600'],
+  variable: '--font-ink-mono',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://mcp-server-studio.vercel.app'),
@@ -19,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className={`${display.variable} ${inkMono.variable}`}>
       <body className={inter.className}>
         <a
           href="#main-content"

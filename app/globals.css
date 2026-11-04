@@ -82,45 +82,50 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-.dark {
-  /* ═══════════════════════════════════════════════════════════════
-     MCP Server Studio - Refined Design System
-     Based on: Linear, Vercel Geist, Tailwind Zinc palette
-     ═══════════════════════════════════════════════════════════════ */
+/* Blueprint sheet: cool white paper, deep ultramarine ink, one vermilion
+   correction mark. Light theme is the primary theme. */
+:root {
+  /* ─── Surfaces (blueprint white) ─── */
+  --bg-base: #eef3fc; /* sheet */
+  --bg-surface: #f8faff; /* panels */
+  --bg-elevated: #ffffff; /* overlays, popovers */
+  --bg-hover: #dfe8f8; /* hover states */
 
-  /* ─── 3-Tier Surface System ─── */
-  --bg-base: #09090b; /* zinc-950 - Page background */
-  --bg-surface: #18181b; /* zinc-900 - Cards, panels */
-  --bg-elevated: #27272a; /* zinc-800 - Overlays, popovers */
-  --bg-hover: #3f3f46; /* zinc-700 - Hover states */
+  /* ─── Primary accent: ultramarine ink ─── */
+  --accent: #1a2ba8;
+  --accent-hover: #2a3ec8;
+  --accent-muted: rgba(26, 43, 168, 0.1);
+  --accent-subtle: rgba(26, 43, 168, 0.05);
 
-  /* ─── Primary Accent (Indigo) ─── */
-  --accent: #6366f1; /* indigo-500 - Primary actions */
-  --accent-hover: #818cf8; /* indigo-400 - Hover state */
-  --accent-muted: rgba(99, 102, 241, 0.15); /* Tinted backgrounds */
-  --accent-subtle: rgba(99, 102, 241, 0.08); /* Very subtle tints */
+  /* ─── Single sparing accent: vermilion ─── */
+  --vermilion: #c32f16;
 
-  /* ─── 4-Tier Text Hierarchy ─── */
-  --text-primary: #fafafa; /* zinc-50 - Headlines, emphasis */
-  --text-secondary: #a1a1aa; /* zinc-400 - Body text */
-  --text-tertiary: #71717a; /* zinc-500 - Captions, placeholders */
-  --text-disabled: #52525b; /* zinc-600 - Disabled states */
+  /* ─── Text (ink) ─── */
+  --text-primary: #0a1450;
+  --text-secondary: #34437e;
+  --text-tertiary: #4d5b91;
+  --text-disabled: #8f9bc4;
 
-  /* ─── Borders ─── */
-  --border-default: #27272a; /* zinc-800 - Default borders */
-  --border-strong: #3f3f46; /* zinc-700 - Emphasized borders */
-  --border-accent: rgba(99, 102, 241, 0.4); /* Accent borders */
+  /* ─── Borders (drafting lines) ─── */
+  --border-default: #c6d3ee;
+  --border-strong: #9fb1de;
+  --border-accent: rgba(26, 43, 168, 0.4);
 
-  /* ─── Semantic Colors ─── */
-  --success: #22c55e; /* green-500 */
-  --warning: #f59e0b; /* amber-500 */
-  --error: #ef4444; /* red-500 */
+  /* ─── Semantic colors (AA on the sheet) ─── */
+  --success: #0b6b43;
+  --warning: #8a5200;
+  --error: #b3261e;
+
+  /* ─── Node type inks ─── */
+  --type-tool: #1a2ba8;
+  --type-resource: #0b6b43;
+  --type-prompt: #475569;
 
   /* ─── Shadows ─── */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.25);
+  --shadow-sm: 0 1px 2px rgba(10, 20, 80, 0.12);
+  --shadow-md: 0 4px 12px rgba(10, 20, 80, 0.14);
+  --shadow-lg: 0 8px 24px rgba(10, 20, 80, 0.18);
+  --shadow-glow: 0 0 0 3px rgba(26, 43, 168, 0.18);
 
   /* ─── Map to shadcn color system ─── */
   --background: var(--bg-base);
@@ -129,8 +134,7 @@
   --card-foreground: var(--text-primary);
   --popover: var(--bg-elevated);
   --popover-foreground: var(--text-primary);
-  /* Use indigo-500 exactly for precision */
-  --primary: #6366f1;
+  --primary: #1a2ba8;
   --primary-foreground: #ffffff;
   --secondary: var(--bg-surface);
   --secondary-foreground: var(--text-primary);
@@ -141,20 +145,20 @@
   --destructive: var(--error);
   --border: var(--border-default);
   --input: var(--border-default);
-  --ring: #6366f1;
-  --chart-1: #6366f1;
-  --chart-2: #8b5cf6;
-  --chart-3: #22c55e;
-  --chart-4: #f59e0b;
-  --chart-5: #ef4444;
+  --ring: #1a2ba8;
+  --chart-1: #1a2ba8;
+  --chart-2: #475569;
+  --chart-3: #0b6b43;
+  --chart-4: #8a5200;
+  --chart-5: #c32f16;
   --sidebar: var(--bg-surface);
   --sidebar-foreground: var(--text-primary);
-  --sidebar-primary: #6366f1;
+  --sidebar-primary: #1a2ba8;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: var(--bg-elevated);
   --sidebar-accent-foreground: var(--text-primary);
   --sidebar-border: var(--border-default);
-  --sidebar-ring: #6366f1;
+  --sidebar-ring: #1a2ba8;
 }
 
 @layer base {
@@ -165,9 +169,54 @@
     @apply bg-background text-foreground;
     font-family: "Inter", sans-serif;
   }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display), "Inter", sans-serif;
+    letter-spacing: -0.01em;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 }
 
 @layer utilities {
+  /* ─── Manifest sheet: the product's own output, drawn as a drafting sheet ─── */
+  .manifest-sheet {
+    background: var(--bg-elevated);
+    border: 1px solid var(--text-primary);
+    box-shadow: 4px 4px 0 var(--border-strong);
+    position: relative;
+  }
+  .manifest-sheet::before,
+  .manifest-sheet::after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--vermilion);
+    pointer-events: none;
+  }
+  .manifest-sheet::before {
+    top: -8px;
+    left: -8px;
+    border-right: 0;
+    border-bottom: 0;
+  }
+  .manifest-sheet::after {
+    right: -8px;
+    bottom: -8px;
+    border-left: 0;
+    border-top: 0;
+  }
+  .font-display {
+    font-family: var(--font-display), "Inter", sans-serif;
+  }
+  .font-ink-mono {
+    font-family: var(--font-ink-mono), ui-monospace, monospace;
+  }
+
   /* ─── Surface System ─── */
   .surface-base {
     background: var(--bg-surface);
@@ -184,7 +233,7 @@
 
   /* Glass effect - ONLY for overlays */
   .surface-overlay {
-    background: rgba(24, 24, 27, 0.85);
+    background: rgba(248, 250, 255, 0.92);
     backdrop-filter: blur(12px);
     border: 1px solid var(--border-strong);
     border-radius: 12px;
@@ -192,7 +241,7 @@
 
   /* Legacy glass-panel - mapped to overlay for backwards compat */
   .glass-panel {
-    background: rgba(24, 24, 27, 0.75);
+    background: rgba(248, 250, 255, 0.88);
     backdrop-filter: blur(12px);
     border: 1px solid var(--border-default);
     border-radius: var(--radius);
@@ -235,11 +284,11 @@
   .grid-bg {
     background-color: var(--bg-base);
     background-image:
-      radial-gradient(ellipse 90% 65% at 50% 42%, rgba(99, 102, 241, 0.07), transparent 72%),
-      linear-gradient(rgba(63, 63, 70, 0.22) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(63, 63, 70, 0.22) 1px, transparent 1px),
-      linear-gradient(rgba(63, 63, 70, 0.09) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(63, 63, 70, 0.09) 1px, transparent 1px);
+      radial-gradient(ellipse 90% 65% at 50% 42%, rgba(26, 43, 168, 0.06), transparent 72%),
+      linear-gradient(rgba(26, 43, 168, 0.16) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26, 43, 168, 0.16) 1px, transparent 1px),
+      linear-gradient(rgba(26, 43, 168, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26, 43, 168, 0.07) 1px, transparent 1px);
     background-size:
       100% 100%,
       120px 120px,
@@ -305,18 +354,18 @@
     transform: scale(1.5);
     box-shadow:
       0 0 0 3px var(--bg-base),
-      0 0 0 6px rgba(34, 197, 94, 0.28),
-      0 0 16px rgba(34, 197, 94, 0.5);
+      0 0 0 6px rgba(11, 107, 67, 0.28),
+      0 0 16px rgba(11, 107, 67, 0.5);
   }
 
   .port--tool {
     --port-color: var(--accent);
   }
   .port--resource {
-    --port-color: #10b981;
+    --port-color: var(--type-resource);
   }
   .port--prompt {
-    --port-color: #8b5cf6;
+    --port-color: var(--type-prompt);
   }
 
   /* ─── Node cards: type accent strip + drag/select lift ─── */
@@ -356,10 +405,10 @@
     --node-accent: var(--accent);
   }
   .node-card--resource {
-    --node-accent: #10b981;
+    --node-accent: var(--type-resource);
   }
   .node-card--prompt {
-    --node-accent: #8b5cf6;
+    --node-accent: var(--type-prompt);
   }
 
   /* ─── Live wires: a dashed "current" flows along each edge ─── */
@@ -377,11 +426,11 @@
 
   /* Connection line while actively dragging a wire out of a port. */
   .react-flow__connection-path {
-    filter: drop-shadow(0 0 6px rgba(99, 102, 241, 0.55));
+    filter: drop-shadow(0 0 4px rgba(26, 43, 168, 0.4));
     animation: edge-current 0.7s linear infinite;
   }
 
-  /* ─── Controls & MiniMap: match the dark wiring board ─── */
+  /* ─── Controls & MiniMap: match the blueprint board ─── */
   .react-flow__controls {
     border-radius: 10px;
     overflow: hidden;
@@ -476,4 +525,12 @@
       height: 80px;
     }
   }
+}
+
+/* Unlayered and doubled up so it wins over the React Flow stylesheet. */
+.react-flow .react-flow__attribution {
+  background: var(--bg-surface);
+}
+.react-flow .react-flow__attribution a {
+  color: var(--text-secondary);
 }

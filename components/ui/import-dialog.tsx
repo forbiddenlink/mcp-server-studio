@@ -190,10 +190,10 @@ Example:
               {parseResult.errors.length > 0 && (
                 <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/30">
                   <div className="flex items-start gap-3">
-                    <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                    <AlertCircle className="w-5 h-5 text-red-700 flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-medium text-red-500">Errors</p>
-                      <ul className="mt-1 text-sm text-red-400 list-disc list-inside">
+                      <p className="font-medium text-red-700">Errors</p>
+                      <ul className="mt-1 text-sm text-red-700 list-disc list-inside">
                         {parseResult.errors.map((error, i) => (
                           <li key={i}>{error}</li>
                         ))}
@@ -207,10 +207,10 @@ Example:
               {parseResult.warnings.length > 0 && (
                 <div className="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
                   <div className="flex items-start gap-3">
-                    <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                    <AlertCircle className="w-5 h-5 text-yellow-700 flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-medium text-yellow-500">Warnings</p>
-                      <ul className="mt-1 text-sm text-yellow-400 list-disc list-inside">
+                      <p className="font-medium text-yellow-700">Warnings</p>
+                      <ul className="mt-1 text-sm text-yellow-700 list-disc list-inside">
                         {parseResult.warnings.slice(0, 5).map((warning, i) => (
                           <li key={i}>{warning}</li>
                         ))}
@@ -227,8 +227,8 @@ Example:
               {parseResult.success && (
                 <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-500" />
-                    <p className="text-emerald-500">
+                    <CheckCircle className="w-5 h-5 text-emerald-700" />
+                    <p className="text-emerald-700">
                       Found {parseResult.tools.length} tool
                       {parseResult.tools.length !== 1 ? 's' : ''}
                     </p>
