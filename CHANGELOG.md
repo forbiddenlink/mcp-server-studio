@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.10...v1.1.0) (2026-11-04)
+
+
+### Features
+
+* **ui:** blueprint light theme with real generated manifest as the empty-state signature ([#146](https://github.com/forbiddenlink/mcp-server-studio/issues/146)) ([e953627](https://github.com/forbiddenlink/mcp-server-studio/commit/e953627a9be1c6c5b108d86392f547dbded85aeb))
+
 ## [1.0.10](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.9...v1.0.10) (2026-10-29)
 
 
