@@ -35,17 +35,17 @@ function PromptNodeComponent({ id, data, selected }: NodeProps) {
       aria-label={`Prompt: ${prompt.name}`}
       className={cn(
         'node-card node-card--prompt surface-base p-4 min-w-[220px] cursor-pointer',
-        'hover:border-violet-500/50 hover:bg-[var(--bg-hover)]',
+        'hover:border-slate-500/50 hover:bg-[var(--bg-hover)]',
         isSelected &&
-          'is-selected ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-violet-500 border-violet-500/50'
+          'is-selected ring-2 ring-offset-2 ring-offset-[var(--bg-base)] ring-slate-500 border-slate-500/50'
       )}
     >
       <Handle type="target" position={Position.Top} className="port port--prompt" />
 
       <div className="flex items-start gap-3">
         {/* Icon Container */}
-        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center">
-          <MessageSquare className="w-5 h-5 text-violet-500" strokeWidth={1.5} />
+        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-slate-500/10 flex items-center justify-center">
+          <MessageSquare className="w-5 h-5 text-slate-600" strokeWidth={1.5} />
         </div>
 
         {/* Content */}
@@ -57,7 +57,7 @@ function PromptNodeComponent({ id, data, selected }: NodeProps) {
 
           {/* Footer */}
           <div className="flex items-center gap-2 mt-3 pt-2 border-t border-[var(--border-default)]">
-            <span className="text-xs text-violet-500 bg-violet-500/10 px-2 py-0.5 rounded">
+            <span className="text-xs text-slate-600 bg-slate-500/10 px-2 py-0.5 rounded">
               {prompt.arguments.length} {prompt.arguments.length === 1 ? 'arg' : 'args'}
             </span>
           </div>

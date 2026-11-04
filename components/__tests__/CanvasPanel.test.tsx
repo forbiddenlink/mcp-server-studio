@@ -1,5 +1,6 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { toolTemplates } from '@/lib/templates/toolTemplates'
 import { CanvasPanel } from '../canvas/CanvasPanel'
 
 // ---- Mocks ----
@@ -84,14 +85,44 @@ describe('CanvasPanel', () => {
       expect(screen.getByTestId('background')).toBeTruthy()
     })
 
-    it('renders Controls component', () => {
+    it('renders Controls component once nodes exist', () => {
+      mockNodes = [
+        {
+          id: 'tool-1',
+          type: 'toolNode',
+          data: { tool: { id: 'tool-1', name: 'test', description: 'test', parameters: [] } },
+        },
+      ]
       render(<CanvasPanel />)
       expect(screen.getByTestId('controls')).toBeTruthy()
     })
 
-    it('renders MiniMap component', () => {
+    it('renders MiniMap component once nodes exist', () => {
+      mockNodes = [
+        {
+          id: 'tool-1',
+          type: 'toolNode',
+          data: { tool: { id: 'tool-1', name: 'test', description: 'test', parameters: [] } },
+        },
+      ]
       render(<CanvasPanel />)
       expect(screen.getByTestId('minimap')).toBeTruthy()
+    })
+
+    it('hides Controls and MiniMap while the empty state shows the sample manifest', () => {
+      mockNodes = []
+      render(<CanvasPanel />)
+      expect(screen.queryByTestId('controls')).toBeNull()
+      expect(screen.queryByTestId('minimap')).toBeNull()
+      expect(screen.getByLabelText('Sample server manifest')).toBeTruthy()
+    })
+
+    it('adds the sample tool from the empty state', () => {
+      mockNodes = []
+      render(<CanvasPanel />)
+      fireEvent.click(screen.getByText('Add this sample tool'))
+      expect(mockAddTool).toHaveBeenCalledTimes(1)
+      expect(mockAddTool.mock.calls[0][0].name).toBe(toolTemplates[0].name)
     })
 
     it('renders Add Tool button', () => {

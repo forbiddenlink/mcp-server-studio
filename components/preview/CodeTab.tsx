@@ -78,7 +78,22 @@ export function CodeTab() {
             height="100%"
             defaultLanguage="typescript"
             value={code}
-            theme="vs-dark"
+            theme="blueprint"
+            beforeMount={(monaco) => {
+              monaco.editor.defineTheme('blueprint', {
+                base: 'vs',
+                inherit: true,
+                rules: [],
+                colors: {
+                  'editorBracketHighlight.foreground1': '#0a1450',
+                  'editorBracketHighlight.foreground2': '#0a1450',
+                  'editorBracketHighlight.foreground3': '#0a1450',
+                  'editorBracketHighlight.foreground4': '#0a1450',
+                  'editorBracketHighlight.foreground5': '#0a1450',
+                  'editorBracketHighlight.foreground6': '#0a1450',
+                },
+              })
+            }}
             options={{
               readOnly: true,
               minimap: { enabled: false },
@@ -86,6 +101,7 @@ export function CodeTab() {
               fontSize: 12,
               lineNumbers: 'on',
               renderLineHighlight: 'none',
+              bracketPairColorization: { enabled: false },
               scrollbar: {
                 verticalScrollbarSize: 8,
                 horizontalScrollbarSize: 8,

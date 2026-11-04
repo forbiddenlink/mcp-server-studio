@@ -48,7 +48,7 @@ function ResourceNodeComponent({ id, data, selected }: NodeProps) {
       <div className="flex items-start gap-3">
         {/* Icon Container */}
         <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-          <IconComponent className="w-5 h-5 text-emerald-500" strokeWidth={1.5} />
+          <IconComponent className="w-5 h-5 text-emerald-700" strokeWidth={1.5} />
         </div>
 
         {/* Content */}
@@ -62,7 +62,7 @@ function ResourceNodeComponent({ id, data, selected }: NodeProps) {
 
           {/* Footer */}
           <div className="flex items-center gap-2 mt-3 pt-2 border-t border-[var(--border-default)]">
-            <span className="text-xs text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded">
+            <span className="text-xs text-emerald-700 bg-emerald-500/10 px-2 py-0.5 rounded">
               {resource.mimeType}
             </span>
           </div>

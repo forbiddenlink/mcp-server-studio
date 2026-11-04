@@ -37,7 +37,6 @@ import {
   Search,
   Sparkles,
   Terminal,
-  Zap,
 } from 'lucide-react'
 import { AIGenerator } from '@/components/ui/ai-generator'
 import { Button } from '@/components/ui/button'
@@ -54,6 +53,7 @@ import { useStore } from '@/lib/store/useStore'
 import { toolTemplates } from '@/lib/templates/toolTemplates'
 import type { MCPPrompt, MCPResource, MCPTool, ToolTemplate } from '@/lib/types'
 import { DataFlowEdge } from './DataFlowEdge'
+import { createSampleTool, ManifestSheet } from './ManifestSheet'
 import { PromptNode } from './PromptNode'
 import { QuickAddMenu } from './QuickAddMenu'
 import { ResourceNode } from './ResourceNode'
@@ -286,19 +286,21 @@ export function CanvasPanel() {
         fitView
         className="bg-transparent"
       >
-        <Background color="rgba(99, 102, 241, 0.05)" gap={24} />
-        <Controls className="glass-panel" />
-        <MiniMap
-          className="glass-panel"
-          maskColor="rgba(9, 9, 11, 0.6)"
-          nodeColor={(node) => {
-            if (node.type === 'resourceNode') return '#10b981'
-            if (node.type === 'promptNode') return '#8b5cf6'
-            return '#6366f1'
-          }}
-          nodeStrokeWidth={0}
-          nodeBorderRadius={4}
-        />
+        <Background color="rgba(26, 43, 168, 0.10)" gap={24} />
+        {nodes.length > 0 && <Controls className="glass-panel" />}
+        {nodes.length > 0 && (
+          <MiniMap
+            className="glass-panel"
+            maskColor="rgba(10, 20, 80, 0.12)"
+            nodeColor={(node) => {
+              if (node.type === 'resourceNode') return '#0b6b43'
+              if (node.type === 'promptNode') return '#475569'
+              return '#1a2ba8'
+            }}
+            nodeStrokeWidth={0}
+            nodeBorderRadius={4}
+          />
+        )}
       </ReactFlow>
 
       {/* Add Tool Button */}
@@ -362,8 +364,8 @@ export function CanvasPanel() {
               onClick={() => setIsAIGeneratorOpen(true)}
               className="cursor-pointer p-3 rounded-lg hover:bg-[var(--bg-hover)] focus:bg-[var(--bg-hover)]"
             >
-              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center mr-3">
-                <Sparkles className="w-4 h-4 text-violet-500" strokeWidth={1.5} />
+              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-slate-500/10 flex items-center justify-center mr-3">
+                <Sparkles className="w-4 h-4 text-slate-600" strokeWidth={1.5} />
               </div>
               <div className="min-w-0">
                 <div className="font-medium text-sm text-[var(--text-primary)]">
@@ -394,7 +396,7 @@ export function CanvasPanel() {
               className="cursor-pointer p-3 rounded-lg hover:bg-[var(--bg-hover)] focus:bg-[var(--bg-hover)]"
             >
               <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center mr-3">
-                <Database className="w-4 h-4 text-emerald-500" strokeWidth={1.5} />
+                <Database className="w-4 h-4 text-emerald-700" strokeWidth={1.5} />
               </div>
               <div className="min-w-0">
                 <div className="font-medium text-sm text-[var(--text-primary)]">Add Resource</div>
@@ -407,8 +409,8 @@ export function CanvasPanel() {
               onClick={handleAddPrompt}
               className="cursor-pointer p-3 rounded-lg hover:bg-[var(--bg-hover)] focus:bg-[var(--bg-hover)]"
             >
-              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center mr-3">
-                <MessageSquare className="w-4 h-4 text-violet-500" strokeWidth={1.5} />
+              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-slate-500/10 flex items-center justify-center mr-3">
+                <MessageSquare className="w-4 h-4 text-slate-600" strokeWidth={1.5} />
               </div>
               <div className="min-w-0">
                 <div className="font-medium text-sm text-[var(--text-primary)]">Add Prompt</div>
@@ -422,8 +424,8 @@ export function CanvasPanel() {
               onClick={() => setIsImportDialogOpen(true)}
               className="cursor-pointer p-3 rounded-lg hover:bg-[var(--bg-hover)] focus:bg-[var(--bg-hover)]"
             >
-              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center mr-3">
-                <FileUp className="w-4 h-4 text-cyan-500" strokeWidth={1.5} />
+              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center mr-3">
+                <FileUp className="w-4 h-4 text-sky-700" strokeWidth={1.5} />
               </div>
               <div className="min-w-0">
                 <div className="font-medium text-sm text-[var(--text-primary)]">
@@ -459,61 +461,32 @@ export function CanvasPanel() {
         onSelectTemplate={handleSelectTemplate}
       />
 
-      {/* Empty State - ghost wiring schematic */}
+      {/* Empty State - the product's own output: a real generated manifest */}
       {nodes.length === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="relative text-center max-w-md px-8">
-            {/* Faint blueprint of ported nodes wired together — previews the
-                node-graph the user is about to build. Decorative only. */}
-            <svg
-              aria-hidden="true"
-              className="empty-schematic pointer-events-none absolute left-1/2 -top-24 -translate-x-1/2 opacity-[0.16]"
-              width="320"
-              height="180"
-              viewBox="0 0 320 180"
-              fill="none"
-            >
-              <title>Wiring schematic</title>
-              {/* wires */}
-              <path
-                d="M80 54 C80 96, 160 84, 160 118"
-                stroke="#6366f1"
-                strokeWidth="2"
-                strokeDasharray="5 9"
-                strokeLinecap="round"
-                className="empty-wire"
-              />
-              <path
-                d="M240 54 C240 96, 160 84, 160 118"
-                stroke="#8b5cf6"
-                strokeWidth="2"
-                strokeDasharray="5 9"
-                strokeLinecap="round"
-                className="empty-wire"
-              />
-              {/* node blocks */}
-              <rect x="34" y="26" width="92" height="30" rx="6" fill="#18181b" stroke="#3f3f46" />
-              <rect x="194" y="26" width="92" height="30" rx="6" fill="#18181b" stroke="#3f3f46" />
-              <rect x="114" y="118" width="92" height="30" rx="6" fill="#18181b" stroke="#3f3f46" />
-              {/* ports */}
-              <circle cx="80" cy="56" r="4" fill="#09090b" stroke="#6366f1" strokeWidth="1.5" />
-              <circle cx="240" cy="56" r="4" fill="#09090b" stroke="#8b5cf6" strokeWidth="1.5" />
-              <circle cx="160" cy="118" r="4" fill="#09090b" stroke="#6366f1" strokeWidth="1.5" />
-            </svg>
-
-            <div className="relative w-16 h-16 rounded-2xl bg-[var(--accent-muted)] border border-[var(--border-accent)] flex items-center justify-center mx-auto mb-6">
-              <Zap className="w-8 h-8 text-[var(--accent)]" strokeWidth={1.5} />
-            </div>
-            <h3 className="relative text-xl font-semibold text-[var(--text-primary)] mb-2">
+        <div className="absolute inset-x-0 bottom-0 top-20 flex items-start sm:items-center justify-center pointer-events-none overflow-hidden">
+          <div className="relative text-center w-full max-w-[31rem] px-5">
+            <h3 className="font-display text-3xl sm:text-4xl font-extrabold text-[var(--text-primary)] mb-2">
               Start Wiring
             </h3>
-            <p className="relative text-sm text-[var(--text-secondary)] leading-relaxed">
+            <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-4">
               Drop your first node, then drag from a port to wire it up
               <br />
-              <span className="text-xs mt-1 opacity-60">
+              <span className="text-xs mt-1 text-[var(--text-tertiary)]">
                 Right-click or press Space to add tools
               </span>
             </p>
+            <div className="pointer-events-auto">
+              <ManifestSheet />
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-4"
+                onClick={() => addTool(createSampleTool())}
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add this sample tool
+              </Button>
+            </div>
           </div>
         </div>
       )}
