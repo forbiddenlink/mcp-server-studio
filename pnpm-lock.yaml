@@ -19,7 +19,7 @@ overrides:
   lodash: '>=4.18.1 <5'
   minimatch: '>=9.0.7 <11'
   nanoid: '>=3.3.18 <7'
-  next: '>=16.2.3 <17'
+  next: '>=16.4.5 <17'
   path-to-regexp: '>=8.4.0 <9'
   picomatch: '>=4.0.4 <5'
   postcss: '>=8.5.23 <9'
@@ -84,7 +84,7 @@ importers:
         specifier: ^1.34.0
         version: 1.40.0(react@19.2.8)
       next:
-        specifier: '>=16.2.3 <17'
+        specifier: '>=16.4.5 <17'
         version: 16.4.5(@babel/core@7.29.7)(@opentelemetry/api@1.10.0)(@types/node@26.6.5)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       next-axiom:
         specifier: ^1.5.0
@@ -2056,7 +2056,7 @@ packages:
     resolution: {integrity: sha512-ilzb3E7Kaskx/RQ355kCkxLxrHBtYS67pe6KO+F/O6s53f5t4sVwz4gE2Mz4ScghDXeKM+ccyB5GMq9dlkQ35A==}
     engines: {node: '>=18'}
     peerDependencies:
-      next: '>=16.2.3 <17'
+      next: '>=16.4.5 <17'
 
   '@sentry/node-core@10.75.2':
     resolution: {integrity: sha512-6sFhrvWVLAPRTOYkwrOOLwgsWINe6Y75oX9xKj11zZcKd2e1K2Y3bcx3uzDU06+cxfVbUQUBulsCr/TD7yx/vw==}
@@ -2705,7 +2705,7 @@ packages:
     resolution: {integrity: sha512-jwkNcrTeafWxjmWq4AHBaptSqZiJkYU5adLC9QBSqeim0GcqDMgN5Ievh8OG1rJ6W3A4l1oiP7qr9CWxGuzu3w==}
     peerDependencies:
       '@sveltejs/kit': ^1 || ^2
-      next: '>=16.2.3 <17'
+      next: '>=16.4.5 <17'
       nuxt: '>= 3'
       react: ^18 || ^19 || ^19.0.0-rc
       svelte: '>= 4'
@@ -4659,14 +4659,14 @@ packages:
     resolution: {integrity: sha512-PpwmfOqoa2xWKcGmYb3d5t3R4+/J8C2D00IhJsI3Qk0xxv9tNvGzS/hKKOPNOuUwqM4b/etqu6iGW7tkKvltgA==}
     engines: {node: '>=18'}
     peerDependencies:
-      next: '>=16.2.3 <17'
+      next: '>=16.4.5 <17'
       react: '>=18.0.0'
 
   next-safe-action@8.7.3:
     resolution: {integrity: sha512-tz6wMMBOSGyEclSDChpj5izLLErUbwqcufXN4a6lyD83pgPni9GWVniLH0zEzPWcKIkkyEiQyrjOhWcqxBKy6A==}
     engines: {node: '>=18.17'}
     peerDependencies:
-      next: '>=16.2.3 <17'
+      next: '>=16.4.5 <17'
       react: '>= 18.2.0'
       react-dom: '>= 18.2.0'
 
@@ -4675,7 +4675,7 @@ packages:
     engines: {node: '>=14.18'}
     hasBin: true
     peerDependencies:
-      next: '>=16.2.3 <17'
+      next: '>=16.4.5 <17'
 
   next@16.4.5:
     resolution: {integrity: sha512-rmdfsWosjTUO+6R0S3KokoIk6Kj0sWDRTe86tZHdqaWH/oXq/udX3/4xb+YQi7aWbyEFoglDU54kaifLCdXbBw==}
@@ -4728,7 +4728,7 @@ packages:
     peerDependencies:
       '@remix-run/react': '>=2'
       '@tanstack/react-router': ^1
-      next: '>=16.2.3 <17'
+      next: '>=16.4.5 <17'
       react: '>=18.2.0 || ^19.0.0-0'
       react-router: ^5 || ^6 || ^7 || ^8
       react-router-dom: ^5 || ^6 || ^7
