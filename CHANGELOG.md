@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.1](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.1.0...v1.1.1) (2026-11-14)
+
+
+### Bug Fixes
+
+* **deps:** bump next to 16.4.5 (security) ([#148](https://github.com/forbiddenlink/mcp-server-studio/issues/148)) ([e135525](https://github.com/forbiddenlink/mcp-server-studio/commit/e135525f218dc89b2a29318780a55951c4e60386))
+* **deps:** lift glob/minimatch to patched majors ([#152](https://github.com/forbiddenlink/mcp-server-studio/issues/152)) ([94df40f](https://github.com/forbiddenlink/mcp-server-studio/commit/94df40fbc96e73f12656f4320a26e7d4c0214f9c))
+* **deps:** raise @hono/node-server, hono override floors to patched versions ([#150](https://github.com/forbiddenlink/mcp-server-studio/issues/150)) ([6bdd8c4](https://github.com/forbiddenlink/mcp-server-studio/commit/6bdd8c4a76bef76d1b436b6da921d5378878319c))
+* **deps:** raise pnpm override floors to patched versions ([#151](https://github.com/forbiddenlink/mcp-server-studio/issues/151)) ([bd0ca77](https://github.com/forbiddenlink/mcp-server-studio/commit/bd0ca77d1063c362e8b32ff538a06a77b1bf5a78))
+
 ## [1.1.0](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.0.10...v1.1.0) (2026-11-04)
 
 
