@@ -106,18 +106,25 @@ export function validateParameters(
 
           // Validate pattern constraint
           if (param.pattern) {
-            const regex = new RegExp(param.pattern)
-            if (!regex.test(value)) {
+            try {
+              const regex = new RegExp(param.pattern)
+              if (!regex.test(value)) {
+                errors.push({
+                  field: param.name,
+                  message: `${param.name} must match pattern: /${param.pattern}/`,
+                })
+              }
+            } catch {
               errors.push({
                 field: param.name,
-                message: `${param.name} must match pattern: /${param.pattern}/`,
+                message: `${param.name} has an invalid validation pattern`,
               })
             }
           }
         }
         break
       case 'number':
-        if (typeof value !== 'number' || Number.isNaN(value)) {
+        if (typeof value !== 'number' || !Number.isFinite(value)) {
           errors.push({
             field: param.name,
             message: `${param.name} must be a number`,
