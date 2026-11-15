@@ -369,7 +369,7 @@ export function CanvasPanel() {
               </div>
               <div className="min-w-0">
                 <div className="font-medium text-sm text-[var(--text-primary)]">
-                  Generate with AI
+                  Describe a Tool
                 </div>
                 <div className="text-xs text-[var(--text-tertiary)] truncate">
                   Describe in natural language
@@ -447,7 +447,7 @@ export function CanvasPanel() {
         onImport={handleImport}
       />
 
-      {/* AI Generator Dialog */}
+      {/* Describe a Tool dialog */}
       <AIGenerator
         isOpen={isAIGeneratorOpen}
         onClose={() => setIsAIGeneratorOpen(false)}
