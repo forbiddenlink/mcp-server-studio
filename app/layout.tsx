@@ -18,6 +18,7 @@ const inkMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://mcp-server-studio.vercel.app'),
+  alternates: { canonical: '/' },
   title: 'MCP Server Studio - Visual MCP Server Builder',
   description:
     'Build Model Context Protocol servers visually with drag-and-drop tools, real-time testing, and code generation.',
