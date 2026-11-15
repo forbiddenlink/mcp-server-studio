@@ -48,19 +48,19 @@ describe('AIGenerator', () => {
   describe('Visibility', () => {
     it('does not render when isOpen is false', () => {
       render(<AIGenerator isOpen={false} onClose={mockOnClose} onGenerate={mockOnGenerate} />)
-      expect(screen.queryByText('Generate Tool with AI')).toBeNull()
+      expect(screen.queryByText('Describe a Tool')).toBeNull()
     })
 
     it('renders when isOpen is true', () => {
       render(<AIGenerator isOpen={true} onClose={mockOnClose} onGenerate={mockOnGenerate} />)
-      expect(screen.getByText('Generate Tool with AI')).toBeTruthy()
+      expect(screen.getByText('Describe a Tool')).toBeTruthy()
     })
   })
 
   describe('Header', () => {
     it('shows header title', () => {
       render(<AIGenerator isOpen={true} onClose={mockOnClose} onGenerate={mockOnGenerate} />)
-      expect(screen.getByText('Generate Tool with AI')).toBeTruthy()
+      expect(screen.getByText('Describe a Tool')).toBeTruthy()
     })
 
     it('shows header description', () => {

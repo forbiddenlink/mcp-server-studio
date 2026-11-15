@@ -135,7 +135,7 @@ export function AIGenerator({ isOpen, onClose, onGenerate }: AIGeneratorProps) {
                   </div>
                   <div>
                     <h2 className="text-lg font-semibold text-[var(--text-primary)]">
-                      Generate Tool with AI
+                      Describe a Tool
                     </h2>
                     <p className="text-sm text-[var(--text-secondary)]">
                       Describe what you want and we will create it

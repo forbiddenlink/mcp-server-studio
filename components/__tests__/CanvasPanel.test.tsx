@@ -48,7 +48,7 @@ vi.mock('@xyflow/react', () => ({
 // Mock child components that are complex
 vi.mock('@/components/ui/ai-generator', () => ({
   AIGenerator: ({ isOpen }: { isOpen: boolean }) =>
-    isOpen ? <div data-testid="ai-generator">AI Generator</div> : null,
+    isOpen ? <div data-testid="ai-generator">Describe a Tool</div> : null,
 }))
 
 vi.mock('@/components/ui/import-dialog', () => ({
