@@ -334,3 +334,20 @@ describe('mcpTestSimulator', () => {
     })
   })
 })
+
+describe('invalid simulator constraints', () => {
+  it('returns feedback for a malformed regex instead of throwing', () => {
+    const errors = validateParameters({ value: 'abc' }, [
+      { name: 'value', type: 'string', description: '', required: true, pattern: '[' },
+    ])
+    expect(errors).toEqual([{ field: 'value', message: 'value has an invalid validation pattern' }])
+  })
+
+  it.each([Infinity, -Infinity])('rejects non-finite number %s', (value) => {
+    expect(
+      validateParameters({ value }, [
+        { name: 'value', type: 'number', description: '', required: true },
+      ])
+    ).toHaveLength(1)
+  })
+})
