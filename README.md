@@ -31,7 +31,7 @@ It is useful for:
 
 **Export & Deploy**: TypeScript, Docker, and Railway-oriented export bundles with supporting project configuration.
 
-**AI Tool Generator**: Describe a tool in natural language and generate a draft tool definition with parameters and types.
+**Describe a Tool**: Write a tool in plain English and get a draft tool definition with parameters and types. This is rule-based pattern matching in `lib/generators/aiToolGenerator.ts`; it makes no LLM call, so review the draft.
 
 **OpenAPI Import**: Convert operations from OpenAPI/Swagger JSON or YAML into MCP tool definitions.
 
