@@ -30,4 +30,10 @@ describe('SEO metadata', () => {
     const { metadata } = await import('../../app/layout')
     expect(metadata.alternates?.canonical).toBe('/')
   })
+
+  it('uses the small twitter card because the share image is square', async () => {
+    const { metadata } = await import('../../app/layout')
+    const twitter = metadata.twitter as { card?: string } | null | undefined
+    expect(twitter?.card).toBe('summary')
+  })
 })
