@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.2](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.1.1...v1.1.2) (2026-11-15)
+
+
+### Bug Fixes
+
+* **seo:** drop image files from sitemap and add canonical ([#154](https://github.com/forbiddenlink/mcp-server-studio/issues/154)) ([bdb341b](https://github.com/forbiddenlink/mcp-server-studio/commit/bdb341b6d3107cb204d10d24f69791318b091348))
+* **ui:** label the rule-based describer "Describe a Tool" instead of AI ([#157](https://github.com/forbiddenlink/mcp-server-studio/issues/157)) ([89ec9e6](https://github.com/forbiddenlink/mcp-server-studio/commit/89ec9e67d1cad0063d4ecacd68c82a7092d07b6d))
+
 ## [1.1.1](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.1.0...v1.1.1) (2026-11-15)
 
 
