@@ -4,6 +4,8 @@
 
 Design MCP tools, resources, and prompts on a drag-and-drop canvas, test them in a built-in simulator, and export TypeScript server code with deployment bundles.
 
+Live: <https://mcp-server-studio.vercel.app>
+
 ![CI](https://github.com/forbiddenlink/mcp-server-studio/actions/workflows/ci.yml/badge.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-7-blue?logo=typescript)
@@ -37,7 +39,7 @@ It is useful for:
 
 **Advanced Capabilities**: Model sampling, elicitation, and experimental task configuration on a per-tool basis.
 
-## Quick Start
+## Quick start
 
 ```bash
 git clone https://github.com/forbiddenlink/mcp-server-studio.git
@@ -46,7 +48,11 @@ pnpm install
 pnpm dev
 ```
 
-Open `http://localhost:3000`.
+Open <http://localhost:3000>. The repo does not pin a Node version; use a current LTS release with pnpm.
+
+### Environment variables
+
+The app runs without any. Optional names read in code: `LOG_LEVEL` (`lib/logger.ts`), `SENTRY_ORG` and `SENTRY_PROJECT` (`next.config.ts`), `NEXT_PUBLIC_SITE_URL` (`next-sitemap.config.js`). `src/env.ts` declares `ARCJET_KEY` and `GROQ_API_KEY` as required, but nothing imports that file, so they are not needed to run or build.
 
 ## Development
 
@@ -56,6 +62,8 @@ pnpm build        # Production build
 pnpm lint         # Biome lint
 pnpm test:run     # Vitest single run
 pnpm test         # Vitest watch mode
+pnpm start        # serve the production build
+pnpm biome:check  # Biome lint and format check
 pnpm presubmit    # lint + tests + build
 ```
 
@@ -84,7 +92,7 @@ flowchart LR
 
 The UI owns the editable project model. Importers and assisted drafting populate that model; generators and the simulator consume it as pure or mostly-pure transformations. Export code is produced from the same project state shown in the visual editor, which keeps preview and export behavior aligned.
 
-## Tech Stack
+## Tech stack
 
 - **Next.js 16** and **React 19**
 - **TypeScript 7**
@@ -98,7 +106,7 @@ The UI owns the editable project model. Importers and assisted drafting populate
 
 See [`package.json`](package.json) for the current dependency versions. Keeping exact version numbers out of prose prevents documentation from drifting after dependency updates.
 
-## Project Structure
+## Project structure
 
 ```text
 mcp-server-studio/
