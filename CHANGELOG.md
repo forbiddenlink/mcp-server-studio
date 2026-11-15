@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.1.2...v1.1.3) (2026-11-15)
+
+
+### Bug Fixes
+
+* **seo:** use the small twitter card for the square share image ([#158](https://github.com/forbiddenlink/mcp-server-studio/issues/158)) ([2541aa5](https://github.com/forbiddenlink/mcp-server-studio/commit/2541aa5aae303fda3829277f3bf330908383935e))
+
 ## [1.1.2](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.1.1...v1.1.2) (2026-11-15)
 
 
