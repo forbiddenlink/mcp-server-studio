@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.1.3...v1.1.4) (2026-11-20)
+
+
+### Bug Fixes
+
+* capture browser and server errors in production ([#163](https://github.com/forbiddenlink/mcp-server-studio/issues/163)) ([2e2c018](https://github.com/forbiddenlink/mcp-server-studio/commit/2e2c018be34bf6890e6a330292d3e8d8c199a49d))
+
 ## [1.1.3](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.1.2...v1.1.3) (2026-11-15)
 
 
