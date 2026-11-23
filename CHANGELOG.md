@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.5](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.1.4...v1.1.5) (2026-11-23)
+
+
+### Bug Fixes
+
+* add global-error boundary that reports to Sentry ([#167](https://github.com/forbiddenlink/mcp-server-studio/issues/167)) ([e73cc0c](https://github.com/forbiddenlink/mcp-server-studio/commit/e73cc0c39076e97b1d0a2a6a8017354efe49acd2))
+
 ## [1.1.4](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.1.3...v1.1.4) (2026-11-22)
 
 
