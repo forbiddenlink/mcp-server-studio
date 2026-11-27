@@ -312,8 +312,8 @@ export default function Home() {
               <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[var(--accent)] flex items-center justify-center flex-shrink-0">
                 <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={2} />
               </div>
-              <div className="hidden sm:block ml-1">
-                <h1 className="text-sm font-semibold text-[var(--text-primary)]">MCP Studio</h1>
+              <div className="min-w-0 ml-1">
+                <h1 className="text-sm font-semibold text-[var(--text-primary)] truncate">MCP Studio</h1>
               </div>
             </div>
 
