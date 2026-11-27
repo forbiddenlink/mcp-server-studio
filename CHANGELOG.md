@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.1.5...v1.2.0) (2026-11-27)
+
+
+### Features
+
+* **analytics:** initialize posthog-js ([#171](https://github.com/forbiddenlink/mcp-server-studio/issues/171)) ([e5d40f4](https://github.com/forbiddenlink/mcp-server-studio/commit/e5d40f4c8cc44bc1d0b50e34f9beaf945e299b7d))
+
+
+### Bug Fixes
+
+* **header:** show the app title on mobile instead of hiding it ([#169](https://github.com/forbiddenlink/mcp-server-studio/issues/169)) ([b03a0dc](https://github.com/forbiddenlink/mcp-server-studio/commit/b03a0dcb5ffadc20373d6df6e440ba7bb7895c5f))
+
 ## [1.1.5](https://github.com/forbiddenlink/mcp-server-studio/compare/v1.1.4...v1.1.5) (2026-11-23)
 
 
