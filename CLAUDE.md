@@ -100,8 +100,9 @@ it matches `src/env.ts`.
 
 ## Gotchas
 
-- `src/env.ts` requires `ARCJET_KEY` and `GROQ_API_KEY` (non-optional server vars) and
-  `NEXT_PUBLIC_POSTHOG_KEY` (non-optional client var), but nothing in `app/`, `components/`,
+- `src/env.ts` requires `ARCJET_KEY` and `GROQ_API_KEY` (non-optional server vars). Its
+  `NEXT_PUBLIC_POSTHOG_KEY` is optional: `instrumentation-client.ts` reads `process.env`
+  directly and skips `posthog.init` when the key is unset. Nothing in `app/`, `components/`,
   or `lib/` imports `src/env.ts`, and the Arcjet package is not a dependency in `package.json`
   (it was removed - see `package.json.bak`). This schema looks like leftover scaffolding from
   a template and is currently dead code (orphaned scaffolding, left over after Arcjet's
