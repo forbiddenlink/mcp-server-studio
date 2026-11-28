@@ -6,13 +6,15 @@ on:
       - main
 
 permissions:
-  contents: write
-  pull-requests: write
-  actions: write
+  contents: read
 
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
     steps:
       # A GitHub App token makes the release PR an ordinary PR event, so CI runs
       # on it with no approval gate. GITHUB_TOKEN-opened PRs get their
