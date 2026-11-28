@@ -50,3 +50,5 @@ package.json.bak
 
 # Local symlink to CLAUDE.md for agents that look for AGENTS.md
 /AGENTS.md
+
+.claude/settings.local.json
